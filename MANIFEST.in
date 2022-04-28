@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include pibidav *.css
+recursive-include pibidav *.csv
+recursive-include pibidav *.html
+recursive-include pibidav *.ico
+recursive-include pibidav *.js
+recursive-include pibidav *.json
+recursive-include pibidav *.md
+recursive-include pibidav *.png
+recursive-include pibidav *.py
+recursive-include pibidav *.svg
+recursive-include pibidav *.txt
+recursive-exclude pibidav *.pyc
