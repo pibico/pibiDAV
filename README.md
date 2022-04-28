@@ -112,7 +112,8 @@ frappe.ui.form.on('Sales Invoice', {
   }
 });
 ```
-![imagen](https://user-images.githubusercontent.com/69711454/165816148-63a3e74b-8aa0-4eb1-b35c-c89b428b3971.png)
+![imagen](https://user-images.githubusercontent.com/69711454/165816499-6e70af0f-2226-4a08-a93d-5bd106296bfa.png)
+
 
 
 
