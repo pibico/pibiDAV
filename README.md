@@ -101,7 +101,8 @@ And once selected the destination folder, on the tree we click on button Recreat
 The result is seen on the image for a new Client Structure called CUSTOMER as abbreviation and Customer Name Details as Description for the Folder.
 ![imagen](https://user-images.githubusercontent.com/69711454/165841463-62829c06-e4f6-4e13-ae3e-49d5bbe67fee.png)
 ![imagen](https://user-images.githubusercontent.com/69711454/165841656-f5b458d8-b15d-47ff-8738-bafe8c5bd08a.png)
-
+### 6. CalDAV integration with Calendar App in NextCloud.
+This portion is explained in pibiCal (refer to https://github.com/pibico/pibical/tree/version-13) The code from pibiCal has been integrated into pibiDav to achieve the syncronization between Frappe and NextCloud CalDAV Server.
 
 
 
