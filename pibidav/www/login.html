@@ -1,0 +1,137 @@
+{% extends "templates/web.html" %}
+
+{% block style %}
+  <style>
+    footer, .navbar {
+      display: none;
+    }
+    body {
+      background-image: url("/assets/pibidav/image/background.png");
+      background-color: rgba(0,0,0,0.25);
+    }
+    .for-login .section-title, .for-forgot .section-title {
+      padding-top: 120px;
+    }
+    .for-login h2, .form-footer a, .for-forgot h2 {
+      color: #4682b4ff;
+      font-weight: 540;
+    }
+    .login-content {
+      background: transparent;
+    }
+  </style>
+{% endblock %}
+
+{% block page_content %}
+  <div class="row pl-2" style="max-height: 360px;">
+    <div style="min-height: 240px;">
+	    <noscript>
+		    <div class="text-center my-5">
+			    <h4>{{ _("Javascript is disabled on your browser") }}</h4>
+			    <p class="text-muted">{{ _("You need to enable JavaScript for your app to work.") }}<br>{{ _("To enable it follow the instructions in the following link: {0}").format("<a href='https://enable-javascript.com/'>enable-javascript.com</a></p>") }}
+		    </div>
+	    </noscript>
+      <section class='text-center for-login'>
+        <div class="section-title">
+          <span>
+            <a href="index" class="logo mr-auto"><img src="/assets/pibidav/image/pibiCo_engine_largo.png" width="150px" alt="PibiCo cloud"></a>
+            <strong style="color: #4682b4ff; font-size: 39pt;"> cloud</strong>
+          </span>
+        </div>  
+  	    <div class="login-content page-card">
+		      <form class="form-signin form-login" role="form">
+			      <div class="page-card-head mb-3 text-white">
+				      <span class="indicator blue" data-text="{{ _('Login') }}"></span>
+			      </div>
+			      <input type="text" id="login_email"
+				      class="form-control"
+				      placeholder="{% if login_name_placeholder %}{{ login_name_placeholder  }}{% else %}{{ _('Email Address') }}{% endif %}"
+				    required autofocus>
+			      <div class="password-field mt-3" style="position: relative;">
+				      <input type="password" id="login_password"
+						    class="form-control" placeholder="{{ _('Password') }}" required>
+
+				      <span toggle="#login_password" class="fa fa-fw fa-eye toggle-password text-muted"></span>
+			      </div>
+			      <button class="btn btn-sm btn-primary btn-block btn-login mt-3" type="submit">{{ _("Login") }}</button>
+			      {% if ldap_settings and ldap_settings.enabled %}
+			      <button class="btn btn-sm btn-default btn-block btn-login btn-ldap-login">{{ _("Login with LDAP") }}</button>
+			      {% endif %}
+		      </form>
+	      </div>
+	      <div class='form-footer'>
+    			<div class='social-logins'>
+			      {%- if social_login -%}
+				    <h6>{{ _("Or login with") }}</h6>
+				    <p class="text-center" style="margin-top: 15px">
+				      {% for provider in provider_logins %}
+					    <a href="{{ provider.auth_url }}"
+						  class="btn btn-default btn-sm btn-social btn-{{ provider.name }}">
+						  {{ provider.icon }} {{ provider.provider_name }}</a>
+				      {% endfor %}
+				    </p>
+			      {%- endif -%}
+			    </div>
+    	    {%- if not disable_signup -%}
+		      <p class="text-center sign-up-message">
+			      <a href="#signup">{{ _("Don't have an account? Sign up") }}</a>
+		      </p>
+	        {%- endif -%}
+	        <p class="text-center forgot-password-message mt-1">
+		        <a class="text-white" href="#forgot">{{ _("Forgot Password?") }}</a>
+          </p>
+	      </div>
+      </section>
+      <section class='for-signup {{ "signup-disabled" if disable_signup else "" }}'>
+	      <div class="login-content page-card mt-1">
+	        {%- if not disable_signup -%}
+		      <form class="form-signin form-signup hide" role="form">
+			      <div class="page-card-head">
+				      <span class="indicator blue" data-text="{{ _('Sign Up') }}"></span>
+			      </div>
+			      <input type="text" id="signup_fullname" class="form-control" placeholder="{{ _('Full Name') }}" required autofocus>
+			      <input type="email" id="signup_email" class="form-control" placeholder="{{ _('Email Address') }}" required>
+			      <button class="btn btn-sm btn-primary btn-block btn-signup" type="submit">{{ _("Sign up") }}</button>
+		      </form>
+	        {%- else -%}
+		      <div class='page-card-head'>
+			      <span class='indicator darkgrey'>{{_("Signup Disabled")}}</span>
+		      </div>
+		      <p>{{_("Signups have been disabled for this website.")}}</p>
+		      <div><a href='/' class='btn btn-primary btn-sm'>{{ _("Home") }}</a></div>
+	        {%- endif -%}
+	      </div>
+	      <div class='form-footer'>
+		      <a href="#login" class="blue">{{ _("Have an account? Login") }}</a>
+	      </div>
+      </section>
+
+      <section class='text-center for-forgot'>
+        <div class="section-title">
+          <span>
+            <a href="index" class="logo mr-auto"><img src="/assets/pibico_settings/image/pibiCo_engine_largo.png" width="150px" alt="PibiCo cloud"></a>
+            <strong style="color: #4682b4ff; font-size: 39pt;"> cloud</strong>
+          </span>
+        </div>  
+	      <div class="login-content page-card mt-1">
+	        <form class="form-signin form-forgot hide" role="form">
+		        <div class="page-card-head text-white">
+			        <span class="indicator blue" data-text="{{ _('Forgot Password') }}">
+            </span></div>
+		        <input type="email" id="forgot_email" class="form-control mt-2" placeholder="{{ _('Email Address') }}" required autofocus>
+		        <button class="btn btn-sm btn-primary btn-block btn-forgot mt-2" type="submit">{{ _("Reset Password") }}</button>
+	        </form>
+	      </div>
+	      <div class='form-footer'>
+		      <a href="#login" class="text-white mt-1">{{ _("Back to Login") }}</a>
+	      </div>
+      </section>
+    </div>
+  </div>
+{% endblock %}
+
+{% block script %}
+	<script>{% include "templates/includes/login/login.js" %}</script>
+{% endblock %}
+
+{% block sidebar %}{% endblock %}

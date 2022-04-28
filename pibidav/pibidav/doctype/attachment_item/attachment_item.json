@@ -1,0 +1,91 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2022-04-17 09:45:52.593268",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "attachment",
+  "file_category",
+  "filename",
+  "uploaded_to_nc",
+  "nc_path",
+  "nc_link",
+  "nc_private",
+  "nc_url"
+ ],
+ "fields": [
+  {
+   "fieldname": "attachment",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Attachment",
+   "options": "File",
+   "reqd": 1
+  },
+  {
+   "fieldname": "file_category",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "File Type",
+   "options": "File Category"
+  },
+  {
+   "fetch_from": "attachment.file_name",
+   "fieldname": "filename",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Filename",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fetch_from": "attachment.uploaded_to_nextcloud",
+   "fieldname": "uploaded_to_nc",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Uploaded To NC",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "attachment.folder_path",
+   "fieldname": "nc_path",
+   "fieldtype": "Text",
+   "in_list_view": 1,
+   "label": "NC Path",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "attachment.share_link",
+   "fieldname": "nc_link",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "NC Share Link",
+   "read_only": 1
+  },
+  {
+   "fieldname": "nc_private",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "NC Private Link",
+   "read_only": 1
+  },
+  {
+   "fieldname": "nc_url",
+   "fieldtype": "Read Only",
+   "label": "NC URL"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2022-04-28 15:53:59.459882",
+ "modified_by": "Administrator",
+ "module": "Pibidav",
+ "name": "Attachment Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

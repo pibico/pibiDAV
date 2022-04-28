@@ -14,7 +14,7 @@ app_license = "MIT"
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/pibidav/css/pibidav.css"
-# app_include_js = "/assets/pibidav/js/pibidav.js"
+app_include_js = "/assets/pibidav/js/pibidav.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/pibidav/css/pibidav.css"
@@ -41,6 +41,13 @@ app_license = "MIT"
 
 # application home page (will override Website Settings)
 # home_page = "login"
+
+brand_html = '<div><img width="27px" src="/assets/pibidav/image/pibiCo_engine_largo.png"> pibi<strong>DAV</strong></div>'
+
+website_context = {
+  "favicon": "/assets/pibidav/image/favicon.svg",
+  "splash_image": "/assets/pibidav/image/pibiCo_engine_largo.png"
+}
 
 # website user home page (by Role)
 # role_home_page = {
@@ -83,6 +90,14 @@ app_license = "MIT"
 # 	"Event": "frappe.desk.doctype.event.event.has_permission",
 # }
 
+jenv = {
+  "methods": [
+    "timestamp_to_date:pibidav.jinja_filters.timestamp_to_date",
+    "ts_to_date:pibidav.jinja_filters.ts_to_date"
+  ]
+}
+
+
 # DocType Class
 # ---------------
 # Override standard doctype classes
@@ -95,34 +110,46 @@ app_license = "MIT"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
+doc_events = {
+  "File": {
+    "after_insert": ["pibidav.pibidav.custom.upload_file_to_nc"]
+  },
+  "Event": {
+    "after_insert": "pibidav.pibidav.pibical.sync_caldav_event_by_user",
+    "on_trash": "pibidav.pibidav.pibical.remove_caldav_event"
+  }
 # 	"*": {
 # 		"on_update": "method",
 # 		"on_cancel": "method",
 # 		"on_trash": "method"
 #	}
-# }
+}
 
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
+scheduler_events = {
 # 	"all": [
 # 		"pibidav.tasks.all"
 # 	],
-# 	"daily": [
-# 		"pibidav.tasks.daily"
-# 	],
+  "cron": {
+    "*/5 * * * *": [
+      "pibidav.pibidav.pibical.sync_outside_caldav"
+    ]
+  },
+  "daily": [
+    "pibidav.pibidav.doctype.nextcloud_settings.nextcloud_settings.daily_backup"
+  ],
 # 	"hourly": [
 # 		"pibidav.tasks.hourly"
 # 	],
-# 	"weekly": [
-# 		"pibidav.tasks.weekly"
-# 	]
+  "weekly": [
+    "pibidocs.pibidocs.doctype.nextcloud_settings.nextcloud_settings.weekly_backup"
+  ] #,
 # 	"monthly": [
 # 		"pibidav.tasks.monthly"
 # 	]
-# }
+}
 
 # Testing
 # -------
@@ -178,6 +205,11 @@ user_data_fields = [
 # auth_hooks = [
 # 	"pibidav.auth.validate"
 # ]
+
+fixtures = ['Role Profile', 'Role', 'Custom Field', 'Client Script', 'Property Setter', 'Translation']
+
+treeviews = ['Folder Set']
+
 
 # Translation
 # --------------------------------

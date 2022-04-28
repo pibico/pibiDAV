@@ -1,0 +1,93 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2022-04-19 16:19:04.497503",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "description",
+  "sb_more_information",
+  "action",
+  "status",
+  "cb_01",
+  "assign_to",
+  "complete_by",
+  "cb_02",
+  "todo",
+  "consequent_event"
+ ],
+ "fields": [
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Description",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sb_more_information",
+   "fieldtype": "Section Break",
+   "label": "More Information"
+  },
+  {
+   "fieldname": "action",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Action"
+  },
+  {
+   "default": "Open",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Open\nClosed"
+  },
+  {
+   "fieldname": "cb_01",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "assign_to",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Assign To"
+  },
+  {
+   "fieldname": "complete_by",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Complete by"
+  },
+  {
+   "fieldname": "cb_02",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "todo",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "To Do Task",
+   "options": "ToDo"
+  },
+  {
+   "fieldname": "consequent_event",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Consequent Event",
+   "options": "Event"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2022-04-28 14:09:25.997393",
+ "modified_by": "Administrator",
+ "module": "Pibidav",
+ "name": "Minute Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

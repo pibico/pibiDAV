@@ -1,0 +1,127 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2022-04-21 19:00:30.884664",
+ "doctype": "DocType",
+ "document_type": "Setup",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "is_group",
+  "title",
+  "reference_doctype",
+  "nc_enable",
+  "cb_01",
+  "old_parent",
+  "root_parent",
+  "parent_folder_set",
+  "nc_folder",
+  "lft",
+  "rgt"
+ ],
+ "fields": [
+  {
+   "default": "0",
+   "fieldname": "is_group",
+   "fieldtype": "Check",
+   "label": "Is Folder"
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Title",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "reference_doctype",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Reference Doctype",
+   "options": "DocType",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:frappe.user.has_role('System Manager');",
+   "fieldname": "nc_enable",
+   "fieldtype": "Check",
+   "label": "NC Enable"
+  },
+  {
+   "fieldname": "cb_01",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "old_parent",
+   "fieldtype": "Link",
+   "label": "Old Parent",
+   "options": "Folder Set"
+  },
+  {
+   "fieldname": "root_parent",
+   "fieldtype": "Link",
+   "label": "Root Parent",
+   "options": "Folder Set"
+  },
+  {
+   "fieldname": "parent_folder_set",
+   "fieldtype": "Link",
+   "label": "Parent Folder Set",
+   "options": "Folder Set"
+  },
+  {
+   "depends_on": "eval:doc.nc_enable;",
+   "fieldname": "nc_folder",
+   "fieldtype": "Text",
+   "label": "NC Folder",
+   "read_only": 1
+  },
+  {
+   "fieldname": "lft",
+   "fieldtype": "Int",
+   "hidden": 1,
+   "label": "Left",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "rgt",
+   "fieldtype": "Int",
+   "hidden": 1,
+   "label": "Right",
+   "no_copy": 1,
+   "read_only": 1
+  }
+ ],
+ "icon": "folder",
+ "index_web_pages_for_search": 1,
+ "is_tree": 1,
+ "links": [],
+ "modified": "2022-04-28 14:09:09.323167",
+ "modified_by": "Administrator",
+ "module": "Pibidav",
+ "name": "Folder Set",
+ "nsm_parent_field": "parent_folder_set",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "quick_entry": 1,
+ "search_fields": "root_parent,parent_folder_set,reference_doctype",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "title_field": "title"
+}
