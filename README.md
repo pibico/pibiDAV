@@ -95,8 +95,12 @@ Looking for details we see the pdf file Sales Invoice uploaded in NextCloud Dest
 Another possible integration is through a Folder Set Doctype Tree integrated in pibiDav. Folder Set is a Doctype for making Folder Structures taken as templates for recreating them in the NextCloud Instance from a destination folder as root. Let's see in action, once we have the template folder set created in Frappe. We can select the root folder and enable the nc_enable check and select the destination folder in NextCloud where to recreate this structure, renaming the folders in NextCloud upon its creation.
 ![imagen](https://user-images.githubusercontent.com/69711454/165839794-602f4e5c-3e7d-4350-9a12-fa16c31bb75b.png)
 We select the destination folder in NextCloud browsing in the dialog.
-![imagen](https://user-images.githubusercontent.com/69711454/165840416-320afaec-f1df-4866-be9a-eb6ea828bcf9.png)
-
+![imagen](https://user-images.githubusercontent.com/69711454/165840960-bb937ec7-9b2b-491d-94b4-4d9df0374c8e.png)
+And once selected the destination folder, on the tree we click on button Recreate to perform the copy of folders from Frappe to NextCloud.
+![imagen](https://user-images.githubusercontent.com/69711454/165841213-d50cd3e1-089e-4106-a997-c9188a2eeef0.png)
+The result is seen on the image for a new Client Structure called CUSTOMER as abbreviation and Customer Name Details as Description for the Folder.
+![imagen](https://user-images.githubusercontent.com/69711454/165841463-62829c06-e4f6-4e13-ae3e-49d5bbe67fee.png)
+![imagen](https://user-images.githubusercontent.com/69711454/165841656-f5b458d8-b15d-47ff-8738-bafe8c5bd08a.png)
 
 
 
