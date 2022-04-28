@@ -80,5 +80,11 @@ The second needed custom field is the Folder Destination Node selected from the 
 
 ![imagen](https://user-images.githubusercontent.com/69711454/165814234-ae75997a-a3cd-4041-adb7-f2107b48187c.png)
 
+#### 2.3 Custom Field Attachment Item (attachment_item)
+The last needed docfield is a child table to get a register with the attachments uploaded from Frappe to NextCloud in the Sales Invoice Doctype, with its shared links (both internal and external links) and with a link to the Frappe File DocType where all data from NextCloud are also registered for further use. The **attachment_item** docfield is a **Table** type field pointing to childtable **Attachment Item** in the options property. We will locate the table at the very bottom of the Sales Invoice doctype after the last docfield.
+
+![imagen](https://user-images.githubusercontent.com/69711454/165815272-0b880b99-2e0c-4ea4-8d43-54e987484187.png)
+
+
 
 
