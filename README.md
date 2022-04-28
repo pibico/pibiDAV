@@ -76,5 +76,9 @@ This is our first needed custom field. In case of our Selection (Sales Invoice),
 ![imagen](https://user-images.githubusercontent.com/69711454/165813393-efade877-03d2-4e1c-86be-6e3ea582e42a.png)
 
 #### 2.2 Custom Field NC Folder (nc_folder)
-The second needed custom field is the Folder Destination Node selected from the NextCloud Folder Structure to upload the attachments from the Sales Invoice in this case. The **nc_folder** docfield is a **Text** type field and ** Read Only** for filling it with very long routes (paths from the root node). 
+The second needed custom field is the Folder Destination Node selected from the NextCloud Folder Structure to upload the attachments from the Sales Invoice in this case. The **nc_folder** docfield is a **Text** type field and **Read Only** for filling it with very long routes (paths from the root node). 
+
+![imagen](https://user-images.githubusercontent.com/69711454/165814234-ae75997a-a3cd-4041-adb7-f2107b48187c.png)
+
+
 
