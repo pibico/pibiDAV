@@ -54,5 +54,11 @@ Once there, we'll activate the NextCloud Backup Enable checkbox and fill the cre
 ![imagen](https://user-images.githubusercontent.com/69711454/165806449-60d1967f-9aa9-41ee-a9b9-7590ccb4896c.png)
 
 We can check that our credentials are correct clicking on NC commands button on upper right side of the screen.
+
 ![imagen](https://user-images.githubusercontent.com/69711454/165807198-41a41df3-9a6e-447f-96fa-5ee2040190c2.png)
+
+Now, automatic uploading of frappe backup is enabled and will be uploaded to the destination folder as given in the backups details section. Frappe Backups files are renamed on NextCloud to files beginning by a number that is the weekday of the backup files, as shown in the picture. So, we will have always the last backup and also all the ancient backups for this weekday as versions in NextCloud, as shown in the picture
+
+![imagen](https://user-images.githubusercontent.com/69711454/165808672-33278ca8-1776-4cb4-bd0e-50ad273aa9e0.png)
+
 
