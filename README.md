@@ -65,5 +65,16 @@ It's time now of telling to Frappe which doctypes will be integrated to upload i
 
 ![imagen](https://user-images.githubusercontent.com/69711454/165810977-61e39c51-c1cf-4f75-a423-69bc174354ef.png)
 
+### 2. Custom Fields and Client Script for Frappe Core Doctypes to achieve the NextCloud Integration.
+Having active the developer mode in the instance, we can go to the Customization Side Menu and create new custom fields and Client Scripts as needed to fulfill the NextCloud Integration with the selected DocTypes. In case of a custom app, this is also valid but these docfields and script will be incluced in the DocTypes and js code of our custom app.
 
+![imagen](https://user-images.githubusercontent.com/69711454/165813154-f0610f50-c401-449a-840d-b8bc5603890f.png)
+
+#### 2.1 Custom Field NC Enable (nc_enable)
+This is our first needed custom field. In case of our Selection (Sales Invoice), the **nc_enable** docfield is a **Check** docfield to include at the beginning of the doctype form.
+
+![imagen](https://user-images.githubusercontent.com/69711454/165813393-efade877-03d2-4e1c-86be-6e3ea582e42a.png)
+
+#### 2.2 Custom Field NC Folder (nc_folder)
+The second needed custom field is the Folder Destination Node selected from the NextCloud Folder Structure to upload the attachments from the Sales Invoice in this case. The **nc_folder** docfield is a **Text** type field and ** Read Only** for filling it with very long routes (paths from the root node). 
 
