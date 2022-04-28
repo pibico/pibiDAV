@@ -29,7 +29,7 @@ In case you update from the sources and observe errors, make sure to update depe
 ```
 $ bench update --requirements
 ```
-##Features
+## Features
 
 Once is installed, be aware that you will need to set **developer_mode = 1 **on your site_config.json file. Also it is a must to have SSL active in both servers Frappe and NextCloud with specific certificates (wildcard *.domain.com certificates are not valid for this integration). Letsencrypt Certificates are valid for both servers.
 
