@@ -38,3 +38,6 @@ This integration app is prepared for including specific and custom doctypes to u
 ### 1. Credentials for NextCloud SuperUser
 
 PibiCo works on NextCloud making the Main Company Folders Superestructure as a shared folder from this NextCloud SuperUser that should be a System Manager on Frappe also. Let's explain with some pictures.
+
+![NC_FolderStructure_Shared_from_SuperUser](https://user-images.githubusercontent.com/69711454/165801352-b4a14016-b360-41ea-9a2c-050ea589580f.JPG)
+
