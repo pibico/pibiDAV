@@ -102,9 +102,10 @@ Let's Check if it has been also uploaded to NextCloud on the PBC > Customer > Cl
 Looking for details we see the pdf file Sales Invoice uploaded in NextCloud Destination, but also has been created a shared public Link, tagged with customer, tax_id, doctype and name as we defined in the Settings. Voilà, first integration achieved. Let's check the File uploaded to Frappe, it has all metadata from NextCloud as well, and also has some frappe tags also automatically filled on the upload.
 ![imagen](https://user-images.githubusercontent.com/69711454/165825969-f883e0d4-b415-4eba-9885-16ed92073276.png)
 ### 5. Create folder structures in NextCloud from template Folder Sets in Frappe.
-Another possible integration is through a Folder Set Doctype Tree integrated in pibiDav. Folder Set is a Doctype for making Folder Structures taken as templates for recreating them in the NextCloud Instance from a destination folder as root. Let's see in action.
+Another possible integration is through a Folder Set Doctype Tree integrated in pibiDav. Folder Set is a Doctype for making Folder Structures taken as templates for recreating them in the NextCloud Instance from a destination folder as root. Let's see in action, once we have the template folder set created in Frappe. We can select the root folder and enable the nc_enable check and select the destination folder in NextCloud where to recreate this structure, renaming the folders in NextCloud upon its creation.
 ![imagen](https://user-images.githubusercontent.com/69711454/165839794-602f4e5c-3e7d-4350-9a12-fa16c31bb75b.png)
-
+We select the destination folder in NextCloud browsing in the dialog.
+![imagen](https://user-images.githubusercontent.com/69711454/165840416-320afaec-f1df-4866-be9a-eb6ea828bcf9.png)
 
 
 
