@@ -87,7 +87,7 @@ frappe.ui.form.on('Sales Invoice', {
 });
 ```
 ![imagen](https://user-images.githubusercontent.com/69711454/165816499-6e70af0f-2226-4a08-a93d-5bd106296bfa.png)
-### 4. The magic of the NextCloud Integration inside Frape
+### 4. The magic of the NextCloud Integration inside Frappe
 It's time now to try the integration of the NextCloud Folder Structure from Frappe to choose the NC Destination Folder of our uploaded files (except website urls).
 We will go to a Sales Invoice after saving as draft. As default the NC Enable Check is unchecked. While keeping so, the attachments to the Sales Invoice will no be uploaded to NextCloud. Thus, the user has the flexibility to decide whether a file is uploaded to NextCloud or not, and files can be uploaded to different folders just unchecking and checking again and selecting a new Destination Folder each time the nc_enable check is selected. It can be very usual that our invoices can be stored inside a Customer Folder in our NextCloud Instance under the year of the Invoice, as in the picture.
 ![imagen](https://user-images.githubusercontent.com/69711454/165822942-8c6f89fc-a71b-4106-bd10-bbc8fb31877b.png)
@@ -101,8 +101,9 @@ Let's Check if it has been also uploaded to NextCloud on the PBC > Customer > Cl
 ![imagen](https://user-images.githubusercontent.com/69711454/165824625-0d650e18-0c94-4c9e-be7e-7577b1d10968.png)
 Looking for details we see the pdf file Sales Invoice uploaded in NextCloud Destination, but also has been created a shared public Link, tagged with customer, tax_id, doctype and name as we defined in the Settings. Voilà, first integration achieved. Let's check the File uploaded to Frappe, it has all metadata from NextCloud as well, and also has some frappe tags also automatically filled on the upload.
 ![imagen](https://user-images.githubusercontent.com/69711454/165825969-f883e0d4-b415-4eba-9885-16ed92073276.png)
-
-
+### 5. Create folder structures in NextCloud from template Folder Sets in Frappe.
+Another possible integration is through a Folder Set Doctype Tree integrated in pibiDav. Folder Set is a Doctype for making Folder Structures taken as templates for recreating them in the NextCloud Instance from a destination folder as root. Let's see in action.
+![imagen](https://user-images.githubusercontent.com/69711454/165839794-602f4e5c-3e7d-4350-9a12-fa16c31bb75b.png)
 
 
 
