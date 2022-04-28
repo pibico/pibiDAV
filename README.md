@@ -66,7 +66,17 @@ It's time now of telling to Frappe which doctypes will be integrated to upload i
 ![imagen](https://user-images.githubusercontent.com/69711454/165810977-61e39c51-c1cf-4f75-a423-69bc174354ef.png)
 
 ### 2. Credentials for each Frappe User to Use his NextCloud Account Credentials
+To get the permissions from NextCloud into Frappe we will fill the User NextCloud Credentials on Frappe User Settings.
 
+We'll go through the user settings and will select the Role NextCloud User first.
+
+![imagen](https://user-images.githubusercontent.com/69711454/165817057-d765dd68-ae4f-4ab9-9edf-2fa438a0d012.png)
+
+After that we will go at the bottom of de User Settings Form to provide the NextCloud User Credentials. In this example is the System Manager or Administrator having the SuperUser NextCloud Credentials for having access to the full NextCloud Folder SuperStructure.
+
+![imagen](https://user-images.githubusercontent.com/69711454/165817406-eeb6fc05-3fa7-4e14-8798-3712c4a2b26c.png)
+
+For CalDAV integration we will provide also othe url for the User Calendars, in the way https://domain.com/remote.php/dav/principals/ (do not forget the / at the end).
 
 ### 3. Custom Fields and Client Script for Frappe Core Doctypes to achieve the NextCloud Integration.
 Having active the developer mode in the instance, we can go to the Customization Side Menu and create new custom fields and Client Scripts as needed to fulfill the NextCloud Integration with the selected DocTypes. In case of a custom app, this is also valid but these docfields and script will be incluced in the DocTypes and js code of our custom app.
