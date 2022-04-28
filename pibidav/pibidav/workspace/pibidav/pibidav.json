@@ -44,6 +44,23 @@
   {
    "hidden": 0,
    "is_query_report": 0,
+   "label": "Utils",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Folder Set",
+   "link_to": "Folder Set",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "Settings",
    "link_type": "DocType",
    "onboard": 0,
@@ -69,7 +86,7 @@
    "type": "Link"
   }
  ],
- "modified": "2022-04-28 17:03:28.508527",
+ "modified": "2022-04-28 22:19:53.819074",
  "modified_by": "Administrator",
  "module": "Pibidav",
  "name": "pibiDAV",
