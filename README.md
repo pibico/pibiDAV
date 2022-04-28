@@ -65,7 +65,10 @@ It's time now of telling to Frappe which doctypes will be integrated to upload i
 
 ![imagen](https://user-images.githubusercontent.com/69711454/165810977-61e39c51-c1cf-4f75-a423-69bc174354ef.png)
 
-### 2. Custom Fields and Client Script for Frappe Core Doctypes to achieve the NextCloud Integration.
+### 2. Credentials for each Frappe User to Use his NextCloud Account Credentials
+
+
+### 3. Custom Fields and Client Script for Frappe Core Doctypes to achieve the NextCloud Integration.
 Having active the developer mode in the instance, we can go to the Customization Side Menu and create new custom fields and Client Scripts as needed to fulfill the NextCloud Integration with the selected DocTypes. In case of a custom app, this is also valid but these docfields and script will be incluced in the DocTypes and js code of our custom app.
 
 ![imagen](https://user-images.githubusercontent.com/69711454/165813154-f0610f50-c401-449a-840d-b8bc5603890f.png)
@@ -85,6 +88,31 @@ The last needed docfield is a child table to get a register with the attachments
 
 ![imagen](https://user-images.githubusercontent.com/69711454/165815272-0b880b99-2e0c-4ea4-8d43-54e987484187.png)
 
+#### 2.4 Client Script on Integrated DocType to get the dialog once the nc_enable check is enabled.
+Now it's time of the frontend logic for the Sales Invoice form. For that purpose we will create a client script on the form with the following code:
+
+```
+// Copyright (c) 2022, pibiCo and contributors
+// For license information, please see license.txt
+
+frappe.ui.form.on('Sales Invoice', {
+  refresh(frm) {
+    if (!frm.doc.nc_enable) {
+      frm.set_value("nc_folder", "");
+      frm.refresh_field("nc_folder");
+    }
+  },
+  nc_enable(frm) {
+    if (frm.doc.nc_enable) {
+      frm.set_value("nc_enable", 1);
+      frm.refresh_field("nc_enable");
+      frm.save();
+      new frappe.ui.pibiDocs();
+    }
+  }
+});
+```
+![imagen](https://user-images.githubusercontent.com/69711454/165816148-63a3e74b-8aa0-4eb1-b35c-c89b428b3971.png)
 
 
 
