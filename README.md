@@ -131,11 +131,17 @@ frappe.ui.form.on('Sales Invoice', {
 ### 4. The magic of the NextCloud Integration inside Frape
 It's time now to try the integration of the NextCloud Folder Structure from Frappe to choose the NC Destination Folder of our uploaded files (except website urls).
 
-We will go to a Sales Invoice after saving as draft. As default the NC Enable Check is unchecked. While keeping so, the attachments to the Sales Invoice will no be uploaded to NextCloud. Thus, the user has the flexibility to decide whether a file is uploaded to NextCloud or not, and files can be uploaded to different folders just unchecking and checking again and selecting a new Destination Folder each time the nc_enable check is selected.
+We will go to a Sales Invoice after saving as draft. As default the NC Enable Check is unchecked. While keeping so, the attachments to the Sales Invoice will no be uploaded to NextCloud. Thus, the user has the flexibility to decide whether a file is uploaded to NextCloud or not, and files can be uploaded to different folders just unchecking and checking again and selecting a new Destination Folder each time the nc_enable check is selected. It can be very usual that our invoices can be stored inside a Customer Folder in our NextCloud Instance under the year of the Invoice, as in the picture.
 
-![imagen](https://user-images.githubusercontent.com/69711454/165819030-45a3bc24-9c15-40c2-8231-fe4d8308b4fc.png)
+![imagen](https://user-images.githubusercontent.com/69711454/165822942-8c6f89fc-a71b-4106-bd10-bbc8fb31877b.png)
 
 When we select the NextCloud Destination Folder in the dialog, this folder path will be filled in our text nc_folder custom field.
+
+![imagen](https://user-images.githubusercontent.com/69711454/165823241-63c5cace-f68e-4a11-9a40-7ab27b0a6d96.png)
+
+While we keep this destination folder, all the attachments uploaded to the Sales Invoice will be also uploaded to NextCloud to this folder. Let's create the pdf from the Sales Invoice, signed electronically outside Frappe and uploaded again as attachment in Frappe/ERPNext
+
+![imagen](https://user-images.githubusercontent.com/69711454/165823914-8dd352e1-69ce-4698-851e-33f53dadb3e2.png)
 
 
 
