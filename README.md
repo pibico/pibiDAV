@@ -61,4 +61,9 @@ Now, automatic uploading of frappe backup is enabled and will be uploaded to the
 
 ![imagen](https://user-images.githubusercontent.com/69711454/165808672-33278ca8-1776-4cb4-bd0e-50ad273aa9e0.png)
 
+It's time now of telling to Frappe which doctypes will be integrated to upload its attachments to NextCloud once they are uploaded in Frappe. This is done on the same NextCloud Settings, but on Settings Section, choosing the Frappe Doctype in the table and also giving the DocFields in that DocType that will be used to Tag Automatically the Files on Frappe and On NextCloud also. We will choose the Sales Invoice Doctype as an example for this configuration. In this case, we will tag the files with the name, the customer and the tax_id from the customer, but whichever field in the doctype, even custom fields are valid.
+
+![imagen](https://user-images.githubusercontent.com/69711454/165810977-61e39c51-c1cf-4f75-a423-69bc174354ef.png)
+
+
 
