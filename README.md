@@ -52,3 +52,7 @@ At this point, let's go to Frappe Server and once logged-in as System Manager or
 Once there, we'll activate the NextCloud Backup Enable checkbox and fill the credentials of the NextCloud SuperUser in the input fields.
 
 ![imagen](https://user-images.githubusercontent.com/69711454/165806449-60d1967f-9aa9-41ee-a9b9-7590ccb4896c.png)
+
+We can check that our credentials are correct clicking on NC commands button on upper right side of the screen.
+![imagen](https://user-images.githubusercontent.com/69711454/165807198-41a41df3-9a6e-447f-96fa-5ee2040190c2.png)
+
