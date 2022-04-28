@@ -49,3 +49,6 @@ At this point, let's go to Frappe Server and once logged-in as System Manager or
 
 ![pibiDav_NC_SuperUser_Credentials_and_Settings](https://user-images.githubusercontent.com/69711454/165805974-23fcec72-04c6-4f4e-9ff0-eba250862fb5.JPG)
 
+Once there, we'll activate the NextCloud Backup Enable checkbox and fill the credentials of the NextCloud SuperUser in the input fields.
+
+![imagen](https://user-images.githubusercontent.com/69711454/165806449-60d1967f-9aa9-41ee-a9b9-7590ccb4896c.png)
