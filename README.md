@@ -124,6 +124,20 @@ frappe.ui.form.on('Sales Invoice', {
 ```
 ![imagen](https://user-images.githubusercontent.com/69711454/165816499-6e70af0f-2226-4a08-a93d-5bd106296bfa.png)
 
+### 4. The magic of the NextCloud Integration inside Frape
+It's time now to try the integration of the NextCloud Folder Structure from Frappe to choose the NC Destination Folder of our uploaded files (except website urls).
+
+We will go to a Sales Invoice after saving as draft. As default the NC Enable Check is unchecked. While keeping so, the attachments to the Sales Invoice will no be uploaded to NextCloud. Thus, the user has the flexibility to decide whether a file is uploaded to NextCloud or not, and files can be uploaded to different folders just unchecking and checking again and selecting a new Destination Folder each time the nc_enable check is selected.
+
+![imagen](https://user-images.githubusercontent.com/69711454/165819030-45a3bc24-9c15-40c2-8231-fe4d8308b4fc.png)
+
+When we select the NextCloud Destination Folder in the dialog, this folder path will be filled in our text nc_folder custom field.
+
+
+
+
+
+
 
 
 
