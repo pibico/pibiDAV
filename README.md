@@ -35,7 +35,7 @@ Once is installed, be aware that you will need to set **developer_mode = 1 **on 
 
 This integration app is prepared for including specific and custom doctypes to upload its attachments to NextCloud at the same time than to Frappe. But for that purpose, custom fields (for Frappe Core Doctypes) or new fields in custom doctypes, are needed. These custom fields are always to be named as nc_enable, nc_folder and attachment_item, as it will be explained in next paragraphs. Also a custom script (client script) will be needed for making active the new frappe.ui.component dialog based on vue.js and called frappe.ui.pibiDocs where to draw the NextCloud Tree and select the destination NextCloud node to upload the files.
 
-### 1. Credentials for NextCloud SuperUser
+### 1. Credentials for NextCloud SuperUser, Backup and DocTypes to Integrate with NextCloud
 
 PibiCo works on NextCloud making the Main Company Folders Superestructure as a shared folder from this NextCloud SuperUser that should be a System Manager on Frappe also. Let's explain with some pictures.
 
