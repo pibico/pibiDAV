@@ -41,3 +41,6 @@ PibiCo works on NextCloud making the Main Company Folders Superestructure as a s
 
 ![NC_FolderStructure_Shared_from_SuperUser](https://user-images.githubusercontent.com/69711454/165801352-b4a14016-b360-41ea-9a2c-050ea589580f.JPG)
 
+This Folder Superstructure has children at different levels and are shared with different groups or users also at different level, thus giving access to these folders and below (both user internal to Company or External such as Customers or Suppliers).
+
+![imagen](https://user-images.githubusercontent.com/69711454/165802115-275c6234-77f5-43fa-b2aa-a1f3942e4693.png)
