@@ -99,8 +99,9 @@ We have uploaded the attachment to Frappe/ERPNext as shown in the picture
 ![imagen](https://user-images.githubusercontent.com/69711454/165824171-d145445b-9c87-4740-b48d-494ef116c26b.png)
 Let's Check if it has been also uploaded to NextCloud on the PBC > Customer > Client > Invoices > 2022 as selected.
 ![imagen](https://user-images.githubusercontent.com/69711454/165824625-0d650e18-0c94-4c9e-be7e-7577b1d10968.png)
-Looking for details we see the pdf file Sales Invoice uploaded in NextCloud Destination, but also has been created a shared public Link, tagged with customer, tax_id, doctype and name as we defined in the Settings. Voilà, first integration achieved. Let's check the File uploaded to Frappe, it has all metadata from NextCloud as w
+Looking for details we see the pdf file Sales Invoice uploaded in NextCloud Destination, but also has been created a shared public Link, tagged with customer, tax_id, doctype and name as we defined in the Settings. Voilà, first integration achieved. Let's check the File uploaded to Frappe, it has all metadata from NextCloud as well, and also has some frappe tags also automatically filled on the upload.
 ![imagen](https://user-images.githubusercontent.com/69711454/165825969-f883e0d4-b415-4eba-9885-16ed92073276.png)
+
 
 
 
