@@ -112,9 +112,11 @@ def tag_file_fp(doc, method=None):
     tag_list = [dctype]
     ## Add user tags to tag list if any
     if hasattr(dt, "_user_tags"):
-      if len(dt._user_tags) > 0: user_tags = dt._user_tags.split(',')
-      for lbl in user_tags:
-        if lbl is not None and lbl not in tag_list and lbl != "": tag_list.append(lbl)
+      if dt._user_tags is not None:
+        if len(dt._user_tags) > 0:
+          user_tags = dt._user_tags.split(',')
+          for lbl in user_tags:
+            if lbl is not None and lbl not in tag_list and lbl != "": tag_list.append(lbl)
     ## Get all docfields for tagging the DocType from NextCloud Settings
     _fields_to_tag = frappe.db.get_value("Reference Item", {"parent": "NextCloud Settings", "reference_doctype": dctype}, "reference_docfield")
     ## Assign tags to DocType in Frappe (limited length 60 chars due to NextCloud Limits)
