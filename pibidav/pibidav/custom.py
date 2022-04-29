@@ -116,10 +116,11 @@ def tag_file_fp(doc, method=None):
     if _fields_to_tag:
       fields_to_tag = _fields_to_tag.split(',')
       for item in fields_to_tag:
-        fp_tag = None
-        if item in dt: fp_tag = dt.get(item) #frappe.db.get_value(dctype, dcname, item)
+        fp_tag = dt.get(item) #frappe.db.get_value(dctype, dcname, item)
         if fp_tag is not None and fp_tag not in tag_list and fp_tag != "": tag_list.append(fp_tag)
-        for el in tag_list: if el != '' and el is not None and 0 < len(el) <= 60: tag.add_tag(el, "File", doc.name)  
+        for el in tag_list:
+          if el != '' and el is not None and len(el) > 0 and len(el) <= 60:
+            tag.add_tag(el, "File", doc.name)  
     else:
       tag.add_tag(dctype, "File", doc.name)
   else:
@@ -269,13 +270,17 @@ def update_attachment_item(nc_url, document):
             _attachment_item.append(item.attachment)
         for row in attached_to_doctype:
           if row.name not in _attachment_item:
+            nc_link = '<a href="'
+            nc_link += nc_url + 'apps/files/?fileid=' + row.fileid
+            nc_link += '" target="_blank">NextCloud</a>' 
             json_item = {
               "attachment": row.name,
               "filename": row.file_name,
               "uploaded_to_nc": row.uploaded_to_nextcloud,
               "nc_path": row.folder_path,
               "nc_link": row.share_link,
-              "nc_private": nc_url + 'apps/files/?fileid=' + row.fileid
+              "nc_private": nc_url + 'apps/files/?fileid=' + row.fileid,
+              "nc_url": nc_link
             }
             document.append("attachment_item", json_item)
         document.save()
@@ -283,13 +288,17 @@ def update_attachment_item(nc_url, document):
       else:
         ## Create new attachment item
         for row in attached_to_doctype:
+          nc_link = '<a href="'
+          nc_link += nc_url + 'apps/files/?fileid=' + row.fileid
+          nc_link += '" target="_blank">NextCloud</a>'
           json_item = {
             "attachment": row.name,
             "filename": row.file_name,
             "uploaded_to_nc": row.uploaded_to_nextcloud,
             "nc_path": row.folder_path,
             "nc_link": row.share_link,
-            "nc_private": nc_url + 'apps/files/?fileid=' + row.fileid
+            "nc_private": nc_url + 'apps/files/?fileid=' + row.fileid,
+            "nc_url": nc_link
           }
           document.append("attachment_item", json_item)
           document.save()
