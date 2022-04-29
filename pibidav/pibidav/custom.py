@@ -123,7 +123,7 @@ def tag_file_fp(doc, method=None):
     if _fields_to_tag:
       fields_to_tag = _fields_to_tag.split(',')
       for item in fields_to_tag:
-        fp_tag = dt.get(item) #frappe.db.get_value(dctype, dcname, item)
+        fp_tag = dt.get(item).replace(',','-') #frappe.db.get_value(dctype, dcname, item)
         if fp_tag is not None and fp_tag not in tag_list and fp_tag != "": tag_list.append(fp_tag)
         for el in tag_list:
           if el != '' and el is not None and len(el) > 0 and len(el) <= 60: tag.add_tag(el, "File", doc.name)  
