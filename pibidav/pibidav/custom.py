@@ -201,21 +201,21 @@ def upload_file_to_nc(doc, method=None):
       if nc == "Failed":
         return frappe.msgprint(_("Error in NC Login"))
       ## Continues to upload files to NC      
-      remote_path = document.nc_folder + file_name
+      nc_path = document.nc_folder + file_name
       nc_args = {
-		    'remote_path': remote_path,
+		    'remote_path': nc_path,
 		    'local_source_file': local_path
 	    }
       ## Upload file to NC
       enqueue(method=nc.put_file,queue='short',timeout=300,now=True,**nc_args)
       ## Get Shared Link from NC
-      share = enqueue(method=nc.share_file_with_link, queue='short', timeout=600, now=True, path=remote_path)
+      share = enqueue(method=nc.share_file_with_link, queue='short', timeout=600, now=True, path=nc_path)
       ## Update and save File in frappe updated with NC data
       doc.uploaded_to_nextcloud = 1
       doc.folder_path = document.nc_folder
       doc.share_link = share.get_link()
       
-      fileid, nctags = tag_file_nc(nc, remote_path, _tag_list)
+      fileid, nctags = tag_file_nc(nc, nc_path, _tag_list)
       doc.fileid = fileid
       ## Register nc tagids into frappe tags
       if len(nctags) > 0:
@@ -250,6 +250,15 @@ def upload_file_to_nc(doc, method=None):
       return {'fname': doc, 'local_path': local_path, 'local_site': share.get_link()}
   else:
     return
+
+@frappe.whitelist()
+def get_nc_settings(doctype):
+  use_default = frappe.get_list("Reference Item", {"parent": "NextCloud Settings", "reference_doctype": doctype}, "use_default_folder")
+  if use_default[0]['use_default_folder']:
+    path = frappe.get_list("Reference Item", {"parent": "NextCloud Settings", "reference_doctype": doctype}, "nc_folder")
+    nc_folder = path[0]['nc_folder']
+    if nc_folder[-1] != '/': nc_folder + '/'
+    return nc_folder
 
 def update_attachment_item(nc_url, document):
   ## Get a list of all files attached to doctype and uploaded to NC

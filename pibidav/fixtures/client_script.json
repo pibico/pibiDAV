@@ -4,12 +4,12 @@
   "doctype": "Client Script",
   "dt": "Sales Invoice",
   "enabled": 1,
-  "modified": "2022-04-29 13:35:32.189095",
+  "modified": "2022-04-29 17:42:38.184557",
   "name": "Sales Invoice-Form",
   "parent": null,
   "parentfield": null,
   "parenttype": null,
-  "script": "// Copyright (c) 2022, pibiCo and contributors\n// For license information, please see license.txt\n\nfrappe.ui.form.on('Sales Invoice', {\n  refresh(frm) {\n    if (!frm.doc.nc_enable) {\n      frm.set_value(\"nc_folder\", \"\");\n      frm.refresh_field(\"nc_folder\");\n    }\n  },\n  nc_enable(frm) {\n    if (frm.doc.nc_enable) {\n      frm.set_value(\"nc_enable\", 1);\n      frm.refresh_field(\"nc_enable\");\n      frm.save();\n      new frappe.ui.pibiDocs();\n    }\n  }\n});",
+  "script": "// Copyright (c) 2022, pibiCo and contributors\n// For license information, please see license.txt\n\nfrappe.ui.form.on('Sales Invoice', {\n  refresh(frm) {\n    frappe.call({\n      method: 'pibidav.pibidav.custom.get_nc_settings',\n        args: {\n          'doctype': frm.doc.doctype\n        },\n        callback: function(r) {\n          // code snippet\n          // console.log(r.message);\n          if (r.message !== undefined) {\n            frm.set_value('nc_enable', 1);\n            frm.set_value('nc_folder', r.message);\n\t\t    frm.refresh_field('nc_enable');\n\t\t    frm.refresh_field('nc_folder');\n          }\n        }\n    });\n    if (!frm.doc.nc_enable) {\n      frm.set_value(\"nc_folder\", \"\");\n      frm.refresh_field(\"nc_folder\");\n    }\n  },\n  nc_enable(frm) {\n    if (frm.doc.nc_enable) {\n      frm.set_value(\"nc_enable\", 1);\n      frm.refresh_field(\"nc_enable\");\n      frm.save();\n      new frappe.ui.pibiDocs();\n    }\n  }\n});",
   "view": "Form"
  },
  {
@@ -17,12 +17,12 @@
   "doctype": "Client Script",
   "dt": "Customer",
   "enabled": 1,
-  "modified": "2022-04-28 20:59:53.678550",
+  "modified": "2022-04-29 17:42:20.126916",
   "name": "Customer-Form",
   "parent": null,
   "parentfield": null,
   "parenttype": null,
-  "script": "// Copyright (c) 2022, pibiCo and contributors\n// For license information, please see license.txt\n\nfrappe.ui.form.on('Customer', {\n  refresh(frm) {\n    if (!frm.doc.nc_enable) {\n      frm.set_value(\"nc_folder\", \"\");\n      frm.refresh_field(\"nc_folder\");\n    }\n  },\n  nc_enable(frm) {\n    if (frm.doc.nc_enable) {\n      frm.set_value(\"nc_enable\", 1);\n      frm.refresh_field(\"nc_enable\");\n      frm.save();\n      new frappe.ui.pibiDocs();\n    }\n  }\n});",
+  "script": "// Copyright (c) 2022, pibiCo and contributors\n// For license information, please see license.txt\n\nfrappe.ui.form.on('Customer', {\n  refresh(frm) {\n    frappe.call({\n      method: 'pibidav.pibidav.custom.get_nc_settings',\n        args: {\n          'doctype': frm.doc.doctype\n        },\n        callback: function(r) {\n          // code snippet\n          // console.log(r.message);\n          if (r.message !== undefined) {\n            frm.set_value('nc_enable', 1);\n            frm.set_value('nc_folder', r.message);\n\t\t    frm.refresh_field('nc_enable');\n\t\t    frm.refresh_field('nc_folder');\n          }\n        }\n    });\n    if (!frm.doc.nc_enable) {\n      frm.set_value(\"nc_folder\", \"\");\n      frm.refresh_field(\"nc_folder\");\n    }\n  },\n  nc_enable(frm) {\n    if (frm.doc.nc_enable) {\n      frm.set_value(\"nc_enable\", 1);\n      frm.refresh_field(\"nc_enable\");\n      frm.save();\n      new frappe.ui.pibiDocs();\n    }\n  }\n});",
   "view": "Form"
  },
  {
@@ -30,7 +30,7 @@
   "doctype": "Client Script",
   "dt": "Event",
   "enabled": 1,
-  "modified": "2022-04-21 16:18:13.370381",
+  "modified": "2022-04-29 17:23:46.276287",
   "name": "Event-Form",
   "parent": null,
   "parentfield": null,
@@ -43,12 +43,12 @@
   "doctype": "Client Script",
   "dt": "Purchase Invoice",
   "enabled": 1,
-  "modified": "2022-04-29 12:53:32.436820",
+  "modified": "2022-04-29 17:42:28.503770",
   "name": "Purchase Invoice-Form",
   "parent": null,
   "parentfield": null,
   "parenttype": null,
-  "script": "// Copyright (c) 2022, pibiCo and contributors\n// For license information, please see license.txt\n\nfrappe.ui.form.on('Purchase Invoice', {\n  refresh(frm) {\n    if (!frm.doc.nc_enable) {\n      frm.set_value(\"nc_folder\", \"\");\n      frm.refresh_field(\"nc_folder\");\n    }\n  },\n  nc_enable(frm) {\n    if (frm.doc.nc_enable) {\n      frm.set_value(\"nc_enable\", 1);\n      frm.refresh_field(\"nc_enable\");\n      frm.save();\n      new frappe.ui.pibiDocs();\n    }\n  }\n});",
+  "script": "// Copyright (c) 2022, pibiCo and contributors\n// For license information, please see license.txt\n\nfrappe.ui.form.on('Purchase Invoice', {\n  refresh(frm) {\n    frappe.call({\n      method: 'pibidav.pibidav.custom.get_nc_settings',\n        args: {\n          'doctype': frm.doc.doctype\n        },\n        callback: function(r) {\n          // code snippet\n          // console.log(r.message);\n          if (r.message !== undefined) {\n            frm.set_value('nc_enable', 1);\n            frm.set_value('nc_folder', r.message);\n\t\t    frm.refresh_field('nc_enable');\n\t\t    frm.refresh_field('nc_folder');\n          }\n        }\n    });  \n    if (!frm.doc.nc_enable) {\n      frm.set_value(\"nc_folder\", \"\");\n      frm.refresh_field(\"nc_folder\");\n    }\n  },\n  nc_enable(frm) {\n    if (frm.doc.nc_enable) {\n      frm.set_value(\"nc_enable\", 1);\n      frm.refresh_field(\"nc_enable\");\n      frm.save();\n      new frappe.ui.pibiDocs();\n    }\n  }\n});",
   "view": "Form"
  }
 ]
