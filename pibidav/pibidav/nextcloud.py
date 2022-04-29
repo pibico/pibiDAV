@@ -729,7 +729,7 @@ class Client(object):
         stat_result = os.stat(local_source_file)
 
         headers = {}
-        headers['cache'] = 'no-cache' ## added to avoid conflict 409?
+        ## headers['cache'] = 'no-cache' ## added to avoid conflict 409?
         if kwargs.get('keep_mtime', True):
             headers['X-OC-MTIME'] = str(int(stat_result.st_mtime))
 
