@@ -4,12 +4,12 @@
   "doctype": "Client Script",
   "dt": "Sales Invoice",
   "enabled": 1,
-  "modified": "2022-04-28 23:45:08.262285",
+  "modified": "2022-04-29 13:35:32.189095",
   "name": "Sales Invoice-Form",
   "parent": null,
   "parentfield": null,
   "parenttype": null,
-  "script": "// Copyright (c) 2022, pibiCo and contributors\n// For license information, please see license.txt\n\nfrappe.ui.form.on('Sales Invoice', {\n  onload(frm) {\n    // your code here\n    frappe.call({\n      method: 'pibico_settings.pibico_settings.custom.get_next_code',\n        args: {\n          'doc': frm.doc\n        },\n        callback: function(r) {\n          // code snippet\n          console.log(r.message);\n          if (r.message !== undefined) {\n            frm.set_value('invoice_code', r.message);\n\t\t    frm.refresh_field('invoice_code');\n          }\n        }\n    });\n  },\n  refresh(frm) {\n    if (!frm.doc.nc_enable) {\n      frm.set_value(\"nc_folder\", \"\");\n      frm.refresh_field(\"nc_folder\");\n    }\n  },\n  nc_enable(frm) {\n    if (frm.doc.nc_enable) {\n      frm.set_value(\"nc_enable\", 1);\n      frm.refresh_field(\"nc_enable\");\n      frm.save();\n      new frappe.ui.pibiDocs();\n    }\n  }\n});",
+  "script": "// Copyright (c) 2022, pibiCo and contributors\n// For license information, please see license.txt\n\nfrappe.ui.form.on('Sales Invoice', {\n  refresh(frm) {\n    if (!frm.doc.nc_enable) {\n      frm.set_value(\"nc_folder\", \"\");\n      frm.refresh_field(\"nc_folder\");\n    }\n  },\n  nc_enable(frm) {\n    if (frm.doc.nc_enable) {\n      frm.set_value(\"nc_enable\", 1);\n      frm.refresh_field(\"nc_enable\");\n      frm.save();\n      new frappe.ui.pibiDocs();\n    }\n  }\n});",
   "view": "Form"
  },
  {
