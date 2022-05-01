@@ -21,7 +21,7 @@ def create_nc_folder(doc, method=None):
   if hasattr(doc, "nc_enable") and hasattr(doc, "create_nc_folder") and hasattr(doc, "nc_folder") and hasattr(doc, "nc_folder_share_link") and hasattr(doc, "nc_folder_internal_link"):  
     if doc.nc_enable and doc.create_nc_folder:
       ## Get default data from NextCloud Settings
-      data = frappe.db.get_value("Reference Item", {"parent": "NextCloud Settings", "reference_doctype": doc.doctype},['folder_set', 'nc_folder', 'abbreviation', 'folder_name', 'shared_with_key', 'secret'], as_dict = 1)
+      data = frappe.db.get_value("Reference Item", {"parent": "NextCloud Settings", "reference_doctype": doc.doctype},['folder_set', 'nc_folder', 'abbreviation', 'folder_name', 'secret', 'sharing_option'], as_dict = 1)
       ## Assign data to variables for creating folders in NC
       node_name = data.folder_set
       path = data.nc_folder
@@ -29,23 +29,21 @@ def create_nc_folder(doc, method=None):
       if abbreviation is not None and abbreviation != '':
         abbreviation = doc.get(data.abbreviation)
       else:
-        abbreviation = '_'
+        abbreviation = 'CLIENT'
       strmain = doc.get(data.folder_name)
       digits = 3
-      shared_with_key = doc.get(data.shared_with_key)
-      secret = ''
-      if shared_with_key == 1:
-        secret = doc.get(data.secret)
+      secret = doc.get(data.secret)
+      sharing_option = data.sharing_option
+      if sharing_option:
+        sharing_option = sharing_option.split('-')
+        sharing_option = int(sharing_option[0])
       root_path = path + abbreviation + " " + strmain + "/"
       ## Create Folders if needed data are filled in logged in as superuser in NC
       if node_name and path and abbreviation and strmain:
         create_nc_dirs(node_name, path, abbreviation, strmain, digits)
         nc = make_nc_session()
-        args = {}
-        if secret != '':
-          args['password'] = secret
         ## Create shared Link
-        share_link = nc.share_file_with_link(path=root_path, **args)
+        share_link = nc.share_file_with_link(path=root_path)
         if share_link:
           ## Create public link
           publink = share_link.get_link()
@@ -55,7 +53,12 @@ def create_nc_folder(doc, method=None):
           intlink = share_link.get_id()
           nc_url = publink[0:-17]
           ## Change perms from read to update
-          oth = {'perms': 31}
+          #oth = {'perms': sharing_option, 'secret': secret}
+          oth = {}
+          if sharing_option:
+            oth = { 'perms': sharing_option }
+          if secret:
+            oth['password'] = secret  
           nc.update_share(intlink, **oth)
           ## Get data fileid from dir
           fileinfo = nc.file_info(root_path, properties=['{http://owncloud.org/ns}fileid'])
@@ -69,6 +72,7 @@ def create_nc_folder(doc, method=None):
           doc.nc_folder = root_path
 
           doc.save()
+          nc.logout()
 
 @frappe.whitelist()
 def get_native(parent, filetype):

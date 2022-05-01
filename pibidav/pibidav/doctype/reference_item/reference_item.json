@@ -13,8 +13,8 @@
   "folder_set",
   "abbreviation",
   "folder_name",
-  "shared_with_key",
-  "secret"
+  "secret",
+  "sharing_option"
  ],
  "fields": [
   {
@@ -66,23 +66,23 @@
    "label": "Folder Name"
   },
   {
-   "default": "0",
-   "fieldname": "shared_with_key",
-   "fieldtype": "Check",
-   "in_list_view": 1,
-   "label": "Shared with Key"
-  },
-  {
    "fieldname": "secret",
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Secret"
+  },
+  {
+   "default": "31-Upload and Edit",
+   "fieldname": "sharing_option",
+   "fieldtype": "Select",
+   "label": "Sharing Option",
+   "options": "\n4-Upload Only\n17-Read Only\n31-Upload and Edit"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2022-05-01 18:47:28.825640",
+ "modified": "2022-05-01 23:19:39.038948",
  "modified_by": "Administrator",
  "module": "Pibidav",
  "name": "Reference Item",
