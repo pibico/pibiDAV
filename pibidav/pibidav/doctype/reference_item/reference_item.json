@@ -9,7 +9,12 @@
   "reference_doctype",
   "reference_docfield",
   "use_default_folder",
-  "nc_folder"
+  "nc_folder",
+  "folder_set",
+  "abbreviation",
+  "folder_name",
+  "shared_with_key",
+  "secret"
  ],
  "fields": [
   {
@@ -22,7 +27,7 @@
   },
   {
    "fieldname": "reference_docfield",
-   "fieldtype": "Text",
+   "fieldtype": "Small Text",
    "in_list_view": 1,
    "label": "DocFields"
   },
@@ -30,7 +35,7 @@
    "depends_on": "eval:doc.use_default_folder;",
    "description": "Default NextCloud Folder Path Complete from Root /",
    "fieldname": "nc_folder",
-   "fieldtype": "Text",
+   "fieldtype": "Small Text",
    "in_list_view": 1,
    "label": "NC Default Folder"
   },
@@ -40,12 +45,44 @@
    "fieldtype": "Check",
    "in_list_view": 1,
    "label": "Use Default Folder"
+  },
+  {
+   "fieldname": "folder_set",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Folder Set",
+   "options": "Folder Set"
+  },
+  {
+   "fieldname": "abbreviation",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Abbreviation"
+  },
+  {
+   "fieldname": "folder_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Folder Name"
+  },
+  {
+   "default": "0",
+   "fieldname": "shared_with_key",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Shared with Key"
+  },
+  {
+   "fieldname": "secret",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Secret"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2022-04-29 16:26:45.665186",
+ "modified": "2022-05-01 18:47:28.825640",
  "modified_by": "Administrator",
  "module": "Pibidav",
  "name": "Reference Item",

@@ -16,6 +16,59 @@ from frappe.utils.file_manager import get_file_path
 
 import frappe.desk.doctype.tag.tag as tag
 
+def create_nc_folder(doc, method=None):
+  ## Create Folder only if doctype has enabled NextCloud and all related fields are filled in and enabled
+  if hasattr(doc, "nc_enable") and hasattr(doc, "create_nc_folder") and hasattr(doc, "nc_folder") and hasattr(doc, "nc_folder_share_link") and hasattr(doc, "nc_folder_internal_link"):  
+    if doc.nc_enable and doc.create_nc_folder:
+      ## Get default data from NextCloud Settings
+      data = frappe.db.get_value("Reference Item", {"parent": "NextCloud Settings", "reference_doctype": doc.doctype},['folder_set', 'nc_folder', 'abbreviation', 'folder_name', 'shared_with_key', 'secret'], as_dict = 1)
+      ## Assign data to variables for creating folders in NC
+      node_name = data.folder_set
+      path = data.nc_folder
+      abbreviation = doc.get(data.abbreviation)
+      if abbreviation is not None and abbreviation != '':
+        abbreviation = doc.get(data.abbreviation)
+      else:
+        abbreviation = '_'
+      strmain = doc.get(data.folder_name)
+      digits = 3
+      shared_with_key = doc.get(data.shared_with_key)
+      secret = ''
+      if shared_with_key == 1:
+        secret = doc.get(data.secret)
+      root_path = path + abbreviation + " " + strmain + "/"
+      ## Create Folders if needed data are filled in logged in as superuser in NC
+      if node_name and path and abbreviation and strmain:
+        create_nc_dirs(node_name, path, abbreviation, strmain, digits)
+        nc = make_nc_session()
+        args = {}
+        if secret != '':
+          args['password'] = secret
+        ## Create shared Link
+        share_link = nc.share_file_with_link(path=root_path, **args)
+        if share_link:
+          ## Create public link
+          publink = share_link.get_link()
+          nc_folder_share_link = '<a href="'
+          nc_folder_share_link += publink +  '" target="_blank">' + publink + '</a>'
+          doc.nc_folder_share_link = nc_folder_share_link
+          intlink = share_link.get_id()
+          nc_url = publink[0:-17]
+          ## Change perms from read to update
+          oth = {'perms': 31}
+          nc.update_share(intlink, **oth)
+          ## Get data fileid from dir
+          fileinfo = nc.file_info(root_path, properties=['{http://owncloud.org/ns}fileid'])
+          if fileinfo:
+            fileid = fileinfo.attributes['{http://owncloud.org/ns}fileid']
+            ## Create internal Link
+            intlink = nc_url + 'f/' + fileid
+            nc_folder_internal_link = '<a href="'
+            nc_folder_internal_link += intlink + '" target="_blank">' + intlink + '</a>' 
+            doc.nc_folder_internal_link = nc_folder_internal_link
+
+          doc.save()
+
 @frappe.whitelist()
 def get_native(parent, filetype):
   native_list = frappe.db.get_list('Deliverable Item',
@@ -460,9 +513,9 @@ def create_nc_dirs(node_name, path, abbrv, strmain, digits):
     children = get_children(nclient, root_node, root_path, abbrv, n)
   else:
     frappe.msgprint(_("Error creating root folder in NC"))
-  
+
   return frappe.msgprint(_("Successfully Created Folders in NC"))
-  
+
 def get_children(session, parent_node, parent_path, abr, n):
   children_list = []
   ## Get all children folders only for given node
@@ -473,7 +526,7 @@ def get_children(session, parent_node, parent_path, abr, n):
       "parent_folder_set": parent_node
     },
     fields = ["name", "parent_folder_set", "is_group"],
-    order_by = "creation asc"   
+    order_by = "creation asc"
   )
   ## Get recursively the rest of children an create folders in NC
   if len(children) > 0:
@@ -487,5 +540,5 @@ def get_children(session, parent_node, parent_path, abr, n):
         get_children(session, child.name, parent_path_child, abr, n)
       else:
         frappe.msgprint(_("Error creating child folder in NC"))
-  
+
   return children_list

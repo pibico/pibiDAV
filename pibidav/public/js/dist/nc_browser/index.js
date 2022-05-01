@@ -69,7 +69,7 @@ export default class Browser {
           frappe.msgprint(__('You have selected a file and not a folder'), nc_folder.file_name);
         }
         this.dialog.hide();
-        window.location.reload();
+        //window.location.reload();
       }  
 		});
 
