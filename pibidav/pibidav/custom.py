@@ -66,6 +66,7 @@ def create_nc_folder(doc, method=None):
             nc_folder_internal_link = '<a href="'
             nc_folder_internal_link += intlink + '" target="_blank">' + intlink + '</a>' 
             doc.nc_folder_internal_link = nc_folder_internal_link
+          doc.nc_folder = root_path
 
           doc.save()
 
