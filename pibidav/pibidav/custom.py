@@ -25,12 +25,14 @@ def create_nc_folder(doc, method=None):
       ## Assign data to variables for creating folders in NC
       node_name = data.folder_set
       path = data.nc_folder
-      abbreviation = doc.get(data.abbreviation)
+      abbreviation = data.abbreviation
       if abbreviation is not None and abbreviation != '':
         abbreviation = doc.get(data.abbreviation)
       else:
-        return frappe.throw(("{} docfield for deriving the abbreviation variable cannot be empty. Please correct and fill {}".format(data.abbreviation, data.abbreviation)))
-
+        return frappe.throw(_("Docfield for deriving the abbreviation cannot be empty. Please correct in NextCloud Settings"))
+      if abbreviation is None or abbreviation == '':
+        return frappe.throw(_("{} for deriving the abbreviation variable cannot be empty. Please correct and fill {}".format(data.abbreviation, data.abbreviation)))
+          
       strmain = doc.get(data.folder_name)
       digits = 3
       secret = data.secret
