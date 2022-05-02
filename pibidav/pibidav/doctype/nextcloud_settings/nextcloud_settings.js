@@ -29,5 +29,16 @@ frappe.ui.form.on('NextCloud Settings', {
     }
     frm.doc.nc_doctype_included = inclusion.slice(0,-1);
     frm.refresh_field('nc_doctype_included');
+    // Query Filter for Reference Item 
+    frm.fields_dict.reference_item.grid.get_field('folder_set').get_query = function(doc, cdt, cdn) {
+      var child = locals[cdt][cdn];
+      //console.log(child);
+      return {    
+        filters:[
+          ['parent_folder_set', '=', ''],
+          ['is_group', '=', 1]
+        ]
+      };
+    };
   }
 });
