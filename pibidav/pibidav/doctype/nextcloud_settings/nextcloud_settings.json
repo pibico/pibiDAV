@@ -7,12 +7,13 @@
  "engine": "InnoDB",
  "field_order": [
   "nc_backup_enable",
-  "sb_nc_credentials",
   "nc_backup_url",
-  "nc_backup_path",
-  "cb_nc_credentials",
+  "cb_01",
   "nc_backup_username",
   "nc_backup_token",
+  "sb_nc_credentials",
+  "nc_backup_path",
+  "cb_nc_credentials",
   "sb_backup_details",
   "backup_frequency",
   "backup_files",
@@ -32,21 +33,22 @@
    "fieldname": "nc_backup_enable",
    "fieldtype": "Check",
    "in_list_view": 1,
-   "label": "NextCloud Backup Enable"
+   "label": "NextCloud Enable"
   },
   {
    "collapsible": 1,
    "depends_on": "eval:doc.nc_backup_enable;",
    "fieldname": "sb_nc_credentials",
    "fieldtype": "Section Break",
-   "label": "NextCloud Backup Credentials"
+   "label": "NextCloud Backup Section"
   },
   {
-   "description": "URL for your NextCloud Backup instance with http:// or https://, with or without port number :nnnn, and without / at the end (i.e. https://nextcloud-instance.com:4443)",
+   "depends_on": "eval:doc.nc_backup_enable;",
+   "description": "URL for your NextCloud instance with http:// or https://, with or without port number :nnnn, and without / at the end (i.e. https://nextcloud-instance.com:4443)",
    "fieldname": "nc_backup_url",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "NextCloud Backup URL",
+   "label": "NextCloud URL",
    "options": "URL"
   },
   {
@@ -61,17 +63,19 @@
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "eval:doc.nc_backup_enable;",
    "description": "NextCloud Username with enough privileges for uploading to the selected Backup Dir (case sensitive)",
    "fieldname": "nc_backup_username",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "NextCloud Backup User"
+   "label": "NextCloud SuperUser"
   },
   {
+   "depends_on": "eval:doc.nc_backup_enable;",
    "fieldname": "nc_backup_token",
    "fieldtype": "Password",
    "in_list_view": 1,
-   "label": "NextCloud Backup Token"
+   "label": "NextCloud SuperUser Token"
   },
   {
    "collapsible": 1,
@@ -114,6 +118,7 @@
   },
   {
    "collapsible": 1,
+   "depends_on": "eval:doc.nc_backup_enable;",
    "fieldname": "sb_doctype_selection",
    "fieldtype": "Section Break",
    "label": "DocType Selection"
@@ -136,6 +141,7 @@
    "label": "NC Doctypes Excluded"
   },
   {
+   "depends_on": "eval:doc.nc_backup_enable;",
    "fieldname": "sb_settings",
    "fieldtype": "Section Break",
    "label": "Settings Section"
@@ -145,12 +151,16 @@
    "fieldtype": "Table",
    "label": "Inclusions",
    "options": "Reference Item"
+  },
+  {
+   "fieldname": "cb_01",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2022-04-28 14:08:23.173997",
+ "modified": "2022-05-02 20:21:19.780819",
  "modified_by": "Administrator",
  "module": "Pibidav",
  "name": "NextCloud Settings",
