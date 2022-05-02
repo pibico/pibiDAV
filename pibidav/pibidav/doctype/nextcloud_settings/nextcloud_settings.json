@@ -13,13 +13,11 @@
   "nc_backup_token",
   "sb_nc_credentials",
   "nc_backup_path",
-  "cb_nc_credentials",
-  "sb_backup_details",
   "backup_frequency",
-  "backup_files",
-  "cb_backup_details",
+  "cb_nc_credentials",
   "send_notifications_to",
   "send_email_for_successful_backup",
+  "backup_files",
   "sb_doctype_selection",
   "nc_doctype_included",
   "cb_nc_selection",
@@ -78,13 +76,6 @@
    "label": "NextCloud SuperUser Token"
   },
   {
-   "collapsible": 1,
-   "depends_on": "eval:doc.nc_backup_enable;",
-   "fieldname": "sb_backup_details",
-   "fieldtype": "Section Break",
-   "label": "Backup Details"
-  },
-  {
    "fieldname": "backup_frequency",
    "fieldtype": "Select",
    "in_list_view": 1,
@@ -97,10 +88,6 @@
    "fieldname": "backup_files",
    "fieldtype": "Check",
    "label": "Backup Files"
-  },
-  {
-   "fieldname": "cb_backup_details",
-   "fieldtype": "Column Break"
   },
   {
    "description": "Only one recipient can be provided",
@@ -160,7 +147,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2022-05-02 20:21:19.780819",
+ "modified": "2022-05-02 20:54:00.226700",
  "modified_by": "Administrator",
  "module": "Pibidav",
  "name": "NextCloud Settings",
