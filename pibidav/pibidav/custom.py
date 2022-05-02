@@ -29,21 +29,35 @@ def create_nc_folder(doc, method=None):
       if abbreviation is not None and abbreviation != '':
         abbreviation = doc.get(data.abbreviation)
       else:
-        abbreviation = 'CLIENT'
+        return frappe.throw(("{} docfield for deriving the abbreviation variable cannot be empty. Please correct and fill {}".format(data.abbreviation, data.abbreviation)))
+
       strmain = doc.get(data.folder_name)
       digits = 3
-      secret = doc.get(data.secret)
+      secret = data.secret
+      if 0 < len(secret) < 10:
+        return frappe.throw(_("Password for autocreation folders should be empty or greater than 10 characters long. Check your NextCloud Settings for password and correct"))
+
       sharing_option = data.sharing_option
       if sharing_option:
+        if sharing_option == "":
+          return frappe.throw(_("Sharing Option for autocreation folders cannot be empty check your NextCloud Settings for Sharing Options"))
+
         sharing_option = sharing_option.split('-')
         sharing_option = int(sharing_option[0])
-      root_path = path + abbreviation + " " + strmain + "/"
+
+      if path[-1] != '/':
+        path += '/'
+      if path[0] != '/':
+        return frappe.throw(_("{} Root Destination Folder must start with /. Correct in your NextCloud Settings and retry".format(path)))
+      
+      root_path = "{}{} {}/".format(path,abbreviation,strmain)
+
       ## Create Folders if needed data are filled in logged in as superuser in NC
       if node_name and path and abbreviation and strmain:
-        create_nc_dirs(node_name, path, abbreviation, strmain, digits)
-        nc = make_nc_session()
+        create_nc_dirs(node_name, path, str(abbreviation), str(strmain), digits)
+        nclog = make_nc_session()
         ## Create shared Link
-        share_link = nc.share_file_with_link(path=root_path)
+        share_link = nclog.share_file_with_link(path=root_path)
         if share_link:
           ## Create public link
           publink = share_link.get_link()
@@ -58,10 +72,10 @@ def create_nc_folder(doc, method=None):
           if sharing_option:
             oth = { 'perms': sharing_option }
           if secret:
-            oth['password'] = secret  
-          nc.update_share(intlink, **oth)
+            oth['password'] = str(secret)  
+          nclog.update_share(intlink, **oth)
           ## Get data fileid from dir
-          fileinfo = nc.file_info(root_path, properties=['{http://owncloud.org/ns}fileid'])
+          fileinfo = nclog.file_info(root_path, properties=['{http://owncloud.org/ns}fileid'])
           if fileinfo:
             fileid = fileinfo.attributes['{http://owncloud.org/ns}fileid']
             ## Create internal Link
@@ -72,7 +86,7 @@ def create_nc_folder(doc, method=None):
           doc.nc_folder = root_path
 
           doc.save()
-          nc.logout()
+          nclog.logout()
 
 @frappe.whitelist()
 def get_native(parent, filetype):
