@@ -21,7 +21,7 @@ def create_nc_folder(doc, method=None):
   if hasattr(doc, "nc_enable") and hasattr(doc, "create_nc_folder") and hasattr(doc, "nc_folder") and hasattr(doc, "nc_folder_share_link") and hasattr(doc, "nc_folder_internal_link"):  
     if doc.nc_enable and doc.create_nc_folder:
       ## Get default data from NextCloud Settings
-      data = frappe.db.get_value("Reference Item", {"parent": "NextCloud Settings", "reference_doctype": doc.doctype},['folder_set', 'nc_folder', 'abbreviation', 'folder_name', 'secret', 'sharing_option'], as_dict = 1)
+      data = frappe.db.get_value("Reference Item", {"parent": "NextCloud Settings", "reference_doctype": doc.doctype},['folder_set', 'nc_folder', 'abbreviation', 'folder_name'], as_dict = 1)
       ## Assign data to variables for creating folders in NC
       node_name = data.folder_set
       path = data.nc_folder
@@ -35,11 +35,11 @@ def create_nc_folder(doc, method=None):
           
       strmain = doc.get(data.folder_name)
       digits = 3
-      secret = data.secret
+      secret = doc.secret
       if 0 < len(secret) < 10:
         return frappe.throw(_("Password for autocreation folders should be empty or greater than 10 characters long. Check your NextCloud Settings for password and correct"))
 
-      sharing_option = data.sharing_option
+      sharing_option = doc.sharing_option
       if sharing_option:
         if sharing_option == "":
           return frappe.throw(_("Sharing Option for autocreation folders cannot be empty check your NextCloud Settings for Sharing Options"))

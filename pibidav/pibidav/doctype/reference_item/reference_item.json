@@ -13,9 +13,7 @@
   "cb_01",
   "folder_set",
   "abbreviation",
-  "folder_name",
-  "secret",
-  "sharing_option"
+  "folder_name"
  ],
  "fields": [
   {
@@ -67,19 +65,6 @@
    "label": "Folder Name"
   },
   {
-   "fieldname": "secret",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Secret"
-  },
-  {
-   "default": "31-Upload and Edit",
-   "fieldname": "sharing_option",
-   "fieldtype": "Select",
-   "label": "Sharing Option",
-   "options": "\n4-Upload Only\n17-Read Only\n31-Upload and Edit"
-  },
-  {
    "fieldname": "cb_01",
    "fieldtype": "Column Break"
   }
@@ -87,7 +72,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2022-05-02 14:41:52.043749",
+ "modified": "2022-05-03 12:53:20.781394",
  "modified_by": "Administrator",
  "module": "Pibidav",
  "name": "Reference Item",
