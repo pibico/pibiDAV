@@ -16,6 +16,16 @@ from frappe.utils.file_manager import get_file_path
 
 import frappe.desk.doctype.tag.tag as tag
 
+
+@frappe.whitelist()
+def get_booklets(txt):
+  """ Get from database booklets linked to doc
+  """
+  data = frappe.db.sql("""
+    SELECT name FROM `tabBooklet Item` WHERE reference_docname = %s AND docstatus < 2
+""",(txt), True)
+  return data
+
 def create_nc_folder(doc, method=None):
   ## Create Folder only if doctype has enabled NextCloud and all related fields are filled in and enabled
   if hasattr(doc, "nc_enable") and hasattr(doc, "create_nc_folder") and hasattr(doc, "nc_folder") and hasattr(doc, "nc_folder_share_link") and hasattr(doc, "nc_folder_internal_link"):  

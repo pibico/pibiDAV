@@ -1987,5 +1987,22 @@
   "property_type": "Check",
   "row_name": null,
   "value": "1"
+ },
+ {
+  "default_value": null,
+  "doc_type": "Purchase Receipt",
+  "docstatus": 0,
+  "doctype": "Property Setter",
+  "doctype_or_field": "DocField",
+  "field_name": "provisional_expense_account",
+  "modified": "2022-05-03 20:21:22.091760",
+  "name": "Purchase Receipt-provisional_expense_account-hidden",
+  "parent": null,
+  "parentfield": null,
+  "parenttype": null,
+  "property": "hidden",
+  "property_type": "Check",
+  "row_name": null,
+  "value": "1"
  }
 ]

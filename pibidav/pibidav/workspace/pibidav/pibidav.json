@@ -26,6 +26,15 @@
   {
    "hidden": 0,
    "is_query_report": 0,
+   "label": "Booklet",
+   "link_to": "Booklet",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "Event",
    "link_to": "Event",
    "link_type": "DocType",
@@ -86,7 +95,7 @@
    "type": "Link"
   }
  ],
- "modified": "2022-04-28 22:19:53.819074",
+ "modified": "2022-05-03 17:44:58.957120",
  "modified_by": "Administrator",
  "module": "Pibidav",
  "name": "pibiDAV",

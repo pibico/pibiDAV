@@ -111,15 +111,15 @@ jenv = {
 # Hook on document methods and events
 
 doc_events = {
+  "*": {
+    "after_insert": "pibidav.pibidav.custom.create_nc_folder"
+  },
   "File": {
     "after_insert": ["pibidav.pibidav.custom.upload_file_to_nc"]
   },
   "Event": {
     "after_insert": "pibidav.pibidav.pibical.sync_caldav_event_by_user",
     "on_trash": "pibidav.pibidav.pibical.remove_caldav_event"
-  },
-  "Customer": {
-    "after_insert": "pibidav.pibidav.custom.create_nc_folder"
   }
 # 	"*": {
 # 		"on_update": "method",
@@ -209,7 +209,7 @@ user_data_fields = [
 # 	"pibidav.auth.validate"
 # ]
 
-fixtures = ['Role Profile', 'Role', 'Custom Field', 'Client Script', 'Property Setter', 'Translation']
+fixtures = ['Role Profile', 'Role', 'Custom Field', 'Client Script', 'Property Setter', 'Translation', {"doctype": "DocType Link", "filters": [ ["parent", "in", ("Project")] ]}]
 
 treeviews = ['Folder Set']
 

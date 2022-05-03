@@ -9,9 +9,8 @@
  "field_order": [
   "is_group",
   "title",
-  "reference_doctype",
-  "nc_enable",
   "cb_01",
+  "nc_enable",
   "old_parent",
   "root_parent",
   "parent_folder_set",
@@ -33,14 +32,6 @@
    "label": "Title",
    "reqd": 1,
    "unique": 1
-  },
-  {
-   "fieldname": "reference_doctype",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Reference Doctype",
-   "options": "DocType",
-   "reqd": 1
   },
   {
    "default": "0",
@@ -99,7 +90,7 @@
  "index_web_pages_for_search": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2022-04-28 14:09:09.323167",
+ "modified": "2022-05-03 20:28:14.903288",
  "modified_by": "Administrator",
  "module": "Pibidav",
  "name": "Folder Set",
@@ -120,7 +111,7 @@
   }
  ],
  "quick_entry": 1,
- "search_fields": "root_parent,parent_folder_set,reference_doctype",
+ "search_fields": "root_parent,parent_folder_set",
  "sort_field": "modified",
  "sort_order": "DESC",
  "title_field": "title"

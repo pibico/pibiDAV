@@ -1,0 +1,19 @@
+[
+ {
+  "custom": 0,
+  "docstatus": 0,
+  "doctype": "DocType Link",
+  "group": "Documents",
+  "hidden": 0,
+  "is_child_table": 0,
+  "link_doctype": "Booklet",
+  "link_fieldname": "reference_docname",
+  "modified": "2022-05-03 19:38:47.822454",
+  "name": "c08f4762ab",
+  "parent": "Project",
+  "parent_doctype": null,
+  "parentfield": "links",
+  "parenttype": "DocType",
+  "table_fieldname": null
+ }
+]
