@@ -23,7 +23,7 @@ def create_nc_folder(doc, method=None):
       ## Get default data from NextCloud Settings
       data = frappe.db.get_value("Reference Item", {"parent": "NextCloud Settings", "reference_doctype": doc.doctype},['folder_set', 'nc_folder', 'abbreviation', 'folder_name'], as_dict = 1)
       ## Assign data to variables for creating folders in NC
-      node_name = data.folder_set
+      node_name = data.folder_set.strip()
       path = data.nc_folder
       abbreviation = data.abbreviation
       if abbreviation is not None and abbreviation != '':
@@ -32,12 +32,16 @@ def create_nc_folder(doc, method=None):
         return frappe.throw(_("Docfield for deriving the abbreviation cannot be empty. Please correct in NextCloud Settings"))
       if abbreviation is None or abbreviation == '':
         return frappe.throw(_("{} for deriving the abbreviation variable cannot be empty. Please correct and fill {}".format(data.abbreviation, data.abbreviation)))
+      abbreviation = abbreviation.strip()
           
       strmain = doc.get(data.folder_name)
+      strmain = strmain.strip()
+      
       digits = 3
       secret = doc.secret
-      if 0 < len(secret) < 10:
-        return frappe.throw(_("Password for autocreation folders should be empty or greater than 10 characters long. Check your NextCloud Settings for password and correct"))
+      if secret is not None:
+        if 0 < len(secret) < 10:
+          return frappe.throw(_("Password for autocreation folders should be empty or greater than 10 characters long. Check your NextCloud Settings for password and correct"))
 
       sharing_option = doc.sharing_option
       if sharing_option:
@@ -52,11 +56,11 @@ def create_nc_folder(doc, method=None):
       if path[0] != '/':
         return frappe.throw(_("{} Root Destination Folder must start with /. Correct in your NextCloud Settings and retry".format(path)))
       
-      root_path = "{}{} {}/".format(path,abbreviation,strmain)
+      root_path = "{}{} {}/".format(path, abbreviation, strmain)
 
       ## Create Folders if needed data are filled in logged in as superuser in NC
       if node_name and path and abbreviation and strmain:
-        create_nc_dirs(node_name, path, str(abbreviation), str(strmain), digits)
+        create_nc_dirs(node_name, path, abbreviation, strmain, digits)
         nclog = make_nc_session()
         ## Create shared Link
         share_link = nclog.share_file_with_link(path=root_path)
@@ -526,7 +530,7 @@ def create_nc_dirs(node_name, path, abbrv, strmain, digits):
     root_path = path + node_name[n+1:] + "/"
   """
   ## Root path is different from the rest of nodes
-  root_path = path + abbrv + " " + strmain + "/"
+  root_path = "{}{} {}/".format(path, abbrv, strmain)
   ## Create first node in NC  
   folder = nclient.mkdir(root_path)
   ## If dir is created in NC, continues recursively with its children
@@ -553,7 +557,7 @@ def get_children(session, parent_node, parent_path, abr, n):
   if len(children) > 0:
     for child in children:
       if child.name not in children_list: children_list.append(child.name)
-      parent_path_child = parent_path + abr + " " + child.name[n+1:] + "/"
+      parent_path_child = "{}{} {}/".format(parent_path, abr, child.name[n+1:])
       ## Create folder in NC
       folder = session.mkdir(parent_path_child)
       ## If folder is created continues recursively
