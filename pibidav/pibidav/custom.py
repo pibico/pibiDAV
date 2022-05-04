@@ -332,11 +332,12 @@ def upload_file_to_nc(doc, method=None):
 @frappe.whitelist()
 def get_nc_settings(doctype):
   use_default = frappe.get_list("Reference Item", {"parent": "NextCloud Settings", "reference_doctype": doctype}, "use_default_folder")
-  if use_default[0]['use_default_folder']:
-    path = frappe.get_list("Reference Item", {"parent": "NextCloud Settings", "reference_doctype": doctype}, "nc_folder")
-    nc_folder = path[0]['nc_folder']
-    if nc_folder[-1] != '/': nc_folder + '/'
-    return nc_folder
+  if use_default:
+    if use_default[0]['use_default_folder']:
+      path = frappe.get_list("Reference Item", {"parent": "NextCloud Settings", "reference_doctype": doctype}, "nc_folder")
+      nc_folder = path[0]['nc_folder']
+      if nc_folder[-1] != '/': nc_folder + '/'
+      return nc_folder
 
 def update_attachment_item(nc_url, document):
   ## Get a list of all files attached to doctype and uploaded to NC
