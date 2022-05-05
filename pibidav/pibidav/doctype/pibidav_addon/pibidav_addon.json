@@ -1,0 +1,162 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:pbc_{ref_docname}",
+ "creation": "2022-05-05 13:59:52.156946",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "ref_doctype",
+  "cb_00",
+  "ref_docname",
+  "sb_01",
+  "nc_enable",
+  "set_different_folder",
+  "cb_01",
+  "nc_folder",
+  "sb_02",
+  "create_nc_folder",
+  "nc_folder_internal_link",
+  "nc_folder_share_link",
+  "column_break_12",
+  "secret",
+  "sharing_option",
+  "sb_03",
+  "attachment_item"
+ ],
+ "fields": [
+  {
+   "fieldname": "ref_doctype",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Reference DocType",
+   "options": "DocType",
+   "reqd": 1
+  },
+  {
+   "fieldname": "cb_00",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "doctype.name",
+   "fieldname": "ref_docname",
+   "fieldtype": "Dynamic Link",
+   "in_list_view": 1,
+   "label": "Reference DocName",
+   "options": "ref_doctype",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sb_01",
+   "fieldtype": "Section Break",
+   "label": "NC File Upload"
+  },
+  {
+   "default": "0",
+   "fieldname": "nc_enable",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "NC Enable"
+  },
+  {
+   "default": "0",
+   "fieldname": "set_different_folder",
+   "fieldtype": "Check",
+   "label": "Set Different Folder"
+  },
+  {
+   "fieldname": "cb_01",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "nc_folder",
+   "fieldtype": "Small Text",
+   "label": "NC Folder"
+  },
+  {
+   "fieldname": "sb_02",
+   "fieldtype": "Section Break",
+   "label": "NC Folder Creation"
+  },
+  {
+   "default": "0",
+   "fieldname": "create_nc_folder",
+   "fieldtype": "Check",
+   "label": "Create NC Folder"
+  },
+  {
+   "fieldname": "secret",
+   "fieldtype": "Data",
+   "label": "Secret"
+  },
+  {
+   "fieldname": "column_break_12",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "nc_folder_internal_link",
+   "fieldtype": "Read Only",
+   "label": "NC Folder Internal Link"
+  },
+  {
+   "fieldname": "nc_folder_share_link",
+   "fieldtype": "Read Only",
+   "label": "NC Folder Share Link"
+  },
+  {
+   "default": "31-Upload and Edit",
+   "fieldname": "sharing_option",
+   "fieldtype": "Select",
+   "label": "Sharing Option",
+   "options": "\n4-Upload Only\n17-Read Only\n31-Upload and Edit"
+  },
+  {
+   "fieldname": "sb_03",
+   "fieldtype": "Section Break",
+   "label": "NC File List"
+  },
+  {
+   "fieldname": "attachment_item",
+   "fieldtype": "Table",
+   "label": "Attachment Item",
+   "options": "Attachment Item"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2022-05-05 14:14:42.070355",
+ "modified_by": "Administrator",
+ "module": "Pibidav",
+ "name": "PibiDAV Addon",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "All",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
