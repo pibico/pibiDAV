@@ -21,16 +21,8 @@
    "label": "Documents",
    "link_type": "DocType",
    "onboard": 0,
+   "only_for": "",
    "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Booklet",
-   "link_to": "Booklet",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
   },
   {
    "hidden": 0,
@@ -95,7 +87,7 @@
    "type": "Link"
   }
  ],
- "modified": "2022-05-03 17:44:58.957120",
+ "modified": "2022-05-05 13:27:56.443668",
  "modified_by": "Administrator",
  "module": "Pibidav",
  "name": "pibiDAV",
