@@ -1,5 +1,6 @@
 {
   "pibidav/js/pibidav.js": [
-    "public/js/dist/nc_upload.js"
+    "public/js/dist/nc_upload.js",
+	"public/js/dist/nc_folder.js"
     ]
 }
