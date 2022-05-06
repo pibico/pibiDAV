@@ -201,10 +201,14 @@ def tag_file_fp(doc, method=None):
     if _fields_to_tag:
       fields_to_tag = _fields_to_tag.split(',')
       for item in fields_to_tag:
-        fp_tag = dt.get(item).replace(',','-') #frappe.db.get_value(dctype, dcname, item)
-        if fp_tag is not None and fp_tag not in tag_list and fp_tag != "": tag_list.append(fp_tag)
-        for el in tag_list:
-          if el != '' and el is not None and len(el) > 0 and len(el) <= 60: tag.add_tag(el, "File", doc.name)  
+        try:
+          if not ',' in dt.get(item):
+            fp_tag = dt.get(item) #frappe.db.get_value(dctype, dcname, item)
+            if fp_tag is not None and fp_tag not in tag_list and fp_tag != "": tag_list.append(fp_tag)
+            for el in tag_list:
+              if el != '' and el is not None and len(el) > 0 and len(el) <= 60: tag.add_tag(el, "File", doc.name)  
+        except:
+          pass
     else:
       tag.add_tag(dctype, "File", doc.name)
   else:
@@ -258,8 +262,9 @@ def upload_file_to_nc(doc, method=None):
   if not nc_url[-1] == '/': nc_url += '/'
   ## Check the file attached to parent docType and its inclusion in the list 
   dt = doc.attached_to_doctype
-  if dt in docs_excluded:
-    return
+  if docs_excluded and dt:
+    if dt in docs_excluded:
+      return
   ## Get name of file attached to doctype and file_name and local server path
   dn = doc.attached_to_name
   file_name = doc.file_name
