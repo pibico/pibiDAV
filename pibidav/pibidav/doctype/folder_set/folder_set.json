@@ -63,11 +63,9 @@
    "options": "Folder Set"
   },
   {
-   "depends_on": "eval:doc.nc_enable;",
    "fieldname": "nc_folder",
    "fieldtype": "Text",
-   "label": "NC Folder",
-   "read_only": 1
+   "label": "NC Folder"
   },
   {
    "fieldname": "lft",
@@ -90,7 +88,7 @@
  "index_web_pages_for_search": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2022-05-09 22:57:42.993792",
+ "modified": "2022-05-10 23:52:10.319870",
  "modified_by": "Administrator",
  "module": "Pibidav",
  "name": "Folder Set",

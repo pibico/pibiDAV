@@ -123,7 +123,8 @@ function CreateFolder(frm) {
     }
   }).then(function(r) {
     let doCreate = r.message;
-    if (doCreate === 'true') {
+    console.log(doCreate);
+    if (doCreate) {
       let d = new frappe.ui.Dialog({
         title: 'Create NC Folder',
         fields: [

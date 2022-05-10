@@ -36,9 +36,9 @@ def create_nc_folder(dt, dn, abbr, strmain, folder_set, sharing_option=None, sec
   if nc_url[-1] != '/': nc_url += '/'
   
   if dt in docs_excluded or not dt in docs_included:
-    return "DocTypes not in NC Integration"
+    return "DocType not in NC integration {}".format(docs_included)
   
-  data = frappe.db.get_value("Reference Item", {"parent": "NextCloud Settings", "reference_doctype": dt},['nc_folder','create_nc_folder', 'folder_name', "nc_enable"], as_dict = 1)
+  data = frappe.db.get_value("Reference Item", {"parent": "NextCloud Settings", "reference_doctype": dt},['nc_folder','create_nc_folder', 'nc_enable'], as_dict = 1)
   node_name = folder_set.strip()
   path = data.nc_folder
   
