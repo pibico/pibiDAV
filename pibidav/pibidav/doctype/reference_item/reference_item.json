@@ -8,12 +8,10 @@
  "field_order": [
   "reference_doctype",
   "reference_docfield",
-  "use_default_folder",
-  "nc_folder",
   "cb_01",
-  "folder_set",
-  "abbreviation",
-  "folder_name"
+  "create_nc_folder",
+  "use_default_folder",
+  "nc_folder"
  ],
  "fields": [
   {
@@ -46,33 +44,20 @@
    "label": "Use Default Folder"
   },
   {
-   "fieldname": "folder_set",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Folder Set",
-   "options": "Folder Set"
-  },
-  {
-   "fieldname": "abbreviation",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Abbreviation"
-  },
-  {
-   "fieldname": "folder_name",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Folder Name"
-  },
-  {
    "fieldname": "cb_01",
    "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "create_nc_folder",
+   "fieldtype": "Check",
+   "label": "Create NC Folder"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2022-05-03 12:53:20.781394",
+ "modified": "2022-05-09 18:42:17.691461",
  "modified_by": "Administrator",
  "module": "Pibidav",
  "name": "Reference Item",

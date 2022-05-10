@@ -12,11 +12,8 @@
   "ref_docname",
   "sb_01",
   "nc_enable",
-  "set_different_folder",
-  "cb_01",
   "nc_folder",
   "sb_02",
-  "create_nc_folder",
   "nc_folder_internal_link",
   "nc_folder_share_link",
   "column_break_12",
@@ -53,23 +50,6 @@
    "label": "NC File Upload"
   },
   {
-   "default": "0",
-   "fieldname": "nc_enable",
-   "fieldtype": "Check",
-   "in_list_view": 1,
-   "label": "NC Enable"
-  },
-  {
-   "default": "0",
-   "fieldname": "set_different_folder",
-   "fieldtype": "Check",
-   "label": "Set Different Folder"
-  },
-  {
-   "fieldname": "cb_01",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "nc_folder",
    "fieldtype": "Small Text",
    "label": "NC Folder"
@@ -80,15 +60,10 @@
    "label": "NC Folder Creation"
   },
   {
-   "default": "0",
-   "fieldname": "create_nc_folder",
-   "fieldtype": "Check",
-   "label": "Create NC Folder"
-  },
-  {
    "fieldname": "secret",
    "fieldtype": "Data",
-   "label": "Secret"
+   "label": "Secret",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_12",
@@ -109,7 +84,8 @@
    "fieldname": "sharing_option",
    "fieldtype": "Select",
    "label": "Sharing Option",
-   "options": "\n4-Upload Only\n17-Read Only\n31-Upload and Edit"
+   "options": "\n4-Upload Only\n17-Read Only\n31-Upload and Edit",
+   "read_only": 1
   },
   {
    "fieldname": "sb_03",
@@ -121,11 +97,17 @@
    "fieldtype": "Table",
    "label": "Attachment Item",
    "options": "Attachment Item"
+  },
+  {
+   "default": "0",
+   "fieldname": "nc_enable",
+   "fieldtype": "Check",
+   "label": "NC Enable"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-05-05 14:14:42.070355",
+ "modified": "2022-05-10 13:26:58.019254",
  "modified_by": "Administrator",
  "module": "Pibidav",
  "name": "PibiDAV Addon",

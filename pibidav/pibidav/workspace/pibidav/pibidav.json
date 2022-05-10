@@ -1,8 +1,8 @@
 {
- "cards_label": "NextCloud Integration and Settings",
+ "cards_label": "NextCloud Integration & Settings",
  "category": "Modules",
  "charts": [],
- "creation": "2022-04-28 17:01:04.335680",
+ "creation": "2022-05-08 19:56:04.771051",
  "developer_mode_only": 0,
  "disable_user_customization": 0,
  "docstatus": 0,
@@ -21,14 +21,13 @@
    "label": "Documents",
    "link_type": "DocType",
    "onboard": 0,
-   "only_for": "",
    "type": "Card Break"
   },
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "PibiCut",
-   "link_to": "Shortener",
+   "label": "pibiDAV Addon",
+   "link_to": "PibiDAV Addon",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -54,27 +53,9 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Utils",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Folder Set",
-   "link_to": "Folder Set",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Settings",
    "link_type": "DocType",
    "onboard": 0,
-   "only_for": "",
    "type": "Card Break"
   },
   {
@@ -94,14 +75,22 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Folder Set",
+   "link_to": "Folder Set",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2022-05-06 16:33:13.004186",
- "modified_by": "Administrator",
- "module": "PibiDAV",
+ "modified": "2022-05-08 19:59:06.587831",
+ "modified_by": "fad.pibico@gmail.com",
+ "module": "Pibidav",
  "name": "pibiDAV",
- "onboarding": "",
- "owner": "Administrator",
+ "owner": "fad.pibico@gmail.com",
  "pin_to_bottom": 0,
  "pin_to_top": 0,
  "shortcuts": []

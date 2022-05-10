@@ -53,23 +53,38 @@ export default class Browser {
 
 	make_dialog() {
 		this.dialog = new frappe.ui.Dialog({
-			title: __('Select NextCloud Destination Folder'),
+			title: __('Select NextCloud Folder'),
       size: 'large',
       primary_action_label: __('Select'),
 			primary_action: () => {
         let nc_folder = this.select_folder();
+        let nc_create_folder = this.browser.ncCreateFolder;
+        let secret = null;
+        let share_type = null;
+        if (nc_create_folder) {
+          secret = this.browser.secret;
+          share_type = this.browser.shareType;
+        }
         let dtdn = this.wrapper.ownerDocument.body.getAttribute('data-route').replace('Form/', '');
         let pos = dtdn.lastIndexOf('/');
         let docname = dtdn.substr(pos+1);
         let doctype = dtdn.replace('/'+docname,'')
         if (nc_folder.is_folder) {
-          frappe.db.set_value(doctype, docname, 'nc_folder', nc_folder.path);          
+          //frappe.db.set_value(doctype, docname, 'nc_folder', nc_folder.path);
+          console.log(`Create Folder: ${nc_create_folder} sharing ${share_type} with password ${secret}`);
+          frappe.db.set_value("PibiDAV Addon", `${docname}`, {
+            "nc_folder": nc_folder.path,
+            "secret": secret,
+            "sharing_option": share_type,
+            "nc_enable": 1
+          });
         } else {
-          frappe.db.set_value(doctype, docname, 'nc_folder', '');
           frappe.msgprint(__('You have selected a file and not a folder'), nc_folder.file_name);
+          return false;
         }
+        
         this.dialog.hide();
-        window.location.reload();
+        //window.location.reload();
       }  
 		});
 

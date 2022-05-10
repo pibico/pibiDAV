@@ -16,83 +16,88 @@ from frappe.utils.file_manager import get_file_path
 
 import frappe.desk.doctype.tag.tag as tag
 
-def create_nc_folder(doc, method=None):
-  ## Create Folder only if doctype has enabled NextCloud and all related fields are filled in and enabled
-  if hasattr(doc, "nc_enable") and hasattr(doc, "create_nc_folder") and hasattr(doc, "nc_folder") and hasattr(doc, "nc_folder_share_link") and hasattr(doc, "nc_folder_internal_link"):  
-    if doc.nc_enable and doc.create_nc_folder:
-      ## Get default data from NextCloud Settings
-      data = frappe.db.get_value("Reference Item", {"parent": "NextCloud Settings", "reference_doctype": doc.doctype},['folder_set', 'nc_folder', 'abbreviation', 'folder_name'], as_dict = 1)
-      ## Assign data to variables for creating folders in NC
-      node_name = data.folder_set.strip()
-      path = data.nc_folder
-      abbreviation = data.abbreviation
-      if abbreviation is not None and abbreviation != '':
-        abbreviation = doc.get(data.abbreviation)
-      else:
-        return frappe.throw(_("Docfield for deriving the abbreviation cannot be empty. Please correct in NextCloud Settings"))
-      if abbreviation is None or abbreviation == '':
-        return frappe.throw(_("{} for deriving the abbreviation variable cannot be empty. Please correct and fill {}".format(data.abbreviation, data.abbreviation)))
-      abbreviation = abbreviation.strip()
-          
-      strmain = doc.get(data.folder_name)
-      strmain = strmain.strip()
+@frappe.whitelist()
+def create_nc_folder(dt, dn, abbr, strmain, folder_set, sharing_option=None, secret=None):
+  doc = frappe.get_doc(doctype=dt, docname=dn)
+  ## Check docs excluded and included in the NC Integration
+  docs_excluded = frappe.get_value("NextCloud Settings", "NextCloud Settings", "nc_doctype_excluded")
+  docs_included = frappe.get_value("NextCloud Settings", "NextCloud Settings", "nc_doctype_included")
+  nc_url = frappe.get_value("NextCloud Settings", "NextCloud Settings", "nc_backup_url")
+  if nc_url[-1] != '/': nc_url += '/'
+  
+  if dt in docs_excluded or not dt in docs_included:
+    return "DocTypes not in NC Integration"
+  
+  data = frappe.db.get_value("Reference Item", {"parent": "NextCloud Settings", "reference_doctype": dt},['nc_folder','create_nc_folder', 'folder_name', "nc_enable"], as_dict = 1)
+  node_name = folder_set.strip()
+  path = data.nc_folder
+  
+  if path is None:
+    return "Failed. Not defined the Default destination Folder in NC Settings"
+    
+  if not data.nc_enable:
+    return "Failed. Not enabled NextCloud Integration in Addon"
       
-      digits = 3
-      secret = doc.secret
-      if secret is not None:
-        if 0 < len(secret) < 10:
-          return frappe.throw(_("Password for autocreation folders should be empty or greater than 10 characters long. Check your NextCloud Settings for password and correct"))
+  if data.create_nc_folder and data.nc_folder != '' and data.folder_set != '':
+    pibidav = check_addon(dt,dn)
 
-      sharing_option = doc.sharing_option
-      if sharing_option:
-        if sharing_option == "":
-          return frappe.throw(_("Sharing Option for autocreation folders cannot be empty check your NextCloud Settings for Sharing Options"))
+    ## Get default data from NextCloud Settings
+    ## Assign data to variables for creating folders in NC
+    strmain = strmain.strip()
+    abbreviation = abbr.strip()  
+    digits = 3
+    if path[-1] != '/':
+      path += '/'
+    if path[0] != '/':
+      return frappe.throw(_("{} Root Destination Folder must start with /. Correct in your NextCloud Settings and retry".format(path)))
+    
+    root_path = "{}{} {}/".format(path, abbreviation, strmain)
 
-        sharing_option = sharing_option.split('-')
-        sharing_option = int(sharing_option[0])
+    ## Create Folders if needed data are filled in logged in as superuser in NC
+    if node_name and path and abbreviation and strmain:
+      create_nc_dirs(node_name, path, abbreviation, strmain, digits)
+      nclog = make_nc_session()
+      ## Get data fileid from dir
+      fileinfo = nclog.file_info(root_path, properties=['{http://owncloud.org/ns}fileid'])
+      if fileinfo:
+        fileid = fileinfo.attributes['{http://owncloud.org/ns}fileid']
+        ## Create internal Link
+        intlink = nc_url + 'f/' + fileid
+        nc_folder_internal_link = '<a href="'
+        nc_folder_internal_link += intlink + '" target="_blank">' + intlink + '</a>' 
+        pibidav.nc_folder_internal_link = nc_folder_internal_link      
 
-      if path[-1] != '/':
-        path += '/'
-      if path[0] != '/':
-        return frappe.throw(_("{} Root Destination Folder must start with /. Correct in your NextCloud Settings and retry".format(path)))
-      
-      root_path = "{}{} {}/".format(path, abbreviation, strmain)
+      pibidav.nc_folder = root_path
+      pibidav.nc_folder_internal_link = nc_folder_internal_link      
 
-      ## Create Folders if needed data are filled in logged in as superuser in NC
-      if node_name and path and abbreviation and strmain:
-        create_nc_dirs(node_name, path, abbreviation, strmain, digits)
-        nclog = make_nc_session()
-        ## Create shared Link
+      ## Create shared Link
+      if secret is not None or sharing_option is not None:
+        if sharing_option is None:
+          pibidav.save()
+          return
+        share_option = sharing_option.split('-')
+        share_option = int(share_option[0])
         share_link = nclog.share_file_with_link(path=root_path)
         if share_link:
           ## Create public link
           publink = share_link.get_link()
           nc_folder_share_link = '<a href="'
           nc_folder_share_link += publink +  '" target="_blank">' + publink + '</a>'
-          doc.nc_folder_share_link = nc_folder_share_link
+          pibidav.nc_folder_share_link = nc_folder_share_link
           intlink = share_link.get_id()
-          nc_url = publink[0:-17]
           ## Change perms from read to update
           #oth = {'perms': sharing_option, 'secret': secret}
           oth = {}
-          if sharing_option:
-            oth = { 'perms': sharing_option }
-          if secret:
-            oth['password'] = str(secret)  
+          if share_option:
+            oth = { 'perms': share_option }
+            pibidav.sharing_option = sharing_option
+          if secret is not None and secret != '':
+            oth['password'] = str(secret)
+            pibidav.secret = secret
           nclog.update_share(intlink, **oth)
-          ## Get data fileid from dir
-          fileinfo = nclog.file_info(root_path, properties=['{http://owncloud.org/ns}fileid'])
-          if fileinfo:
-            fileid = fileinfo.attributes['{http://owncloud.org/ns}fileid']
-            ## Create internal Link
-            intlink = nc_url + 'f/' + fileid
-            nc_folder_internal_link = '<a href="'
-            nc_folder_internal_link += intlink + '" target="_blank">' + intlink + '</a>' 
-            doc.nc_folder_internal_link = nc_folder_internal_link
-          doc.nc_folder = root_path
 
-          doc.save()
-          nclog.logout()
+      pibidav.save()
+      nclog.logout()
 
 @frappe.whitelist()
 def get_native(parent, filetype):
@@ -271,7 +276,10 @@ def upload_file_to_nc(doc, method=None):
   local_path = get_file_path(file_name)
   ## Method only valid for docTypes not being Files
   if dt != 'File' and dn:
-    document = frappe.get_doc(dt, dn)
+    ## check whether document has NC addon extension active
+    document = check_addon(dt,dn)
+    
+    #document = frappe.get_doc(dt, dn)
     ## Check whether doctype has NextCloud Integration active
     if not hasattr(document, "nc_enable"):
       return
@@ -310,24 +318,6 @@ def upload_file_to_nc(doc, method=None):
             fptag.save()
             
       doc.save()
-      ## Update Child Table Attachment Item if exists with a List of Attachments Uploaded to NC
-      ## Check whether doctype is not included in exclusions or inclusions
-      if document.doctype in docs_excluded or not document.doctype in docs_included:
-        return {'fname': doc, 'local_path': local_path, 'local_site': local_site}
-      ## Get a list of all files attached to doctype and uploaded to NC
-      attached_to_doctype = frappe.get_list(
-        doctype = "File",
-        fields = ["*"],
-        filters = [
-          ["attached_to_doctype", "=", document.doctype],
-          ["attached_to_name", "=", document.name],
-          ["uploaded_to_nextcloud", "=", 1],
-          ["docstatus", "<", 1]
-        ]
-      )
-      ## Update Attachemnt Item Child Table
-      update_attachment_item(nc_url, document)
-
       nc.logout()
         
       return {'fname': doc, 'local_path': local_path, 'local_site': share.get_link()}
@@ -344,22 +334,29 @@ def get_nc_settings(doctype):
       if nc_folder[-1] != '/': nc_folder + '/'
       return nc_folder
 
-def update_attachment_item(nc_url, document):
+@frappe.whitelist()
+def update_attachment_item(dt, dn):
+  nc_url = frappe.get_value("NextCloud Settings", "NextCloud Settings", "nc_backup_url")
+  if not nc_url[-1] == '/': nc_url += '/'
   ## Get a list of all files attached to doctype and uploaded to NC
   attached_to_doctype = frappe.get_list(
     doctype = "File",
     fields = ["*"],
     filters = [
-      ["attached_to_doctype", "=", document.doctype],
-      ["attached_to_name", "=", document.name],
+      ["attached_to_doctype", "=", dt],
+      ["attached_to_name", "=", dn],
       ["uploaded_to_nextcloud", "=", 1],
       ["docstatus", "<", 1]
     ]
   )
   
-  if len(attached_to_doctype) > 0 and hasattr(document, "nc_enable"):
-    if hasattr(document, "attachment_item"):
-      attachment_item = document.attachment_item
+  doc = frappe.get_doc("PibiDAV Addon", "pbc_" + dn)
+  if doc is None:
+    return
+
+  if len(attached_to_doctype) > 0 and hasattr(doc, "nc_enable"):
+    if hasattr(doc, "attachment_item"):
+      attachment_item = doc.attachment_item
       if len(attachment_item) > 0:
         ## Update attachments uploaded to NC
         ## Get all files attached to docname
@@ -381,8 +378,8 @@ def update_attachment_item(nc_url, document):
               "nc_private": nc_url + 'apps/files/?fileid=' + row.fileid,
               "nc_url": nc_link
             }
-            document.append("attachment_item", json_item)
-        document.save()
+            doc.append("attachment_item", json_item)
+        doc.save()
         frappe.db.commit()  
       else:
         ## Create new attachment item
@@ -399,8 +396,8 @@ def update_attachment_item(nc_url, document):
             "nc_private": nc_url + 'apps/files/?fileid=' + row.fileid,
             "nc_url": nc_link
           }
-          document.append("attachment_item", json_item)
-          document.save()
+          doc.append("attachment_item", json_item)
+          doc.save()
           frappe.db.commit()
 
 @frappe.whitelist()
@@ -479,7 +476,8 @@ def get_nc_files_in_folder(folder, start=0, page_length=20):
     'files': nodes[:page_length],
     'has_more': len(nodes) > page_length
   }
-  
+
+@frappe.whitelist()
 def make_nc_session():
     nc_settings = frappe.get_doc('NextCloud Settings', 'NextCloud Settings')
     if nc_settings.nc_backup_enable:
@@ -573,3 +571,27 @@ def get_children(session, parent_node, parent_path, abr, n):
         frappe.msgprint(_("Error creating child folder in NC"))
 
   return children_list
+
+def check_addon(dt, dn):
+  ## First we'll check and create pibiDAV Addon doctype related
+  addon_list = frappe.db.get_list('PibiDAV Addon',
+    filters={
+      'docstatus': ['<', 2],
+      'name': "pbc_{}".format(dn)
+    },
+    fields=['*']
+  )
+  if len(addon_list) == 0: 
+    ## Create pibiDAV Addon doctype
+    pibidav = frappe.new_doc("PibiDAV Addon")
+    pibidav.ref_doctype = dt
+    pibidav.ref_docname = dn
+    ## Get default data from NextCloud Settings
+    settings = frappe.db.get_value("Reference Item", {"parent": "NextCloud Settings", "reference_doctype": dt},['nc_folder'], as_dict = 1)
+    pibidav.nc_folder = settings.nc_folder
+    pibidav.insert()
+    frappe.db.commit()
+  else:
+    pibidav = frappe.get_doc("PibiDAV Addon", "pbc_{}".format(dn))
+    
+  return pibidav
