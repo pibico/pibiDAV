@@ -17,6 +17,16 @@ from frappe.utils.file_manager import get_file_path
 import frappe.desk.doctype.tag.tag as tag
 
 @frappe.whitelist()
+def doCreateFolder(doctype):
+  data = frappe.db.get_value("Reference Item", {"parent": "NextCloud Settings", "reference_doctype": doctype},['create_nc_folder','nc_enable'], as_dict = 1)
+  if data is None:
+    return False
+  if data.create_nc_folder and data.nc_enable:
+    return True
+  else:
+    return False
+
+@frappe.whitelist()
 def create_nc_folder(dt, dn, abbr, strmain, folder_set, sharing_option=None, secret=None):
   doc = frappe.get_doc(doctype=dt, docname=dn)
   ## Check docs excluded and included in the NC Integration

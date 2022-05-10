@@ -9,6 +9,7 @@
   "reference_doctype",
   "reference_docfield",
   "cb_01",
+  "nc_enable",
   "create_nc_folder",
   "use_default_folder",
   "nc_folder"
@@ -52,12 +53,18 @@
    "fieldname": "create_nc_folder",
    "fieldtype": "Check",
    "label": "Create NC Folder"
+  },
+  {
+   "default": "0",
+   "fieldname": "nc_enable",
+   "fieldtype": "Check",
+   "label": "NC Enable"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2022-05-09 18:42:17.691461",
+ "modified": "2022-05-10 20:23:52.781190",
  "modified_by": "Administrator",
  "module": "Pibidav",
  "name": "Reference Item",

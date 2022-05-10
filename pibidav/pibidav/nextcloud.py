@@ -336,7 +336,7 @@ class Client(object):
         self.url = url
         self._session = None
         self._debug = kwargs.get('debug', False)
-        self._verify_certs = kwargs.get('verify_certs', False) # Modified if NC/Frappe in same instance
+        self._verify_certs = kwargs.get('verify_certs', True)
         self._dav_endpoint_version = kwargs.get('dav_endpoint_version', True)
 
         self._capabilities = None
