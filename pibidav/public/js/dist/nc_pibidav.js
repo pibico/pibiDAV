@@ -3,6 +3,7 @@
 
 frappe.ui.form.on(doctype.name, {
   refresh: function(frm) {
+   if (!frm.doc.__islocal) {
     frm.add_custom_button(__("Select NC Folder"), function() {
       frappe.db.get_value("PibiDAV Addon",
         {"ref_doctype": frm.doc.doctype, "ref_docname": frm.doc.name},
@@ -101,6 +102,7 @@ frappe.ui.form.on(doctype.name, {
         }
       });
     },__("NC Commands"));
+   }
   },
   after_save: function(frm) {
     frappe.db.get_list('PibiDAV Addon',

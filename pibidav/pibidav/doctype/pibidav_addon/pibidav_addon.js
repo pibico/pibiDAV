@@ -14,6 +14,6 @@ frappe.ui.form.on('PibiDAV Addon', {
         frappe.msgprint(r.message);
         window.location.reload();
       });
-    },__("NC Commands"));
+    }).addClass('btn-primary');
   }
 });
