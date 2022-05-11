@@ -128,9 +128,9 @@ export default {
 
 <style>
   .nc-browser-list {
-    height: 300px;
+    height: 420px;
     overflow: hidden;
-    margin-top: 10px;
+    margin-top: 6px;
   }
   .tree {
     overflow: auto;
