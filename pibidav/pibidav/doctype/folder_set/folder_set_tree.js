@@ -107,35 +107,45 @@ frappe.treeview_settings['Folder Set'] = {
          var upload2nc = true;
          frappe.db.get_value('Folder Set', {'name': node.title}, 'nc_folder', (r) => {
            if (r.nc_folder) {
-             //console.log(r.nc_folder);
-             let d = new frappe.ui.Dialog({
-               title: __("Recreate Folders in NC"),
-               fields: [
-			           { label: __("Parent Path"), fieldname: "parent_path", fieldtype: "Data", default: r.nc_folder},
-			           { label: __("Abbreviation"), fieldname: "abbreviation", fieldtype: "Data", default: "PRJYYABV"},
-				         { label: __("Root Dir Name"), fieldname: "folder_name", fieldtype: "Data"},
-                 { label: __("Digits to substitute with abbreviation"), fieldname: "digits", fieldtype: "Int", default: 3}
+              frappe.call({
+                method: "pibidav.pibidav.custom.checkNCuser",
+                args: {
+                }
+              }).then(function(r) {
+                let isUser = r.message;
+                if (isUser) {
+                  let d = new frappe.ui.Dialog({
+                    title: __("Recreate Folders in NC"),
+                    fields: [
+			                { label: __("Parent Path"), fieldname: "parent_path", fieldtype: "Data", default: r.nc_folder},
+			                { label: __("Abbreviation"), fieldname: "abbreviation", fieldtype: "Data", default: "PRJYYABV"},
+				              { label: __("Root Dir Name"), fieldname: "folder_name", fieldtype: "Data"},
+                      { label: __("Digits to substitute with abbreviation"), fieldname: "digits", fieldtype: "Int", default: 3}
                ],
-               primary_action_label: __("Create"),
-               primary_action(values) {
-				         console.log(values);
-				         frappe.call({
-				           method: "pibidav.pibidav.custom.create_nc_dirs",
-				           args: {
-					           node_name: node.title,
-                     path: values.parent_path,
-                     abbrv: values.abbreviation,
-                     strmain: values.folder_name,
-                     digits: values.digits
-				           },
-                   callback: function(r) {
-                     console.log(r.message);
-                   }					   
-				         });
-				         d.hide();
-               }
-             });
-		         d.show();
+                    primary_action_label: __("Create"),
+                    primary_action(values) {
+				              //console.log(values);
+				              frappe.call({
+				                method: "pibidav.pibidav.custom.create_nc_dirs",
+				                args: {
+					                node_name: node.title,
+                          path: values.parent_path,
+                          abbrv: values.abbreviation,
+                          strmain: values.folder_name,
+                          digits: values.digits
+				                },
+                        callback: function(r) {
+                          console.log(r.message);
+                        }					   
+				              });
+				              d.hide();
+                    }
+                  });
+		              d.show();
+                } else {
+                  frappe.msgprint(__("Only NextCloud SuperUser can use this method"));
+                }
+              });  
            } else {
              frappe.msgprint(__("First Select your NC Destination Folder"));
            }

@@ -17,6 +17,15 @@ from frappe.utils.file_manager import get_file_path
 import frappe.desk.doctype.tag.tag as tag
 
 @frappe.whitelist()
+def checkNCuser():
+  ncuser = frappe.get_value("NextCloud Settings", "NextCloud Settings", "nc_backup_username")
+  loggeduser = frappe.get_value("User", frappe.session.user, "nextcloud_username")
+  if ncuser == loggeduser:
+    return True
+  else:
+    return False
+
+@frappe.whitelist()
 def doCreateFolder(doctype):
   data = frappe.db.get_value("Reference Item", {"parent": "NextCloud Settings", "reference_doctype": doctype},['create_nc_folder','nc_enable'], as_dict = 1)
   if data is None:
