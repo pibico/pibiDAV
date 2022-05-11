@@ -84,7 +84,10 @@ export default class Browser {
         }
         
         this.dialog.hide();
-        window.location.reload();
+        console.log(doctype);
+        if (doctype == 'Folder Set') { 
+          window.location.reload();
+        }  
       }  
 		});
 
