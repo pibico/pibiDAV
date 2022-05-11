@@ -607,9 +607,11 @@ def check_addon(dt, dn):
     pibidav.ref_docname = dn
     ## Get default data from NextCloud Settings
     settings = frappe.db.get_value("Reference Item", {"parent": "NextCloud Settings", "reference_doctype": dt},['nc_folder'], as_dict = 1)
-    pibidav.nc_folder = settings.nc_folder
-    pibidav.insert()
-    frappe.db.commit()
+    if settings is not None:
+      if settings.use_default_folder and settings.nc_folder:
+        pibidav.nc_folder = settings.nc_folder
+        pibidav.insert()
+        frappe.db.commit()
   else:
     pibidav = frappe.get_doc("PibiDAV Addon", "pbc_{}".format(dn))
     
