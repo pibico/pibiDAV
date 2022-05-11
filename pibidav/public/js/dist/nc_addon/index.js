@@ -72,11 +72,11 @@ export default class Browser {
         if (nc_folder.is_folder) {
           //frappe.db.set_value(doctype, docname, 'nc_folder', nc_folder.path);
           console.log(`Create Folder: ${nc_create_folder} sharing ${share_type} with password ${secret}`);
-          frappe.db.set_value("PibiDAV Addon", `${docname}`, {
+          frappe.db.set_value(`${doctype}`, `${docname}`, {
             "nc_folder": nc_folder.path,
-            "secret": secret,
-            "sharing_option": share_type,
-            "nc_enable": 1
+            //"secret": secret,
+            //"sharing_option": share_type,
+            //"nc_enable": 1
           });
         } else {
           frappe.msgprint(__('You have selected a file and not a folder'), nc_folder.file_name);
@@ -84,7 +84,7 @@ export default class Browser {
         }
         
         this.dialog.hide();
-        //window.location.reload();
+        window.location.reload();
       }  
 		});
 

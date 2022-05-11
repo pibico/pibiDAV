@@ -3,11 +3,6 @@
 
 frappe.ui.form.on(doctype.name, {
   refresh: function(frm) {
-    let nc_enable = frappe.db.get_value("PibiDAV Addon",
-      {"ref_doctype": frm.doc.doctype, "ref_docname": frm.doc.name},
-      ["nc_enable"]
-    );
-    console.log(nc_enable);
     frm.add_custom_button(__("Select NC Folder"), function() {
       frappe.db.get_value("PibiDAV Addon",
         {"ref_doctype": frm.doc.doctype, "ref_docname": frm.doc.name},
@@ -30,50 +25,61 @@ frappe.ui.form.on(doctype.name, {
         }
       });
     },__("NC Commands"));
-    frm.add_custom_button(__("Enable NC Upload"), function() {
-      frappe.db.get_value("PibiDAV Addon",
-        {"ref_doctype": frm.doc.doctype, "ref_docname": frm.doc.name},
-        ["name"]
-      )
-      .then(r => {
-        var addon = r.message;
-        let docname = frm.doc.name
-        if (addon.name == 'pbc_' + docname) {
-          frappe.db.set_value("PibiDAV Addon", `pbc_${docname}`, {"nc_enable": 1});    
-        } else {
-          frappe.db.insert({
-            "doctype": "PibiDAV Addon",
-            "ref_doctype": frm.doc.doctype,
-            "ref_docname": frm.doc.name,
-            "nc_enable": 1
-          }).then(function(doc) {
-            console.log(`${doc.name} created on ${doc.creation}`)
+    frappe.db.get_value("PibiDAV Addon",
+      {"ref_doctype": frm.doc.doctype, "ref_docname": frm.doc.name},
+      ["nc_enable"]
+    ).then(r => {
+      let nc_enable = r.message.nc_enable;
+      if (!nc_enable) { 
+        frm.add_custom_button(__("Enable NC"), function() {
+          frappe.db.get_value("PibiDAV Addon",
+            {"ref_doctype": frm.doc.doctype, "ref_docname": frm.doc.name},
+            ["name"]
+          )
+          .then(r => {
+            var addon = r.message;
+            let docname = frm.doc.name
+            if (addon.name == 'pbc_' + docname) {
+              frappe.db.set_value("PibiDAV Addon", `pbc_${docname}`, {"nc_enable": 1});    
+            } else {
+              frappe.db.insert({
+                "doctype": "PibiDAV Addon",
+                "ref_doctype": frm.doc.doctype,
+                "ref_docname": frm.doc.name,
+                "nc_enable": 1
+              }).then(function(doc) {
+                console.log(`${doc.name} created on ${doc.creation}`)
+              });
+            }
           });
-        }
-      });
-    },__("NC Commands"));
-    frm.add_custom_button(__("Disable NC Upload"), function() {
-      frappe.db.get_value("PibiDAV Addon",
-        {"ref_doctype": frm.doc.doctype, "ref_docname": frm.doc.name},
-        ["name"]
-      )
-      .then(r => {
-        var addon = r.message;
-        let docname = frm.doc.name
-        if (addon.name == 'pbc_' + docname) {
-          frappe.db.set_value("PibiDAV Addon", `pbc_${docname}`, {"nc_enable": 0});    
-        } else {
-          frappe.db.insert({
-            "doctype": "PibiDAV Addon",
-            "ref_doctype": frm.doc.doctype,
-            "ref_docname": frm.doc.name,
-            "nc_enable": 0
-          }).then(function(doc) {
-            console.log(`${doc.name} created on ${doc.creation}`)
+          window.setTimeout(function(){location.reload()},300)
+        }).addClass("btn btn-primary");
+      } else {  
+        frm.add_custom_button(__("Disable NC"), function() {
+          frappe.db.get_value("PibiDAV Addon",
+            {"ref_doctype": frm.doc.doctype, "ref_docname": frm.doc.name},
+            ["name"]
+          )
+          .then(r => {
+            var addon = r.message;
+            let docname = frm.doc.name
+            if (addon.name == 'pbc_' + docname) {
+              frappe.db.set_value("PibiDAV Addon", `pbc_${docname}`, {"nc_enable": 0});    
+            } else {
+              frappe.db.insert({
+                "doctype": "PibiDAV Addon",
+                "ref_doctype": frm.doc.doctype,
+                "ref_docname": frm.doc.name,
+                "nc_enable": 0
+              }).then(function(doc) {
+                console.log(`${doc.name} created on ${doc.creation}`)
+              });
+            }
           });
-        }
-      });
-    },__("NC Commands"));
+          window.setTimeout(function(){location.reload()},300)
+        }).addClass("btn btn-danger");
+      }  
+    });
     frm.add_custom_button(__("Check Addon"), function() {
       frappe.db.get_value("PibiDAV Addon",
         {"ref_doctype": frm.doc.doctype, "ref_docname": frm.doc.name},

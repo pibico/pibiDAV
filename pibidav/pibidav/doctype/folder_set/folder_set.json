@@ -10,7 +10,7 @@
   "is_group",
   "title",
   "cb_01",
-  "nc_enable",
+  "select_nc_folder",
   "old_parent",
   "root_parent",
   "parent_folder_set",
@@ -32,13 +32,6 @@
    "label": "Title",
    "reqd": 1,
    "unique": 1
-  },
-  {
-   "default": "0",
-   "depends_on": "eval:frappe.user.has_role('System Manager');",
-   "fieldname": "nc_enable",
-   "fieldtype": "Check",
-   "label": "NC Enable"
   },
   {
    "fieldname": "cb_01",
@@ -82,13 +75,18 @@
    "label": "Right",
    "no_copy": 1,
    "read_only": 1
+  },
+  {
+   "fieldname": "select_nc_folder",
+   "fieldtype": "Button",
+   "label": "Select NC Folder"
   }
  ],
  "icon": "folder",
  "index_web_pages_for_search": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2022-05-10 23:52:10.319870",
+ "modified": "2022-05-11 10:34:30.594028",
  "modified_by": "Administrator",
  "module": "Pibidav",
  "name": "Folder Set",

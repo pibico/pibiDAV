@@ -64,7 +64,8 @@ export default class Browser {
         let doctype = dtdn.replace('/'+docname,'')
         if (nc_folder.is_folder) {
           frappe.db.set_value("PibiDAV Addon", `pbc_${docname}`, {
-            "nc_folder": nc_folder.path
+            "nc_folder": nc_folder.path,
+            "nc_enable": 1
           });         
         } else {
           frappe.msgprint(__('You have selected a file and not a folder'), nc_folder.file_name);
