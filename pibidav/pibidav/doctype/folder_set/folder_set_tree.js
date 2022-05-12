@@ -106,7 +106,8 @@ frappe.treeview_settings['Folder Set'] = {
        click: function(node) {
          var upload2nc = true;
          frappe.db.get_value('Folder Set', {'name': node.title}, 'nc_folder', (r) => {
-           if (r.nc_folder) {
+           let nc_folder = r.nc_folder;
+           if (nc_folder) {
               frappe.call({
                 method: "pibidav.pibidav.custom.checkNCuser",
                 args: {
@@ -117,7 +118,7 @@ frappe.treeview_settings['Folder Set'] = {
                   let d = new frappe.ui.Dialog({
                     title: __("Recreate Folders in NC"),
                     fields: [
-			                { label: __("Parent Path"), fieldname: "parent_path", fieldtype: "Data", default: r.nc_folder},
+			                { label: __("Parent Path"), fieldname: "parent_path", fieldtype: "Data", default: nc_folder},
 			                { label: __("Abbreviation"), fieldname: "abbreviation", fieldtype: "Data", default: "PRJYYABV"},
 				              { label: __("Root Dir Name"), fieldname: "folder_name", fieldtype: "Data"},
                       { label: __("Digits to substitute with abbreviation"), fieldname: "digits", fieldtype: "Int", default: 3}
