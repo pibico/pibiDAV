@@ -65,10 +65,10 @@ First of all, we must enable the NC Integration, clicking on Enable NC button. W
 ![imagen](https://user-images.githubusercontent.com/69711454/168051867-32eeaeda-0d05-4525-935f-b464a6cb7a06.png)
 We can check the created Addon clicking on the Check Addon Button. And return to the sales invoice clicking on the ref_docname on the addon.
 ![imagen](https://user-images.githubusercontent.com/69711454/168052040-b623d8ef-7d4c-4135-8497-ba412e730023.png)
+After having saved the original Sales Invoice as draft we can select the NextCloud Destination Folder for our attachments by clicking on the NC Commands Button and selecting Select NC Folder to bring the pop-up dialog for browsing and selecting our NC Folder.
+![imagen](https://user-images.githubusercontent.com/69711454/168052743-ac2bec03-915e-47de-82a7-2e62996b1d64.png)
 
 
-We will go to a Sales Invoice after saving as draft. As default the NC Enable Check is unchecked. While keeping so, the attachments to the Sales Invoice will no be uploaded to NextCloud. Thus, the user has the flexibility to decide whether a file is uploaded to NextCloud or not, and files can be uploaded to different folders just unchecking and checking again and selecting a new Destination Folder each time the nc_enable check is selected. It can be very usual that our invoices can be stored inside a Customer Folder in our NextCloud Instance under the year of the Invoice, as in the picture.
-![imagen](https://user-images.githubusercontent.com/69711454/165822942-8c6f89fc-a71b-4106-bd10-bbc8fb31877b.png)
 When we select the NextCloud Destination Folder in the dialog, this folder path will be filled in our text nc_folder custom field.
 ![imagen](https://user-images.githubusercontent.com/69711454/165823241-63c5cace-f68e-4a11-9a40-7ab27b0a6d96.png)
 While we keep this destination folder, all the attachments uploaded to the Sales Invoice will be also uploaded to NextCloud to this folder. Let's create the pdf from the Sales Invoice, signed electronically outside Frappe and uploaded again as attachment in Frappe/ERPNext
