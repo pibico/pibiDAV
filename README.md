@@ -39,13 +39,24 @@ To get the permissions from NextCloud into Frappe we will fill the User NextClou
 ![imagen](https://user-images.githubusercontent.com/69711454/165817057-d765dd68-ae4f-4ab9-9edf-2fa438a0d012.png)
 After that we will go at the bottom of de User Settings Form to provide the NextCloud User Credentials. In this example is the System Manager or Administrator having the SuperUser NextCloud Credentials for having access to the full NextCloud Folder SuperStructure.
 ![imagen](https://user-images.githubusercontent.com/69711454/165817406-eeb6fc05-3fa7-4e14-8798-3712c4a2b26c.png)
-For CalDAV integration we will provide also othe url for the User Calendars, in the way https://domain.com/remote.php/dav/principals/ (do not forget the / at the end).
-### 3. Custom Fields and Client Script for Frappe Core Doctypes to achieve the NextCloud Integration.
-Having active the developer mode in the instance, we can go to the Customization Side Menu and create new custom fields and Client Scripts as needed to fulfill the NextCloud Integration with the selected DocTypes. In case of a custom app, this is also valid but these docfields and script will be incluced in the DocTypes and js code of our custom app.
-![imagen](https://user-images.githubusercontent.com/69711454/165813154-f0610f50-c401-449a-840d-b8bc5603890f.png)
-#### 2.1 Custom Field NC Enable (nc_enable)
-This is our first needed custom field. In case of our Selection (Sales Invoice), the **nc_enable** docfield is a **Check** docfield to include at the beginning of the doctype form.
-![imagen](https://user-images.githubusercontent.com/69711454/165813393-efade877-03d2-4e1c-86be-6e3ea582e42a.png)
+For CalDAV integration we will provide also the url for the User Calendars, in the way https://domain.com/remote.php/dav/principals/ (do not forget the / at the end).
+### 3. Hooks for NextCloud Integration
+Provide we have access to the frappe-bench folder, we must hook with the Doctypes included in the integration, on adding the following to hooks.py of pibidav app:
+```
+# doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
+
+nc_list = ["Customer","Project","Sales Invoice","Purchase Invoice","Supplier","Event"]
+doctype_js = {}
+for item in nc_list:
+  doctype_js[item] = "public/js/dist/nc_pibidav.js"
+
+# Home Pages
+# ----------
+```
+In nc_list variable, we will include whichever doctype to integrate with NextCloud.
+#### 2.1 PibiDAV Addon DocType
+This new DocType is an extension of existing DocTypes to fill with data related to Attchments, Folders, etc. related to NextCloud based on its referenced doctype. It is somehow a parallel sheet with data only related to NextCloud Functionalities. It is filled automatically from the different actions derived from NC buttons.
+![imagen](https://user-images.githubusercontent.com/69711454/168050089-1f6a7f44-52a8-4d27-ae64-2c94775a17f3.png)
 #### 2.2 Custom Field NC Folder (nc_folder)
 The second needed custom field is the Folder Destination Node selected from the NextCloud Folder Structure to upload the attachments from the Sales Invoice in this case. The **nc_folder** docfield is a **Text** type field and **Read Only** for filling it with very long routes (paths from the root node). 
 ![imagen](https://user-images.githubusercontent.com/69711454/165814234-ae75997a-a3cd-4041-adb7-f2107b48187c.png)
