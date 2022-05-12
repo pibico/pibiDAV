@@ -9,7 +9,7 @@ PibiDAV has been tested on Frappe/ERPNext version-13 only.
 ## Installation
 From the frappe-bench folder, execute
 ```
-$ bench get-app pibidav https://github.com/pibico/pibidav.git
+$ bench get-app pibidav --branch develop https://github.com/pibico/pibidav.git
 $ bench install-app pibidav
 ```
 If you are using a multi-tenant environment, use the following command
