@@ -25,9 +25,9 @@ PibiCo works on NextCloud making the Main Company Folders Superestructure as a s
 This Folder Superstructure has children at different levels and are shared with different groups or users also at different level, thus giving access to these folders and below (both user internal to Company or External such as Customers or Suppliers).
 ![imagen](https://user-images.githubusercontent.com/69711454/165802115-275c6234-77f5-43fa-b2aa-a1f3942e4693.png)
 At this point, let's go to Frappe Server and once logged-in as System Manager or Administrator we'll go to module pibiDAV on side menu, and on Settings Card we'll choose NextCloud Settings.
-![imagen](https://user-images.githubusercontent.com/69711454/168047039-bcccfd78-a843-4ac0-a836-213254341849.png)
-Once there, we'll activate the NextCloud Backup Enable checkbox and fill the credentials of the NextCloud SuperUser in the input fields.
-![imagen](https://user-images.githubusercontent.com/69711454/165806449-60d1967f-9aa9-41ee-a9b9-7590ccb4896c.png)
+![pibiDav_NC_SuperUser_Credentials_and_Settings](https://user-images.githubusercontent.com/69711454/165805974-23fcec72-04c6-4f4e-9ff0-eba250862fb5.JPG)
+Once there, we'll activate the NextCloud Enable checkbox (valid also for backup) and fill the credentials of the NextCloud SuperUser in the input fields.
+![imagen](https://user-images.githubusercontent.com/69711454/168047648-0c131b17-ba4e-4f77-af4e-8207d0050159.png)
 We can check that our credentials are correct clicking on NC commands button on upper right side of the screen.
 ![imagen](https://user-images.githubusercontent.com/69711454/165807198-41a41df3-9a6e-447f-96fa-5ee2040190c2.png)
 Now, automatic uploading of frappe backup is enabled and will be uploaded to the destination folder as given in the backups details section. Frappe Backups files are renamed on NextCloud to files beginning by a number that is the weekday of the backup files, as shown in the picture. So, we will have always the last backup and also all the ancient backups for this weekday as versions in NextCloud, as shown in the picture
