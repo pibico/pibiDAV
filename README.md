@@ -67,17 +67,14 @@ We can check the created Addon clicking on the Check Addon Button. And return to
 ![imagen](https://user-images.githubusercontent.com/69711454/168052040-b623d8ef-7d4c-4135-8497-ba412e730023.png)
 After having saved the original Sales Invoice as draft we can select the NextCloud Destination Folder for our attachments by clicking on the NC Commands Button and selecting Select NC Folder to bring the pop-up dialog for browsing and selecting our NC Folder.
 ![imagen](https://user-images.githubusercontent.com/69711454/168052743-ac2bec03-915e-47de-82a7-2e62996b1d64.png)
-
-
-When we select the NextCloud Destination Folder in the dialog, this folder path will be filled in our text nc_folder custom field.
-![imagen](https://user-images.githubusercontent.com/69711454/165823241-63c5cace-f68e-4a11-9a40-7ab27b0a6d96.png)
+When we select the NextCloud Destination Folder in the dialog, this folder path will be filled in our addon text nc_folder field to remember the destination till it is changed by a new selection.
 While we keep this destination folder, all the attachments uploaded to the Sales Invoice will be also uploaded to NextCloud to this folder. Let's create the pdf from the Sales Invoice, signed electronically outside Frappe and uploaded again as attachment in Frappe/ERPNext
 ![imagen](https://user-images.githubusercontent.com/69711454/165823914-8dd352e1-69ce-4698-851e-33f53dadb3e2.png)
 We have uploaded the attachment to Frappe/ERPNext as shown in the picture
 ![imagen](https://user-images.githubusercontent.com/69711454/165824171-d145445b-9c87-4740-b48d-494ef116c26b.png)
 Let's Check if it has been also uploaded to NextCloud on the PBC > Customer > Client > Invoices > 2022 as selected.
 ![imagen](https://user-images.githubusercontent.com/69711454/165824625-0d650e18-0c94-4c9e-be7e-7577b1d10968.png)
-Looking for details we see the pdf file Sales Invoice uploaded in NextCloud Destination, but also has been created a shared public Link, tagged with customer, tax_id, doctype and name as we defined in the Settings. Voilà, first integration achieved. Let's check the File uploaded to Frappe, it has all metadata from NextCloud as well, and also has some frappe tags also automatically filled on the upload.
+Looking for details we see the pdf file Sales Invoice uploaded in NextCloud Destination, but also it has been created a shared public Link, tagged with customer, tax_id, doctype and name as we defined in the Settings. Voilà, first integration achieved. Let's check the File uploaded to Frappe, it has all metadata from NextCloud as well, and also has some frappe tags also automatically filled on the upload.
 ![imagen](https://user-images.githubusercontent.com/69711454/165825969-f883e0d4-b415-4eba-9885-16ed92073276.png)
 ### 5. Create folder structures in NextCloud from template Folder Sets in Frappe.
 Another possible integration is through a Folder Set Doctype Tree integrated in pibiDav. Folder Set is a Doctype for making Folder Structures taken as templates for recreating them in the NextCloud Instance from a destination folder as root. Let's see in action, once we have the template folder set created in Frappe. We can select the root folder and enable the nc_enable check and select the destination folder in NextCloud where to recreate this structure, renaming the folders in NextCloud upon its creation.
