@@ -57,39 +57,12 @@ In nc_list variable, we will include whichever doctype to integrate with NextClo
 #### 2.1 PibiDAV Addon DocType
 This new DocType is an extension of existing DocTypes to fill with data related to Attchments, Folders, etc. related to NextCloud based on its referenced doctype. It is somehow a parallel sheet with data only related to NextCloud Functionalities. It is filled automatically from the different actions derived from NC buttons.
 ![imagen](https://user-images.githubusercontent.com/69711454/168050089-1f6a7f44-52a8-4d27-ae64-2c94775a17f3.png)
-#### 2.2 Custom Field NC Folder (nc_folder)
-The second needed custom field is the Folder Destination Node selected from the NextCloud Folder Structure to upload the attachments from the Sales Invoice in this case. The **nc_folder** docfield is a **Text** type field and **Read Only** for filling it with very long routes (paths from the root node). 
-![imagen](https://user-images.githubusercontent.com/69711454/165814234-ae75997a-a3cd-4041-adb7-f2107b48187c.png)
-#### 2.3 Custom Field Attachment Item (attachment_item)
-First we will create a doctype **Files List** of type **Section Break** to separate the table from the rest of the fields and located on the very bottom of the current doctype form.
-![imagen](https://user-images.githubusercontent.com/69711454/165822617-4c7f28dc-238f-4c68-9e44-bae1213052e9.png)
-The last needed docfield is a child table to get a register with the attachments uploaded from Frappe to NextCloud in the Sales Invoice Doctype, with its shared links (both internal and external links) and with a link to the Frappe File DocType where all data from NextCloud are also registered for further use. The **attachment_item** docfield is a **Table** type field pointing to childtable **Attachment Item** in the options property. We will locate the table at the very bottom of the Sales Invoice doctype after the last docfield.
-![imagen](https://user-images.githubusercontent.com/69711454/165815272-0b880b99-2e0c-4ea4-8d43-54e987484187.png)
-#### 2.4 Client Script on Integrated DocType to get the dialog once the nc_enable check is enabled.
-Now it's time of the frontend logic for the Sales Invoice form. For that purpose we will create a client script on the form with the following code:
-```
-// Copyright (c) 2022, pibiCo and contributors
-// For license information, please see license.txt
-frappe.ui.form.on('Sales Invoice', {
-  refresh(frm) {
-    if (!frm.doc.nc_enable) {
-      frm.set_value("nc_folder", "");
-      frm.refresh_field("nc_folder");
-    }
-  },
-  nc_enable(frm) {
-    if (frm.doc.nc_enable) {
-      frm.set_value("nc_enable", 1);
-      frm.refresh_field("nc_enable");
-      frm.save();
-      new frappe.ui.pibiDocs();
-    }
-  }
-});
-```
-![imagen](https://user-images.githubusercontent.com/69711454/165816499-6e70af0f-2226-4a08-a93d-5bd106296bfa.png)
 ### 4. The magic of the NextCloud Integration inside Frappe
 It's time now to try the integration of the NextCloud Folder Structure from Frappe to choose the NC Destination Folder of our uploaded files (except website urls).
+Let's go to a doctype of the NC Integration List, i.e. a Sales Invoice. On this core doctype, we'll have two new buttons, for enabling NC and for getting the browser dialog to choose the NC destination folder.
+![imagen](https://user-images.githubusercontent.com/69711454/168051235-2f762d9e-30a4-476e-83c8-e8345ca2dd4f.png)
+
+
 We will go to a Sales Invoice after saving as draft. As default the NC Enable Check is unchecked. While keeping so, the attachments to the Sales Invoice will no be uploaded to NextCloud. Thus, the user has the flexibility to decide whether a file is uploaded to NextCloud or not, and files can be uploaded to different folders just unchecking and checking again and selecting a new Destination Folder each time the nc_enable check is selected. It can be very usual that our invoices can be stored inside a Customer Folder in our NextCloud Instance under the year of the Invoice, as in the picture.
 ![imagen](https://user-images.githubusercontent.com/69711454/165822942-8c6f89fc-a71b-4106-bd10-bbc8fb31877b.png)
 When we select the NextCloud Destination Folder in the dialog, this folder path will be filled in our text nc_folder custom field.
