@@ -61,6 +61,10 @@ This new DocType is an extension of existing DocTypes to fill with data related 
 It's time now to try the integration of the NextCloud Folder Structure from Frappe to choose the NC Destination Folder of our uploaded files (except website urls).
 Let's go to a doctype of the NC Integration List, i.e. a Sales Invoice. On this core doctype, we'll have two new buttons, for enabling NC and for getting the browser dialog to choose the NC destination folder.
 ![imagen](https://user-images.githubusercontent.com/69711454/168051235-2f762d9e-30a4-476e-83c8-e8345ca2dd4f.png)
+First of all, we must enable the NC Integration, clicking on Enable NC button. With this action we will generate the pbc_sales_invoice doctype parallel to our sales invoice (same name with 'pbc_' before it).
+![imagen](https://user-images.githubusercontent.com/69711454/168051867-32eeaeda-0d05-4525-935f-b464a6cb7a06.png)
+We can check the created Addon clicking on the Check Addon Button. And return to the sales invoice clicking on the ref_docname on the addon.
+![imagen](https://user-images.githubusercontent.com/69711454/168052040-b623d8ef-7d4c-4135-8497-ba412e730023.png)
 
 
 We will go to a Sales Invoice after saving as draft. As default the NC Enable Check is unchecked. While keeping so, the attachments to the Sales Invoice will no be uploaded to NextCloud. Thus, the user has the flexibility to decide whether a file is uploaded to NextCloud or not, and files can be uploaded to different folders just unchecking and checking again and selecting a new Destination Folder each time the nc_enable check is selected. It can be very usual that our invoices can be stored inside a Customer Folder in our NextCloud Instance under the year of the Invoice, as in the picture.
