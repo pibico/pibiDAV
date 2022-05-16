@@ -1,5 +1,5 @@
 ## pibiDAV
-pibiDAV is a Frappe App to integrate webDAV, calDAV and cardDAV (Future) with a NextCloud Server used as (DMS) for a copy of Frappe Files uploaded and tagged to NextCloud while uploading files to Frappe.
+pibiDAV is a Frappe App to integrate webDAV, calDAV and cardDAV (Future) with a NextCloud Server, used as (DMS), for a copy of Frappe Files uploaded and tagged to NextCloud while uploading files to Frappe.
 ## License
 MIT# pibiDAV
 ## Requirements
@@ -18,7 +18,7 @@ $ bench --site site_name install-app pibidav
 ```
 ## Features
 Once is installed, be aware that you will need to set **developer_mode = 1** on your site_config.json file. Also it is a must to have SSL active in both servers Frappe and NextCloud with specific certificates (wildcard *.domain.com* certificates are not valid for this integration). Letsencrypt Certificates are valid for both servers. 
-This integration app is prepared for including specific and custom doctypes to upload its attachments to NextCloud at the same time than to Frappe. There is a new frappe.ui.component dialog based on vue.js and called frappe.ui.pibiDocs where to draw the NextCloud Tree and select the destination NextCloud node to upload the files.
+This integration app is prepared for including specific and custom doctypes to upload its attachments to NextCloud at the same time than to Frappe. There is a new frappe.ui.component dialog based on vue.js and called frappe.ui.pibiDocs where to draw the NextCloud Tree and select the destination NextCloud Directory to upload the files.
 ### 1. Credentials for NextCloud SuperUser, Backup and DocTypes to Integrate with NextCloud
 PibiCo works on NextCloud making the Main Company Folders Superestructure as a shared folder from this NextCloud SuperUser that should be a System Manager on Frappe also. Let's explain with some pictures.
 ![NC_FolderStructure_Shared_from_SuperUser](https://user-images.githubusercontent.com/69711454/165801352-b4a14016-b360-41ea-9a2c-050ea589580f.JPG)
@@ -41,7 +41,7 @@ After that we will go at the bottom of de User Settings Form to provide the Next
 ![imagen](https://user-images.githubusercontent.com/69711454/165817406-eeb6fc05-3fa7-4e14-8798-3712c4a2b26c.png)
 For CalDAV integration we will provide also the url for the User Calendars, in the way https://domain.com/remote.php/dav/principals/ (do not forget the / at the end).
 ### 3. Hooks for NextCloud Integration
-Provide we have access to the frappe-bench folder, we must hook with the Doctypes included in the integration, on adding the following to hooks.py of pibidav app:
+Provided we have access to the frappe-bench folder, we must hook the Doctypes included in the integration, by adding the following code to hooks.py of pibidav app:
 ```
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
@@ -55,7 +55,7 @@ for item in nc_list:
 ```
 In nc_list variable, we will include whichever doctype to integrate with NextCloud.
 #### 2.1 PibiDAV Addon DocType
-This new DocType is an extension of existing DocTypes to fill with data related to Attchments, Folders, etc. related to NextCloud based on its referenced doctype. It is somehow a parallel sheet with data only related to NextCloud Functionalities. It is filled automatically from the different actions derived from NC buttons.
+This new DocType is an extension of existing DocTypes to fill with data given by Attchments, Folders, etc. related to NextCloud and based on its referenced doctype. It is somehow a parallel sheet with data only related to NextCloud Functionalities. It is filled automatically from the different actions derived from NC buttons.
 ![imagen](https://user-images.githubusercontent.com/69711454/168050089-1f6a7f44-52a8-4d27-ae64-2c94775a17f3.png)
 ### 4. The magic of the NextCloud Integration inside Frappe
 It's time now to try the integration of the NextCloud Folder Structure from Frappe to choose the NC Destination Folder of our uploaded files (except website urls).
