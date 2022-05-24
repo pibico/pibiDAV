@@ -65,7 +65,7 @@ export default class Browser {
 
 	make_dialog() {
 	  this.dialog = new frappe.ui.Dialog({
-		  title: __('Select NextCloud Folder'),
+		  title: __('Read NC Folder'),
       size: 'large',
       primary_action_label: __('Select'),
 		  primary_action: () => {
@@ -90,6 +90,7 @@ export default class Browser {
             //"sharing_option": share_type,
             //"nc_enable": 1
           });
+          
         } else {
           frappe.msgprint(__('You have selected a file and not a folder'), nc_folder.file_name);
           return false;
@@ -97,9 +98,11 @@ export default class Browser {
         
         this.dialog.hide();
         //console.log(doctype);
-        if (doctype == 'Folder Set') { 
+        if (doctype == 'Folder Set') {
           window.location.reload();
-        }   
+        } else {
+          document.querySelector('.add-attachment-btn').click(); return false;  
+        }
       }  
   	});
 
