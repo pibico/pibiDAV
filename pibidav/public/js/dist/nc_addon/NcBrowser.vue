@@ -39,7 +39,8 @@
 import TreeNode from "./TreeNode.vue";
 
 export default {
-  name: "NcBrowser",  
+  name: "NcBrowser",
+  props: ["node"],
   components: {
     TreeNode
   },

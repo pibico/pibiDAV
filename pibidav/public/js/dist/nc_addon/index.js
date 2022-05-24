@@ -3,35 +3,47 @@ import NcBrowserComponent from './NcBrowser.vue';
 export default class Browser {
 	constructor({
 		wrapper,
-		method,
-		on_success,
-		doctype,
-		docname,
-		fieldname,
-		files,
-		folder,
-		disable_file_browser,
-		frm
+    folder
 	} = {}) {
 
-		if (!wrapper) {
+    if (!wrapper) {
 			this.make_dialog();
 		} else {
 			this.wrapper = wrapper.get ? wrapper.get(0) : wrapper;
 		}
 
-		this.$ncbrowser = new Vue({
+    let node = {}
+    if (!folder) {
+      node = {
+        label: __("/"),
+        value: "/",
+        children: [],
+        children_start: 0,
+        children_loading: false,
+        is_leaf: false,
+        fetching: false,
+        fetched: false,
+        open: false
+      } 
+    } else {  
+      node = {
+        label: folder.slice(0, -1),
+        value: folder,
+        children: [],
+        children_start: 0,
+        children_loading: false,
+        is_leaf: false,
+        fetching: false,
+        fetched: false,
+        open: false
+      }
+    }
+    
+    this.$ncbrowser = new Vue({
 			el: this.wrapper,
 			render: h => h(NcBrowserComponent, {
 				props: {
-					show_upload_button: !Boolean(this.dialog),
-					doctype,
-					docname,
-					fieldname,
-					method,
-					folder,
-					on_success,
-					disable_file_browser
+          node
 				}
 			})
 		});
@@ -52,11 +64,11 @@ export default class Browser {
 	}
 
 	make_dialog() {
-		this.dialog = new frappe.ui.Dialog({
-			title: __('Select NextCloud Folder'),
+	  this.dialog = new frappe.ui.Dialog({
+		  title: __('Select NextCloud Folder'),
       size: 'large',
       primary_action_label: __('Select'),
-			primary_action: () => {
+		  primary_action: () => {
         let nc_folder = this.select_folder();
         let nc_create_folder = this.browser.ncCreateFolder;
         let secret = null;
@@ -84,18 +96,18 @@ export default class Browser {
         }
         
         this.dialog.hide();
-        console.log(doctype);
+        //console.log(doctype);
         if (doctype == 'Folder Set') { 
           window.location.reload();
-        }  
+        }   
       }  
-		});
+  	});
 
-		this.wrapper = this.dialog.body;
-		this.dialog.show();
-		this.dialog.$wrapper.on('hidden.bs.modal', function() {
-			$(this).data('bs.modal', null);
-			$(this).remove();
-		});
+	  this.wrapper = this.dialog.body;
+	  this.dialog.show();
+	  this.dialog.$wrapper.on('hidden.bs.modal', function() {
+		  $(this).data('bs.modal', null);
+		  $(this).remove();
+	  });
 	}
 }
