@@ -97,9 +97,11 @@ export default class Browser {
         
         this.dialog.hide();
         //console.log(doctype);
-        if (doctype == 'Folder Set') { 
+        if (doctype == 'Folder Set') {
           window.location.reload();
-        }   
+        } else {
+          document.querySelector('.add-attachment-btn').click(); return false;  
+        }
       }  
   	});
 
