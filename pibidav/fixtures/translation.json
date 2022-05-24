@@ -7198,5 +7198,21 @@
   "parenttype": null,
   "source_text": "17-Read Only",
   "translated_text": "17-Solo Lectura"
+ },
+ {
+  "context": null,
+  "contributed": 0,
+  "contribution_docname": null,
+  "contribution_status": "",
+  "docstatus": 0,
+  "doctype": "Translation",
+  "language": "es",
+  "modified": "2022-05-17 17:14:41.993982",
+  "name": "8de7c4d4ec",
+  "parent": null,
+  "parentfield": null,
+  "parenttype": null,
+  "source_text": "HS Documents",
+  "translated_text": "Documentos Prevenci\u00f3n"
  }
 ]

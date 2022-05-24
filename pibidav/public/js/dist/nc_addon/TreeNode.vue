@@ -29,6 +29,7 @@
     </ul>
   </div>
 </template>
+
 <script>
 export default {
   name: "TreeNode",
@@ -41,7 +42,7 @@ export default {
       let icons = {
         open: frappe.utils.icon("folder-open", "md"),
         closed: frappe.utils.icon("folder-normal", "md"),
-        leaf: frappe.utils.icon("primitive-dot", "xs")
+        leaf: frappe.utils.icon("file", "sm")
       };
       if (this.node.is_leaf) return icons.leaf;
       if (this.node.open) return icons.open;

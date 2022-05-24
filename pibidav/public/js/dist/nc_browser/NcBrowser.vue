@@ -12,6 +12,7 @@
   </div>
 </template>
 <script>
+
 import TreeNode from "./TreeNode.vue";
 
 export default {

@@ -29,26 +29,27 @@
     </ul>
   </div>
 </template>
+
 <script>
-export default {
-  name: "TreeNode",
-  props: ["node", "selected_node"],
-  components: {
-    TreeNode: () => frappe.ui.components.TreeNode
-  },
-  computed: {
-    icon() {
-      let icons = {
-        open: frappe.utils.icon("folder-open", "md"),
-        closed: frappe.utils.icon("folder-normal", "md"),
-        leaf: frappe.utils.icon("primitive-dot", "xs")
-      };
-      if (this.node.is_leaf) return icons.leaf;
-      if (this.node.open) return icons.open;
-      return icons.closed;
+  export default {
+    name: "TreeNode",
+    props: ["node", "selected_node"],
+    components: {
+      TreeNode: () => frappe.ui.components.TreeNode
+    },
+    computed: {
+      icon() {
+        let icons = {
+          open: frappe.utils.icon("folder-open", "md"),
+          closed: frappe.utils.icon("folder-normal", "md"),
+          leaf: frappe.utils.icon("file", "md")
+        };
+        if (this.node.is_leaf) return icons.leaf;
+        if (this.node.open) return icons.open;
+        return icons.closed;
+      }
     }
-  }
-};
+  };
 </script>
 <style scoped>
   .btn-load-more {

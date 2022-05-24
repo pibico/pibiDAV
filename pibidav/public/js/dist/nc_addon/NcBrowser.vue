@@ -1,29 +1,28 @@
 <template>
   <div class="file-browser">
-    
-      <div class="form-control">           
-        <div class="d-flex justify-content-between">
-		  <label for="nc_create_folder">NC Create Folder</label>
-          <input
-            type="checkbox"
-			value="nc_create_folder"
-            v-model="ncCreateFolder"
-          />
-          <select
+    <div class="form-control">           
+      <div class="d-flex justify-content-between">
+        <label for="nc_create_folder">NC Create Folder</label>
+        <input
+          type="checkbox"
+          value="nc_create_folder"
+          v-model="ncCreateFolder"
+        />
+        <select
   		    v-model="shareType"
-		    class="form-select"
-		    aria-label="share Type">
-              <option disabled value="">Select Share Type</option>
-              <option>4-Upload Only</option>
-              <option>17-Read Only</option>
-              <option>31-Upload and Edit</option>
-          </select>
-		  <label for="secret">Sharing Password</label>
+		      class="form-select"
+		      aria-label="share Type">
+            <option disabled value="">Select Share Type</option>
+            <option>4-Upload Only</option>
+            <option>17-Read Only</option>
+            <option>31-Upload and Edit</option>
+        </select>
+		    <label for="secret">Sharing Password</label>
           <input
 		    v-model="secret"
-          />
-		</div>  
-      </div>
+        />
+	    </div>
+    </div>
     <div class="nc-browser-list">         
       <TreeNode
         class="tree with-skeleton"
@@ -35,11 +34,13 @@
     </div>
   </div>
 </template>
+
 <script>
 import TreeNode from "./TreeNode.vue";
 
 export default {
-  name: "NcBrowser",  
+  name: "NcBrowser",
+  props: ["node"],  
   components: {
     TreeNode
   },
@@ -50,7 +51,7 @@ export default {
       shareType: '',
       node: {
         label: __("/"),
-        value: "/",
+        value: '/',
         children: [],
         children_start: 0,
         children_loading: false,
