@@ -42,7 +42,7 @@ export default {
       let icons = {
         open: frappe.utils.icon("folder-open", "md"),
         closed: frappe.utils.icon("folder-normal", "md"),
-        leaf: frappe.utils.icon("file", "sm")
+        leaf: frappe.utils.icon("file", "md")
       };
       if (this.node.is_leaf) return icons.leaf;
       if (this.node.open) return icons.open;

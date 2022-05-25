@@ -10,7 +10,7 @@ frappe.ui.form.on(doctype.name, {
         ["nc_enable"]
       ).then(r => {
         let nc_enable = r.message.nc_enable;
-        console.log(r);
+        //console.log(r);
         if (nc_enable !== 1) { 
           frm.add_custom_button(__("Enable NC"), function() {
             frappe.db.get_value("PibiDAV Addon",
@@ -137,7 +137,7 @@ function CreateFolder(frm) {
     }
   }).then(function(r) {
     let doCreate = r.message;
-    console.log(doCreate);
+    //console.log(doCreate);
     if (doCreate) {
       let d = new frappe.ui.Dialog({
         title: 'Create NC Folder',
@@ -173,7 +173,7 @@ function CreateFolder(frm) {
         ],
         primary_action_label: 'Create',
         primary_action(values) {
-          console.log(values);
+          //console.log(values);
           if (values.abbreviation === undefined || values.strmain === undefined || values.folder_set === undefined){
             frappe.throw(__('Complete all data Abbreviation, Folder Name and Folder Set'));
             return false;

@@ -136,6 +136,7 @@
   {
    "fieldname": "reference_item",
    "fieldtype": "Table",
+   "ignore_user_permissions": 1,
    "label": "Inclusions",
    "options": "Reference Item"
   },
@@ -147,7 +148,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2022-05-11 22:03:17.161609",
+ "modified": "2022-05-25 19:34:49.772141",
  "modified_by": "Administrator",
  "module": "Pibidav",
  "name": "NextCloud Settings",
@@ -170,6 +171,16 @@
    "print": 1,
    "read": 1,
    "role": "Docs Controller",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "HR User",
    "share": 1,
    "write": 1
   }
