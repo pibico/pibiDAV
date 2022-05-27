@@ -292,7 +292,8 @@ def upload_file_to_nc(doc, method=None):
   ## Get name of file attached to doctype and file_name and local server path
   dn = doc.attached_to_name
   file_name = doc.file_name
-  local_path = get_file_path(file_name)
+  local_path = get_file_path(file_name) 
+  fname = doc.file_url.split('/')[-1] ## In case a document is uploaded n-times in Frappe only changes its name and not its url
   ## Method only valid for docTypes not being Files
   if dt != 'File' and dn:
     ## check whether document has NC addon extension active
@@ -325,7 +326,7 @@ def upload_file_to_nc(doc, method=None):
       if nc == "Failed":
         return frappe.msgprint(_("Error in NC Login"))
       ## Continues to upload files to NC      
-      nc_path = document.nc_folder + file_name
+      nc_path = document.nc_folder + fname
       nc_args = {
 		    'remote_path': nc_path,
 		    'local_source_file': local_path
@@ -404,7 +405,7 @@ def update_attachment_item(dt, dn):
             nc_link += '" target="_blank">NextCloud</a>' 
             json_item = {
               "attachment": row.name,
-              "filename": row.file_name,
+              "filename": row.file_url.split('/')[-1],
               "uploaded_to_nc": row.uploaded_to_nextcloud,
               "nc_path": row.folder_path,
               "nc_link": row.share_link,
@@ -422,7 +423,7 @@ def update_attachment_item(dt, dn):
           nc_link += '" target="_blank">NextCloud</a>'
           json_item = {
             "attachment": row.name,
-            "filename": row.file_name,
+            "filename": row.file_url.split('/')[-1],
             "uploaded_to_nc": row.uploaded_to_nextcloud,
             "nc_path": row.folder_path,
             "nc_link": row.share_link,
@@ -456,7 +457,7 @@ def upload_nc_file(remote_path, local_file):
   enqueue(method=nc.put_file,queue='short',timeout=300,now=True,**nc_args) 
 
   fname.uploaded_to_nextcloud = 1
-  fname.folder_path = remote_path.replace(fname.file_name, '')
+  fname.folder_path = remote_path.replace(fname.file_url.split('/')[-1], '')
   fname.save()
 
   nc.logout()
@@ -623,9 +624,12 @@ def check_addon(dt, dn):
     settings = frappe.db.get_value("Reference Item", {"parent": "NextCloud Settings", "reference_doctype": dt},['nc_folder'], as_dict = 1)
     if settings is not None:
       if settings.use_default_folder and settings.nc_folder:
-        pibidav.nc_folder = settings.nc_folder
-        pibidav.insert()
-        frappe.db.commit()
+        ## Valid for all doctypes except pibiDocs HS Document Addon  
+        if not dt == "HS Document": 
+          pibidav.nc_folder = settings.nc_folder
+          pibidav.insert()
+          frappe.db.commit()
+          
   else:
     pibidav = frappe.get_doc("PibiDAV Addon", "pbc_{}".format(dn))
     
