@@ -281,7 +281,7 @@ def upload_file_to_nc(doc, method=None):
     return
   ## Check docs excluded and included in the NC Integration
   docs_excluded = frappe.get_value("NextCloud Settings", "NextCloud Settings", "nc_doctype_excluded")
-  docs_included = frappe.get_value("NextCloud Settings", "NextCloud Settings", "nc_doctype_included")
+  ## docs_included = frappe.get_value("NextCloud Settings", "NextCloud Settings", "nc_doctype_included")
   nc_url = frappe.get_value("NextCloud Settings", "NextCloud Settings", "nc_backup_url")
   if not nc_url[-1] == '/': nc_url += '/'
   ## Check the file attached to parent docType and its inclusion in the list 
@@ -298,10 +298,24 @@ def upload_file_to_nc(doc, method=None):
     ## check whether document has NC addon extension active
     document = check_addon(dt,dn)
     
-    #document = frappe.get_doc(dt, dn)
+    ## Check for pibiDocs deliverable data on Addon -- This is valid only for pibiDocs App installed
+    if dt == "HS Document":
+      deliverable_type = ""
+      if hasattr(document, "deliverable_type"):
+        if document.deliverable_type:
+          deliverable_type = document.deliverable_type 
+          ## Fill File with deliverable type and tag
+          doc.deliverable_type = deliverable_type
+          tag.add_tag(deliverable_type, "File", doc.name)
+          _tag_list.append(deliverable_type)
+    
     ## Check whether doctype has NextCloud Integration active
     if not hasattr(document, "nc_enable"):
       return
+    ## Check if document has destination folder
+    if document.nc_enable and not document.nc_folder:
+      return frappe.msgprint(_("File uploaded only to Frappe. No NC Destination Folder Given"))
+      
     ## Continues if NC Integration is enabled and NC Destination Folder given
     if document.nc_enable and document.nc_folder:
       local_site = frappe.utils.get_url()
@@ -317,7 +331,7 @@ def upload_file_to_nc(doc, method=None):
 		    'local_source_file': local_path
 	    }
       ## Upload file to NC
-      enqueue(method=nc.put_file,queue='short',timeout=300,now=True,**nc_args)
+      enqueue(method=nc.put_file, queue='short',timeout=3000,now=True,**nc_args)
       ## Get Shared Link from NC
       share = enqueue(method=nc.share_file_with_link, queue='short', timeout=600, now=True, path=nc_path)
       ## Update and save File in frappe updated with NC data
