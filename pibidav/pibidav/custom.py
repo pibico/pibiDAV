@@ -435,34 +435,88 @@ def update_attachment_item(dt, dn):
           frappe.db.commit()
 
 @frappe.whitelist()
-def upload_nc_file(remote_path, local_file):
+def upload_nc_file(remote_path, local_file, **kwargs):
   ## Get bench path
   fname = frappe.get_doc('File', local_file)
   ## Only applicable if File is not attached to any doctype
   if not fname.attached_to_doctype == 'File' or 'http' in fname.file_url:
     return
+  ## Get kwargs
+  attached_to_doctype = attached_to_name = None
+  for key, value in kwargs.items():
+    if key == 'attached_to_doctype':
+      dt = value
+      fname.attached_to_doctype = dt
+    if key == 'attached_to_name':
+      dn = value
+      fname.attached_to_name = dn  
+  ## Check docs excluded and included in the NC Integration
+  docs_excluded = frappe.get_value("NextCloud Settings", "NextCloud Settings", "nc_doctype_excluded")
+  ## docs_included = frappe.get_value("NextCloud Settings", "NextCloud Settings", "nc_doctype_included")
+  nc_url = frappe.get_value("NextCloud Settings", "NextCloud Settings", "nc_backup_url")
+  if not nc_url[-1] == '/': nc_url += '/'
+  ## Tag File in Frappe if attached to any doctype
+  if dt != 'File' and dn:
+    _tag_list = tag_file_fp(fname)  
+    ## Check the file attached to parent docType and its inclusion in the list 
+    if docs_excluded:
+      if dt in docs_excluded:
+        return
 
-  local_site = frappe.utils.get_url()
-  local_path = get_file_path(local_file)
-  nc_user = frappe.get_doc("User", frappe.session.user)
-  nc = make_nc_session_user(nc_user)
-  
-  if nc == "Failed":
-    return frappe.msgprint(_("Error in NC Login"))
-     
-  nc_args = {
-    'remote_path': remote_path,
-    'local_source_file': local_path
-  }
-  enqueue(method=nc.put_file,queue='short',timeout=300,now=True,**nc_args) 
-
-  fname.uploaded_to_nextcloud = 1
-  fname.folder_path = remote_path.replace(fname.file_url.split('/')[-1], '')
-  fname.save()
-
-  nc.logout()
-
-  return {'fname': fname, 'local_path': local_path, 'local_site': local_site}
+    ## check whether document has NC addon extension active
+    document = check_addon(dt,dn)
+    ## Check for pibiDocs deliverable data on Addon -- This is valid only for pibiDocs App installed
+    if dt == "HS Document":
+      deliverable_type = ""
+      if hasattr(document, "deliverable_type"):
+        if document.deliverable_type:
+          deliverable_type = document.deliverable_type 
+          ## Fill File with deliverable type and tag
+          fname.deliverable_type = deliverable_type
+          tag.add_tag(deliverable_type, "File", fname.name)
+          _tag_list.append(deliverable_type)
+    ## Check whether doctype has NextCloud Integration active
+    if not hasattr(document, "nc_enable"):
+      return
+    ## Check if document has destination folder
+    if document.nc_enable and not document.nc_folder:
+      return frappe.msgprint(_("File uploaded only to Frappe. No NC Destination Folder Given"))
+    ## Continues if NC Integration is enabled and NC Destination Folder given
+    if document.nc_enable and document.nc_folder:
+      local_site = frappe.utils.get_url()
+      local_path = get_file_path(local_file)
+      ## Login to NC with superuser  
+      nc = make_nc_session()
+      if nc == "Failed":
+        return frappe.msgprint(_("Error in NC Login"))
+      ## Pass Arguments for Uploading   
+      nc_args = {
+        'remote_path': remote_path,
+        'local_source_file': local_path
+      }
+      enqueue(method=nc.put_file,queue='short',timeout=900,now=True,**nc_args) 
+      ## Get Shared Link from NC
+      share = enqueue(method=nc.share_file_with_link, queue='short', timeout=600, now=True, path=remote_path)
+      ## Update and save File in frappe updated with NC data
+      fname.uploaded_to_nextcloud = 1
+      fname.folder_path = document.nc_folder
+      fname.share_link = share.get_link()
+      
+      fileid, nctags = tag_file_nc(nc, remote_path, _tag_list)
+      fname.fileid = fileid
+      ## Register nc tagids into frappe tags
+      if len(nctags) > 0:
+        for strtag in nctags:
+          fptag = frappe.get_doc("Tag", strtag['display-name'])
+          if fptag:
+            fptag.uploaded_to_nextcloud = 1
+            fptag.tagid = strtag['tagid']
+            fptag.save()
+            
+      fname.save()
+      nc.logout()
+      
+      return {'fname': fname, 'local_path': local_path, 'local_site': local_site}
 
 @frappe.whitelist()
 def get_nc_files_in_folder(folder, start=0, page_length=20):
@@ -523,7 +577,8 @@ def make_nc_session():
       session.login(nc_settings.nc_backup_username, nc_token)
       return session
     else:
-      frappe.msgprint(_("NextCloud Integration not Enabled"))  
+      frappe.msgprint(_("NextCloud Integration not Enabled")) 
+      return "Failed" 
     
 @frappe.whitelist()
 def create_nc_group(alias):
