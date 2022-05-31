@@ -442,14 +442,17 @@ def upload_nc_file(remote_path, local_file, **kwargs):
   if not fname.attached_to_doctype == 'File' or 'http' in fname.file_url:
     return
   ## Get kwargs
-  attached_to_doctype = attached_to_name = None
+  attached_to_doctype = attached_to_name = deliverable_type = None
   for key, value in kwargs.items():
     if key == 'attached_to_doctype':
       dt = value
       fname.attached_to_doctype = dt
     if key == 'attached_to_name':
       dn = value
-      fname.attached_to_name = dn  
+      fname.attached_to_name = dn
+    if key == 'deliverable_type':
+      deliverable_type = value
+      fname.deliverable_type = deliverable_type    
   ## Check docs excluded and included in the NC Integration
   docs_excluded = frappe.get_value("NextCloud Settings", "NextCloud Settings", "nc_doctype_excluded")
   ## docs_included = frappe.get_value("NextCloud Settings", "NextCloud Settings", "nc_doctype_included")
@@ -467,14 +470,14 @@ def upload_nc_file(remote_path, local_file, **kwargs):
     document = check_addon(dt,dn)
     ## Check for pibiDocs deliverable data on Addon -- This is valid only for pibiDocs App installed
     if dt == "HS Document":
-      deliverable_type = ""
-      if hasattr(document, "deliverable_type"):
+      if hasattr(document, "deliverable_type") and not deliverable_type:
         if document.deliverable_type:
           deliverable_type = document.deliverable_type 
           ## Fill File with deliverable type and tag
           fname.deliverable_type = deliverable_type
-          tag.add_tag(deliverable_type, "File", fname.name)
-          _tag_list.append(deliverable_type)
+      if deliverable_type:
+        tag.add_tag(deliverable_type, "File", fname.name)
+        _tag_list.append(deliverable_type)
     ## Check whether doctype has NextCloud Integration active
     if not hasattr(document, "nc_enable"):
       return
