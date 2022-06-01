@@ -320,9 +320,12 @@ def upload_file_to_nc(doc, method=None):
     ## Continues if NC Integration is enabled and NC Destination Folder given
     if document.nc_enable and document.nc_folder:
       local_site = frappe.utils.get_url()
-      ## Get current logged user and makes session in NC
-      nc_user = frappe.get_doc("User", frappe.session.user)
-      nc = make_nc_session_user(nc_user)
+      ## Get current logged user and makes session in NC not for pibiDocs Documents like HS Docs
+      if dt in ["HS Document"]:
+        nc = make_nc_session()
+      else:
+        nc_user = frappe.get_doc("User", frappe.session.user)
+        nc = make_nc_session_user(nc_user)
       if nc == "Failed":
         return frappe.msgprint(_("Error in NC Login"))
       ## Continues to upload files to NC      
@@ -332,9 +335,10 @@ def upload_file_to_nc(doc, method=None):
 		    'local_source_file': local_path
 	    }
       ## Upload file to NC
-      enqueue(method=nc.put_file, queue='short',timeout=3000,now=True,**nc_args)
+      enqueue(method=nc.put_file, queue='long',timeout=3000,now=True,**nc_args)
       ## Get Shared Link from NC
-      share = enqueue(method=nc.share_file_with_link, queue='short', timeout=600, now=True, path=nc_path)
+      share = enqueue(method=nc.share_file_with_link, queue='long', timeout=3000, now=True, path=nc_path)
+        
       ## Update and save File in frappe updated with NC data
       doc.uploaded_to_nextcloud = 1
       doc.folder_path = document.nc_folder
