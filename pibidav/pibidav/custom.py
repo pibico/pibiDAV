@@ -309,10 +309,17 @@ def upload_file_to_nc(doc, method=None):
           doc.deliverable_type = deliverable_type
           tag.add_tag(deliverable_type, "File", doc.name)
           _tag_list.append(deliverable_type)
+          ## Modify the pibiDAV Addon Folder for the automatic Folder in case of being a pibiDocs Deliverable (HS Doc, Engineering)
+          full_node = frappe.db.get_value("HS Document", dn, "full_node")
+          document.nc_folder = full_node
+          document.nc_enable = True
+          ##frappe.db.set_value("PibiDAV Addon", document.name, "nc_folder", full_node)
+          document.save()
     
     ## Check whether doctype has NextCloud Integration active
     if not hasattr(document, "nc_enable"):
       return
+      
     ## Check if document has destination folder
     if document.nc_enable and not document.nc_folder:
       return frappe.msgprint(_("File uploaded only to Frappe. No NC Destination Folder Given"))
