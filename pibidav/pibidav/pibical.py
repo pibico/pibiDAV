@@ -63,34 +63,12 @@ def sync_caldav_event_by_user(doc, method=None):
   if not doc.sync_with_caldav:
     return 'Document is not set to be synchronized with CalDAV.'
 
-  # Fetch the user's CalDAV credentials
-  user = frappe.get_doc('User', frappe.session.user)
-  client, url, username, password = make_caldav_session(user)
-
-  # If the CalDAV session could not be created, return an error message
-  if client == 'Failed':
-    return 'Failed to create CalDAV session: ' + url
-
-  # If no method was provided, choose a method based on the document's status
-  if method is None:
-    if doc.docstatus == 1:
-      method = 'on_update'
-    elif doc.docstatus == 2:
-      method = 'on_trash'
-
-  # Perform the appropriate synchronization action based on the chosen method
-  if method == 'on_update':
-    create_or_update_event_on_caldav(doc, client)
-  elif method == 'on_trash':
-    remove_caldav_event(doc)
-  else:
-    frappe.msgprint(_('Invalid method: ' + method))
-    return 'Invalid method: ' + method
-
+  create_or_update_event_on_caldav(doc)
+  
   frappe.msgprint(_('Synchronization successful.'))
   return 'Synchronization successful.'
 
-def create_or_update_event_on_caldav(doc, client):
+def create_or_update_event_on_caldav(doc, method=None):
   """
     Create or update an event on a CalDAV server.
 
@@ -104,6 +82,14 @@ def create_or_update_event_on_caldav(doc, client):
   # If the document has no CalDAV ID URL, there is no calendar to update
   # Fill CalDav URL with selected CalDav Calendar
   frappe.publish_progress(12, title='Event Progress', description='Synchronizing Event in NC')
+  # Fetch the user's CalDAV credentials
+  user = frappe.get_doc('User', frappe.session.user)
+  client, url, username, password = make_caldav_session(user)
+  # If the CalDAV session could not be created, return an error message
+  if client == 'Failed':
+    frappe.msgprint(f"Failed to create CalDAV session {url}")
+    return f"Failed to create CalDAV session {url}"
+  
   doc.caldav_id_url = doc.caldav_id_calendar
   if not doc.caldav_id_url:
     frappe.throw(_('Document has no CalDAV ID URL.'))
@@ -150,9 +136,6 @@ def create_or_update_event_on_caldav(doc, client):
       if doc.description: event.vobject_instance.vevent.description.value = doc.description
       # LOCATION if any
       if doc.location: event.vobject_instance.vevent.location.value = doc.location
-      # CATEGORIES from event_category
-      category = _(doc.event_category)
-      event.vobject_instance.vevent.categories.value = [category]
       event.save()
       frappe.publish_progress(100, title='Event Progress', description='Synchronizing Event in NC')
       frappe.msgprint(_('Event updated successfully.'))
@@ -350,14 +333,13 @@ def remove_caldav_event(doc, method=None):
     # If this event matches the document's event UID, remove it
     if event.vobject_instance.vevent.uid.value == doc.event_uid:
       event.delete()
-      frappe.msgprint(_('Event removed successfully'))
+      frappe.msgprint(_('Event removed successfully.'))
       return 'Event removed successfully.'
 
   # If no matching event was found, return a message indicating this
   frappe.throw(_('No matching event found.'))
   return 'No matching event found.'
 
-@frappe.whitelist()
 def sync_outside_caldav():
   # Get All Users with CalDav Credentials
   caldav_users = frappe.get_list(
@@ -416,6 +398,7 @@ def sync_outside_caldav():
                     new_cal_event.caldav_id_url = str(c.url)
                     new_event = prepare_fp_event(new_cal_event, evento)
                     new_event.save()
+                    frappe.db.commit()
                     #print(new_event.as_dict())
                     
 def prepare_fp_event(event, cal_event):
