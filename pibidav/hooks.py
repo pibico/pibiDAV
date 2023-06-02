@@ -47,12 +47,12 @@ for item in nc_list:
 # application home page (will override Website Settings)
 # home_page = "login"
 
-brand_html = '<div><img width="27px" src="/assets/pibidav/image/pibiCo_engine_largo.png"> pibi<strong>DAV</strong></div>'
+#brand_html = '<div><img width="27px" src="/assets/pibidav/image/pibiCo_engine_largo.png"> pibi<strong>DAV</strong></div>'
 
-website_context = {
-  "favicon": "/assets/pibidav/image/favicon.svg",
-  "splash_image": "/assets/pibidav/image/pibiCo_engine_largo.png"
-}
+#website_context = {
+#  "favicon": "/assets/pibidav/image/favicon.svg",
+#  "splash_image": "/assets/pibidav/image/pibiCo_engine_largo.png"
+#}
 
 # website user home page (by Role)
 # role_home_page = {
@@ -124,7 +124,8 @@ doc_events = {
   },
   "Event": {
     "after_insert": "pibidav.pibidav.pibical.sync_caldav_event_by_user",
-    "on_trash": "pibidav.pibidav.pibical.remove_caldav_event"
+    "on_trash": "pibidav.pibidav.pibical.remove_caldav_event",
+    "on_update": "pibidav.pibidav.pibical.sync_caldav_event_by_user"
   }
 # 	"*": {
 # 		"on_update": "method",
@@ -152,7 +153,7 @@ scheduler_events = {
 # 		"pibidav.tasks.hourly"
 # 	],
   "weekly": [
-    "pibidocs.pibidocs.doctype.nextcloud_settings.nextcloud_settings.weekly_backup"
+    "pibidav.pibidav.doctype.nextcloud_settings.nextcloud_settings.weekly_backup"
   ] #,
 # 	"monthly": [
 # 		"pibidav.tasks.monthly"

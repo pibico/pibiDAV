@@ -27,6 +27,7 @@ def get_calendar(nuser):
   fp_user = frappe.get_doc("User", nuser)
   caldav_client, caldav_url, caldav_username, caldav_token = make_caldav_session(fp_user)
   if caldav_client == "Failed":
+    frappe.throw(_("calDAV Connection Failed"))
     return
   
   cal_principal = caldav_client.principal()
@@ -43,221 +44,304 @@ def get_calendar(nuser):
       scal['url'] = str(c.url)
       arr_cal.append(scal)
   else:
-    frappe.msgprint(_("Server has no calendars for your user"))
+    frappe.throw(_("Server has no calendars for your user"))
     
   return arr_cal
 
 @frappe.whitelist()
 def sync_caldav_event_by_user(doc, method=None):
-  if doc.sync_with_caldav:
-    # Get CalDav Data from logged in user
-    fp_user = frappe.get_doc("User", frappe.session.user)
-    # Continue if CalDav Data exists on logged in user
-    if fp_user.caldav_url and fp_user.nextcloud_username and fp_user.nextcloud_token:
-      # Check if selected calendar matches with previously recorded and delete event if not matching
-      if doc.caldav_id_url:
-        s_cal = doc.caldav_id_url.split("/")
-        ocal = s_cal[len(s_cal)-2]
-        if '_shared_by_' in ocal:
-          pos = ocal.find("_shared_by_")
-          ocal = ocal[0:pos]
-        if doc.caldav_id_calendar == None:
-          doc.caldav_id_url = doc.event_uid = doc.event_stamp = None
-        else:
-          if not ocal in doc.caldav_id_calendar or not 'frappe' in doc.event_uid:
-            args = { "doc": doc }
-            #remove_caldav_event(doc)
-            enqueue(method=remove_caldav_event, queue='short', timeout=300, now=True, *args)
-            doc.caldav_id_url = doc.event_uid = doc.event_stamp = None
-      # Fill CalDav URL with selected CalDav Calendar
-      doc.caldav_id_url = doc.caldav_id_calendar
-      # Create uid for new events
-      str_uid = datetime.now().strftime("%Y%m%dT%H%M%S")
-      uidstamp = 'frappe' + hashlib.md5(str_uid.encode('utf-8')).hexdigest() + '@pibico.es'
-      if not doc.event_uid:
-        doc.event_uid = uidstamp
-      else:
-        uidstamp = doc.event_uid
-      ucal = str(doc.caldav_id_url).split("/")
-      # Get Calendar Name from URL as last portion in URL
-      cal_name = ucal[len(ucal)-2]
-      # Set connection to caldav calendar with CalDav user credentials
-      caldav_client, caldav_url, caldav_username, caldav_token = make_caldav_session(fp_user)
-      if caldav_client == "Failed":
-        return
-    
-      cal_principal = caldav_client.principal()
-      # Fetching calendars from server
-      calendars = cal_principal.calendars()
-      if calendars:
-        # Loop on CalDav User Calendars to check if event exists
-        for c in calendars:
-          scal = str(c.url).split("/")
-          str_user = scal[len(scal)-3]
-          str_cal = scal[len(scal)-2]
-          # Check if CalDav calendar name or calendar name shared by another user matches
-          if str_cal == cal_name or str_cal + "_shared_by_"  in str(doc.caldav_id_url):
-            # Prepare iCalendar Event
-            # Initialise iCalendar
-            cal = Calendar()
-            cal.add('prodid', '-//pibiDAV//pibico.org//')
-            cal.add('version', '2.0')
-            # Initialize Event
-            event = Event()
-            # Fill data to Event
-            # UID  
-            event['uid'] = uidstamp
-            # SUMMARY from Subject
-            event.add('summary', doc.subject)
-            # DTSTAMP from current time
-            doc.event_stamp = datetime.now()
-            event.add('dtstamp', doc.event_stamp)
-            # DTSTART from start
-            dtstart = datetime.strptime(doc.starts_on, '%Y-%m-%d %H:%M:%S')
-            if doc.all_day:
-              dtstart = date(dtstart.year, dtstart.month, dtstart.day)
-            else:  
-              dtstart = datetime(dtstart.year, dtstart.month, dtstart.day, dtstart.hour, dtstart.minute, dtstart.second, tzinfo=madrid)
-            event.add('dtstart', dtstart)
-            # DTEND if end
-            if doc.ends_on:
-              dtend = datetime.strptime(doc.ends_on, '%Y-%m-%d %H:%M:%S')
-              if doc.all_day:
-                dtend = date(dtend.year, dtend.month, dtend.day)
-              else:  
-                dtend = datetime(dtend.year, dtend.month, dtend.day, dtend.hour, dtend.minute, dtend.second, tzinfo=madrid)
-              event.add('dtend', dtend)
-            # DESCRIPTION if any
-            if doc.description: event.add('description', doc.description)
-            # LOCATION if any
-            if doc.location: event.add('location', doc.location)
-            # CATEGORIES from event_category
-            category = _(doc.event_category)
-            event.add('categories', [category])
-            # ORGANIZER from user session
-            if not fp_user in ["Administrator", "Guest"]:
-              organizer = vCalAddress(u'mailto:%s' % fp_user)
-              organizer.params['cn'] = vText(fp_user.nextcloud_username)
-              organizer.params['ROLE'] = vText('ORGANIZER')
-              event.add('organizer', organizer)
-            # ATTENDEE if participants
-            """
-            attendee_params = { "CUTYPE"   => "INDIVIDUAL",
-                    "ROLE"     => "REQ-PARTICIPANT",
-                    "PARTSTAT" => "NEEDS-ACTION",
-                    "RSVP"     => "TRUE",
-                    "CN"       => "Firstname Lastname",
-                    "X-NUM-GUESTS" => "0" }
-            """        
-            if doc.event_participants:
-              if len(doc.event_participants) > 0:
-                for _contact in doc.event_participants:
-                  if _contact.reference_doctype in ["Contact", "Customer", "Lead"]:
-                    if _contact.reference_doctype == "Contact":
-                      email = frappe.db.get_value("Contact", _contact.reference_docname, "email_id")
-                    elif _contact.reference_doctype == "Customer":
-                      email = frappe.db.get_value("Customer", _contact.reference_docname, "email_id")
-                    elif _contact.reference_doctype == "Lead":
-                      email = frappe.db.get_value("Lead", _contact.reference_docname, "email_id")
-                    contact = vCalAddress(u'mailto:%s' % email)
-                    contact.params['cn'] = vText(_contact.reference_docname)
-                    contact.params['partstat'] = vText('NEEDS-ACTION')
-                    contact.params['rsvp'] = vText(str(bool(_contact.send_email)).upper())  
-                  elif _contact.reference_doctype == "User":
-                    if not _contact.reference_docname in ["Administrator", "Guest"]:
-                      contact = vCalAddress(u'mailto:%s' % _contact.reference_docname)
-                      contact.params['cn'] = vText(_contact.reference_docname)
-                      contact.params['partstat'] = vText('NEEDS-ACTION')
-                      contact.params['rsvp'] = vText(str(bool(_contact.send_email)).upper())
-                  else:
-                    contact = vCalAddress(u'mailto:%s' % "")
-                    contact.params['cn'] = vText(_contact.reference_docname)
-                  if _contact.participant_type:
-                    if _contact.participant_type == "Chairperson":
-                      contact.params['ROLE'] = vText('CHAIR') 
-                    elif _contact.participant_type == "Required":
-                      contact.params['ROLE'] = vText('REQ-PARTICIPANT') 
-                    elif _contact.participant_type == "Optional":
-                      contact.params['ROLE'] = vText('OPT-PARTICIPANT')
-                    elif _contact.participant_type == "Non Participant":
-                      contact.params['ROLE'] = vText('NON-PARTICIPANT')
-                  else:
-                    contact.params['ROLE'] = vText('REQ-PARTICIPANT')
-                  if contact:
-                    event.add('attendee', contact)
-            # Add Recurring events
-            if doc.repeat_this_event:
-             if doc.repeat_on:
-               if not doc.repeat_till:
-                 if doc.repeat_on.lower() == 'weekly':
-                   sday = []
-                   if doc.monday: sday.append('MO')
-                   if doc.tuesday: sday.append('TU')
-                   if doc.wednesday: sday.append('WE')
-                   if doc.thursday: sday.append('TH')
-                   if doc.friday: sday.append('FR')
-                   if doc.saturday: sday.append('SA')
-                   if doc.sunday: sday.append('SU')
-                   if len(sday) > 0:  
-                     event.add('rrule', {'freq': [doc.repeat_on.lower()], 'byday': sday})
-                   else:
-                     event.add('rrule', {'freq': [doc.repeat_on.lower()]})
-                 else:
-                   event.add('rrule', {'freq': [doc.repeat_on.lower()]})
-               else:
-                 dtuntil = datetime.strptime(doc.repeat_till, '%Y-%m-%d')
-                 dtuntil = datetime(dtuntil.year, dtuntil.month, dtuntil.day, tzinfo=madrid)
-                 if doc.repeat_on.lower() == 'weekly':
-                   sday = []
-                   if doc.monday: sday.append('MO')
-                   if doc.tuesday: sday.append('TU')
-                   if doc.wednesday: sday.append('WE')
-                   if doc.thursday: sday.append('TH')
-                   if doc.friday: sday.append('FR')
-                   if doc.saturday: sday.append('SA')
-                   if doc.sunday: sday.append('SU')
-                   if len(sday) > 0:  
-                     event.add('rrule', {'freq': [doc.repeat_on.lower()], 'byday': sday, 'until': [dtuntil]})
-                 else:
-                   event.add('rrule', {'freq': [doc.repeat_on.lower()], 'until': [dtuntil]})
-            # Add event to iCalendar 
-            cal.add_component(event)
-            # Save/Update Frappe Event
-            c.save_event(cal.to_ical())
-            doc.save()
-            frappe.db.commit()
-            # This portion makes events not saving event doc and thus not existing in database and promoting double entries
-            """
-            # Get all events in matched calendar just to inform about existing or new event
-            all_events = c.events()
-            args = {
-                "all_events": all_events,
-                "caldav_username": caldav_username,
-                "caldav_token": caldav_token,
-                "uidstamp": uidstamp
-            }
-            enqueue(method=check_event_exists, queue='long', timeout=600, now=True, **args)
-            """
-  else:
-    if doc.event_uid:
-      args = {"doc": doc}
-      #remove_caldav_event(doc)
-      enqueue(method=remove_caldav_event, queue='short', timeout=300, now=True, *args)
-      doc.caldav_id_url = doc.event_uid = doc.event_stamp = None
-      doc.save()
-      frappe.db.commit()
+  """
+    Synchronize a CalDAV event with a user.
+    Args:
+        doc (frappe.model.Document): The document representing the event.
+        method (str, optional): The synchronization method. If not provided, a method will be chosen based on the document's status.
+    Returns:
+        str: A message indicating the result of the synchronization.
+    """
+  # If the document is not set to be synchronized with CalDAV, do nothing
+  if not doc.sync_with_caldav:
+    return 'Document is not set to be synchronized with CalDAV.'
 
-def check_event_exists(all_events, caldav_username, caldav_token, uidstamp):
-  # Loop through events to check if current event exists
-  for url_event in all_events:
-    cal_url = str(url_event).replace("Event: https://", "https://" + caldav_username + ":" + caldav_token + "@")
-    req = requests.get(cal_url)
-    cal = Calendar.from_ical(req.text)
-    for evento in cal.walk('vevent'):
-      if uidstamp in str(evento.decoded('uid')):
-        # print(evento.decoded('summary'), evento.decoded('attendee'), evento.decoded('dtstart'), evento.decoded('dtend'), evento.decoded('dtstamp'))  
-        frappe.msgprint(_("Updated/Created Event in Calendar"))
-        return
+  # Fetch the user's CalDAV credentials
+  user = frappe.get_doc('User', frappe.session.user)
+  client, url, username, password = make_caldav_session(user)
+
+  # If the CalDAV session could not be created, return an error message
+  if client == 'Failed':
+    return 'Failed to create CalDAV session: ' + url
+
+  # If no method was provided, choose a method based on the document's status
+  if method is None:
+    if doc.docstatus == 1:
+      method = 'on_update'
+    elif doc.docstatus == 2:
+      method = 'on_trash'
+
+  # Perform the appropriate synchronization action based on the chosen method
+  if method == 'on_update':
+    create_or_update_event_on_caldav(doc, client)
+  elif method == 'on_trash':
+    remove_event_if_exists(doc, client)
+  else:
+    return 'Invalid method: ' + method
+
+  return 'Synchronization successful.'
+
+def create_or_update_event_on_caldav(doc, client):
+  """
+    Create or update an event on a CalDAV server.
+
+    Args:
+        doc (frappe.model.Document): The document representing the event.
+        client (caldav.DAVClient): The CalDAV client to use.
+
+    Returns:
+        str: A message indicating the result of the operation.
+  """
+  # If the document has no CalDAV ID URL, there is no calendar to update
+  # Fill CalDav URL with selected CalDav Calendar
+  doc.caldav_id_url = doc.caldav_id_calendar
+  if not doc.caldav_id_url:
+    return 'Document has no CalDAV ID URL.'
+
+  # Fetch the calendar
+  calendar = client.calendar(url=doc.caldav_id_url)
+
+  # If the calendar could not be found, return an error message
+  if not calendar:
+    return 'Failed to fetch calendar: ' + doc.caldav_id_url
+  
+  # Search for the event for events scheduled from yesterday to 30 days onwards. Not overdue
+  start_date = datetime.now() - timedelta(days=1)  # Yesterday
+  end_date = datetime.now() + timedelta(days=30)  # 30 days from now
+  events = calendar.search(start=start_date, end=end_date, event=True, expand=True)
+
+  # Try to find an existing event to update
+  for event in events:
+    # If this event matches the document's event UID, update it
+    if event.vobject_instance.vevent.uid.value == doc.event_uid:
+      # DTSTAMP from current time
+      doc.event_stamp = datetime.now()
+      event.vobject_instance.vevent.dtstamp.value = doc.event_stamp
+      # DTSTART from start
+      dtstart = datetime.strptime(doc.starts_on, '%Y-%m-%d %H:%M:%S')
+      if doc.all_day:
+        dtstart = date(dtstart.year, dtstart.month, dtstart.day)
+      else:  
+        dtstart = datetime(dtstart.year, dtstart.month, dtstart.day, dtstart.hour, dtstart.minute, dtstart.second, tzinfo=madrid) 
+      event.vobject_instance.vevent.dtstart.value = dtstart
+      # DTEND if end
+      if doc.ends_on:
+        dtend = datetime.strptime(doc.ends_on, '%Y-%m-%d %H:%M:%S')
+        if doc.all_day:
+          dtend = date(dtend.year, dtend.month, dtend.day)
+        else:  
+          dtend = datetime(dtend.year, dtend.month, dtend.day, dtend.hour, dtend.minute, dtend.second, tzinfo=madrid)
+        event.vobject_instance.vevent.dtend.value = dtend
+      # SUMMARY from subject
+      event.vobject_instance.vevent.summary.value = doc.subject
+      # DESCRIPTION if any
+      if doc.description: event.vobject_instance.vevent.description.value = doc.description
+      # LOCATION if any
+      if doc.location: event.vobject_instance.vevent.location.value = doc.location
+      # CATEGORIES from event_category
+      category = _(doc.event_category)
+      event.vobject_instance.vevent.categories.value = [category]
+      event.save()
+      return 'Event updated successfully.'
+
+  # Create uid for new events
+  uid_date = datetime.now().strftime("%Y%m%dT%H%M%S")
+  uid = 'frappe' + hashlib.md5(uid_date.encode('utf-8')).hexdigest() + '@pibico.es'
+  if not doc.event_uid:
+    doc.event_uid = uid
+  else:
+    uid = doc.event_uid
+
+  #If no matching event was found, create a new one
+  #ical_event = """
+  #  BEGIN:VCALENDAR
+  #  VERSION:2.0
+  #  PRODID:-//pibiDAV//pibico.org//EN
+  #  BEGIN:VEVENT
+  #  UID:{uid}
+  #  DTSTAMP:{timestamp}
+  #  DTSTART:{start}
+  #  DTEND:{end}
+  #  SUMMARY:{summary}
+  #  END:VEVENT
+  #  END:VCALENDAR
+  #  """.format(uid=doc.event_uid, timestamp=doc.event_stamp, start=doc.start_date, end=doc.end_date, summary=doc.event_summary)
+ 
+  #Prepare iCalendar
+  cal = Calendar()
+  #VERSION
+  cal.add('version', '2.0')
+  #PRODID
+  cal.add('prodid', '-//pibiDAV//pibico.org//')
+  # Initialize Event
+  event = Event()
+  # Fill data to Event
+  #UID
+  event['uid'] = doc.event_uid
+  # DTSTAMP from current time
+  doc.event_stamp = datetime.now()
+  event.add('dtstamp', doc.event_stamp)
+  # DTSTART from start
+  dtstart = datetime.strptime(doc.starts_on, '%Y-%m-%d %H:%M:%S')
+  if doc.all_day:
+    dtstart = date(dtstart.year, dtstart.month, dtstart.day)
+  else:  
+    dtstart = datetime(dtstart.year, dtstart.month, dtstart.day, dtstart.hour, dtstart.minute, dtstart.second, tzinfo=madrid)
+  event.add('dtstart', dtstart)
+  # DTEND if end
+  if doc.ends_on:
+    dtend = datetime.strptime(doc.ends_on, '%Y-%m-%d %H:%M:%S')
+    if doc.all_day:
+      dtend = date(dtend.year, dtend.month, dtend.day)
+    else:  
+      dtend = datetime(dtend.year, dtend.month, dtend.day, dtend.hour, dtend.minute, dtend.second, tzinfo=madrid)
+    event.add('dtend', dtend)
+  # SUMMARY from Subject
+  event.add('summary', doc.subject)
+  # DESCRIPTION if any
+  if doc.description: event.add('description', doc.description)
+  # LOCATION if any
+  if doc.location: event.add('location', doc.location)
+  # CATEGORIES from event_category
+  category = _(doc.event_category)
+  event.add('categories', [category])
+  # ORGANIZER from user session
+  fp_user = frappe.get_doc("User", frappe.session.user)
+  if not fp_user in ["Administrator", "Guest"]:
+    organizer = vCalAddress(u'mailto:%s' % fp_user)
+    organizer.params['cn'] = vText(fp_user.nextcloud_username)
+    organizer.params['ROLE'] = vText('ORGANIZER')
+    event.add('organizer', organizer)
+  # ATTENDEE if participants
+  """
+    attendee_params = {
+     "CUTYPE"   => "INDIVIDUAL",
+     "ROLE"     => "REQ-PARTICIPANT",
+     "PARTSTAT" => "NEEDS-ACTION",
+     "RSVP"     => "TRUE",
+     "CN"       => "Firstname Lastname",
+     "X-NUM-GUESTS" => "0" }
+  """        
+  if doc.event_participants:
+    if len(doc.event_participants) > 0:
+      for _contact in doc.event_participants:
+        if _contact.reference_doctype in ["Contact", "Customer", "Lead"]:
+          if _contact.reference_doctype == "Contact":
+            email = frappe.db.get_value("Contact", _contact.reference_docname, "email_id")
+          elif _contact.reference_doctype == "Customer":
+            email = frappe.db.get_value("Customer", _contact.reference_docname, "email_id")
+          elif _contact.reference_doctype == "Lead":
+            email = frappe.db.get_value("Lead", _contact.reference_docname, "email_id")
+          contact = vCalAddress(u'mailto:%s' % email)
+          contact.params['cn'] = vText(_contact.reference_docname)
+          contact.params['partstat'] = vText('NEEDS-ACTION')
+          contact.params['rsvp'] = vText(str(bool(_contact.send_email)).upper())  
+        elif _contact.reference_doctype == "User":
+          if not _contact.reference_docname in ["Administrator", "Guest"]:
+            contact = vCalAddress(u'mailto:%s' % _contact.reference_docname)
+            contact.params['cn'] = vText(_contact.reference_docname)
+            contact.params['partstat'] = vText('NEEDS-ACTION')
+            contact.params['rsvp'] = vText(str(bool(_contact.send_email)).upper())
+          else:
+            contact = vCalAddress(u'mailto:%s' % "")
+            contact.params['cn'] = vText(_contact.reference_docname)
+          if _contact.participant_type:
+            if _contact.participant_type == "Chairperson":
+              contact.params['ROLE'] = vText('CHAIR') 
+            elif _contact.participant_type == "Required":
+              contact.params['ROLE'] = vText('REQ-PARTICIPANT') 
+            elif _contact.participant_type == "Optional":
+              contact.params['ROLE'] = vText('OPT-PARTICIPANT')
+            elif _contact.participant_type == "Non Participant":
+              contact.params['ROLE'] = vText('NON-PARTICIPANT')
+          else:
+            contact.params['ROLE'] = vText('REQ-PARTICIPANT')
+          if contact:
+            event.add('attendee', contact)
+  # Add Recurring events
+  if doc.repeat_this_event:
+    if doc.repeat_on:
+      if not doc.repeat_till:
+        if doc.repeat_on.lower() == 'weekly':
+          sday = []
+          if doc.monday: sday.append('MO')
+          if doc.tuesday: sday.append('TU')
+          if doc.wednesday: sday.append('WE')
+          if doc.thursday: sday.append('TH')
+          if doc.friday: sday.append('FR')
+          if doc.saturday: sday.append('SA')
+          if doc.sunday: sday.append('SU')
+          if len(sday) > 0:  
+            event.add('rrule', {'freq': [doc.repeat_on.lower()], 'byday': sday})
+          else:
+            event.add('rrule', {'freq': [doc.repeat_on.lower()]})
+        else:
+          event.add('rrule', {'freq': [doc.repeat_on.lower()]})
+      else:
+        dtuntil = datetime.strptime(doc.repeat_till, '%Y-%m-%d')
+        dtuntil = datetime(dtuntil.year, dtuntil.month, dtuntil.day, tzinfo=madrid)
+        if doc.repeat_on.lower() == 'weekly':
+          sday = []
+          if doc.monday: sday.append('MO')
+          if doc.tuesday: sday.append('TU')
+          if doc.wednesday: sday.append('WE')
+          if doc.thursday: sday.append('TH')
+          if doc.friday: sday.append('FR')
+          if doc.saturday: sday.append('SA')
+          if doc.sunday: sday.append('SU')
+          if len(sday) > 0:  
+            event.add('rrule', {'freq': [doc.repeat_on.lower()], 'byday': sday, 'until': [dtuntil]})
+          else:
+            event.add('rrule', {'freq': [doc.repeat_on.lower()], 'until': [dtuntil]})
+
+  # Add event to iCalendar
+  cal.add_component(event)
+  # Save event
+  calendar.save_event(cal.to_ical())
+  doc.save()
+  
+  return 'Event created successfully.'
+
+def remove_event_if_exists(doc, client):
+  """
+    Remove an event from a CalDAV server if it exists.
+
+    Args:
+        doc (frappe.model.Document): The document representing the event.
+        client (caldav.DAVClient): The CalDAV client to use.
+
+    Returns:
+        str: A message indicating the result of the operation.
+  """
+  # If the document has no CalDAV ID URL, there is nothing to remove
+  if not doc.caldav_id_url:
+    return 'Document has no CalDAV ID URL.'
+
+  # Fetch the calendar
+  calendar = client.calendar(url=doc.caldav_id_url)
+
+  # If the calendar could not be found, return an error message
+  if not calendar:
+    return 'Failed to fetch calendar: ' + doc.caldav_id_url
+
+  # Search for the event
+  events = calendar.search(event=True, expand=True)
+
+  # Loop through the events
+  for event in events:
+    # If this event matches the document's event UID, remove it
+    if event.vobject_instance.vevent.uid.value == doc.event_uid:
+      event.delete()
+      return 'Event removed successfully.'
+
+  # If no matching event was found, return a message indicating this
+  return 'No matching event found.'
 
 @frappe.whitelist()
 def remove_caldav_event(doc, method=None):
@@ -516,17 +600,33 @@ def prepare_fp_event(event, cal_event):
   return event
 
 def make_caldav_session(user):
-  if user.caldav_url and user.nextcloud_username and user.nextcloud_token:
-    caldav_username = user.nextcloud_username
-    caldav_principals = user.caldav_url
-    if caldav_principals[-1] == "/":
-      caldav_url = caldav_principals + "users/" + caldav_username
-    else:
-      caldav_url = caldav_principals + "/users/" + caldav_username
-    caldav_token = get_decrypted_password('User', user.name, 'nextcloud_token', False)
-    # Set connection to caldav calendar with CalDav user credentials
-    caldav_client = caldav.DAVClient(url=caldav_url, username=caldav_username, password=caldav_token)
+    """
+    Create a CalDAV session for the given user.
+    Args:
+        user (User): The user for whom to create a CalDAV session.
+    Returns:
+        tuple: A 4-tuple containing the CalDAV client, the CalDAV URL, the username,
+            and the password. If the session could not be created, the tuple contains
+            an error message and three None values.
+    """
+    # Validate the necessary attributes
+    if not (user.caldav_url and user.nextcloud_username and user.nextcloud_token):
+        return 'Failed', None, None, None
 
-    return caldav_client, caldav_url, caldav_username, caldav_token
-  else:
-    return 'Failed', None, None, None
+    # Form the CalDAV URL
+    username = user.nextcloud_username
+    principals = user.caldav_url
+    if principals[-1] == "/":
+        url = principals + "users/" + username
+    else:
+        url = principals + "/users/" + username
+
+    # Get the decrypted password
+    password = get_decrypted_password('User', user.name, 'nextcloud_token', False)
+    if not password:
+        return 'Failed to decrypt password', None, None, None
+
+    # Set connection to caldav calendar with CalDav user credentials
+    client = caldav.DAVClient(url=url, username=username, password=password)
+
+    return client, url, username, password
