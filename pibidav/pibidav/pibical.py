@@ -327,7 +327,7 @@ def remove_caldav_event(doc, method=None):
   # Search for the event for events scheduled from yesterday to 30 days onwards. Not overdue
   start_date = datetime.now() - timedelta(days=1)  # Yesterday
   end_date = datetime.now() + timedelta(days=30)  # 30 days from now
-  events = calendar.date_search(start=start_date, end=end_date, event=True, expand=True)
+  events = calendar.date_search(start=start_date, end=end_date)
   # Loop through the events
   for event in events:
     # If this event matches the document's event UID, remove it
