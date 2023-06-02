@@ -36,7 +36,7 @@ app_include_js = "/assets/pibidav/js/pibidav.js"
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
-nc_list = ["Customer","Project","Sales Invoice","Purchase Invoice","Supplier","Event"]
+nc_list = ["Customer","Project","Sales Invoice","Purchase Invoice","Supplier","Event","Quotation","Purchase Order","Task"]
 doctype_js = {}
 for item in nc_list:
   doctype_js[item] = "public/js/dist/nc_pibidav.js"
@@ -124,8 +124,8 @@ doc_events = {
   },
   "Event": {
     "after_insert": "pibidav.pibidav.pibical.sync_caldav_event_by_user",
+    "on_update": "pibidav.pibidav.pibical.sync_caldav_event_by_user",
     "on_trash": "pibidav.pibidav.pibical.remove_caldav_event",
-    "on_update": "pibidav.pibidav.pibical.sync_caldav_event_by_user"
   }
 # 	"*": {
 # 		"on_update": "method",
@@ -142,7 +142,7 @@ scheduler_events = {
 # 		"pibidav.tasks.all"
 # 	],
   "cron": {
-    "*/5 * * * *": [
+    "*/1 * * * *": [
       "pibidav.pibidav.pibical.sync_outside_caldav"
     ]
   },

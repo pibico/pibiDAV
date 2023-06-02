@@ -7,6 +7,32 @@
   "docstatus": 0,
   "doctype": "Translation",
   "language": "es",
+  "modified": "2023-06-02 13:37:22.801164",
+  "name": "a53e476006",
+  "source_text": "Event updated successfully.",
+  "translated_text": "Evento actualizado correctamente."
+ },
+ {
+  "context": null,
+  "contributed": 0,
+  "contribution_docname": null,
+  "contribution_status": "",
+  "docstatus": 0,
+  "doctype": "Translation",
+  "language": "es",
+  "modified": "2023-06-02 13:37:47.559234",
+  "name": "41a01d7d41",
+  "source_text": "Event created successfully.",
+  "translated_text": "Evento creado satisfactoriamente."
+ },
+ {
+  "context": null,
+  "contributed": 0,
+  "contribution_docname": null,
+  "contribution_status": "",
+  "docstatus": 0,
+  "doctype": "Translation",
+  "language": "es",
   "modified": "2023-06-01 18:54:56.385374",
   "name": "54041436cf",
   "source_text": "Child Data",
@@ -6186,5 +6212,18 @@
   "name": "4c483fbcee",
   "source_text": "Child Selector",
   "translated_text": "Selector de Tablas"
+ },
+ {
+  "context": null,
+  "contributed": 0,
+  "contribution_docname": null,
+  "contribution_status": "",
+  "docstatus": 0,
+  "doctype": "Translation",
+  "language": "es",
+  "modified": "2023-06-02 15:02:30.274259",
+  "name": "38095525cd",
+  "source_text": "Synchronization successful.",
+  "translated_text": "Sincronizaci\u00f3n correcta."
  }
 ]

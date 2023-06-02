@@ -9,6 +9,7 @@ from frappe.desk.doctype.tag.tag import DocTags
 from frappe.modules.utils import get_doctype_module, get_module_app
 
 import json, time, requests, sys, hashlib
+from urllib.parse import urljoin
 
 from icalendar import Calendar, Event
 from icalendar import vCalAddress, vText, vRecur
@@ -81,10 +82,12 @@ def sync_caldav_event_by_user(doc, method=None):
   if method == 'on_update':
     create_or_update_event_on_caldav(doc, client)
   elif method == 'on_trash':
-    remove_event_if_exists(doc, client)
+    remove_caldav_event(doc)
   else:
+    frappe.msgprint(_('Invalid method: ' + method))
     return 'Invalid method: ' + method
 
+  frappe.msgprint(_('Synchronization successful.'))
   return 'Synchronization successful.'
 
 def create_or_update_event_on_caldav(doc, client):
@@ -100,8 +103,10 @@ def create_or_update_event_on_caldav(doc, client):
   """
   # If the document has no CalDAV ID URL, there is no calendar to update
   # Fill CalDav URL with selected CalDav Calendar
+  frappe.publish_progress(12, title='Event Progress', description='Synchronizing Event in NC')
   doc.caldav_id_url = doc.caldav_id_calendar
   if not doc.caldav_id_url:
+    frappe.throw(_('Document has no CalDAV ID URL.'))
     return 'Document has no CalDAV ID URL.'
 
   # Fetch the calendar
@@ -109,6 +114,7 @@ def create_or_update_event_on_caldav(doc, client):
 
   # If the calendar could not be found, return an error message
   if not calendar:
+    frappe.throw(_('Failed to fetch calendar: ' + doc.caldav_id_url))
     return 'Failed to fetch calendar: ' + doc.caldav_id_url
   
   # Search for the event for events scheduled from yesterday to 30 days onwards. Not overdue
@@ -148,6 +154,7 @@ def create_or_update_event_on_caldav(doc, client):
       category = _(doc.event_category)
       event.vobject_instance.vevent.categories.value = [category]
       event.save()
+      frappe.publish_progress(100, title='Event Progress', description='Synchronizing Event in NC')
       frappe.msgprint(_('Event updated successfully.'))
       return 'Event updated successfully.'
 
@@ -306,10 +313,12 @@ def create_or_update_event_on_caldav(doc, client):
   # Save event
   calendar.save_event(cal.to_ical())
   doc.save()
+  frappe.publish_progress(100, title='Event Progress', description='Synchronizing Event in NC')
   frappe.msgprint(_('Event created successfully.'))
   return 'Event created successfully.'
 
-def remove_event_if_exists(doc, client):
+@frappe.whitelist()
+def remove_caldav_event(doc, method=None):
   """
     Remove an event from a CalDAV server if it exists.
 
@@ -323,79 +332,32 @@ def remove_event_if_exists(doc, client):
   # If the document has no CalDAV ID URL, there is nothing to remove
   if not doc.caldav_id_url:
     return 'Document has no CalDAV ID URL.'
-
+  # Get CalDav Data from logged in user
+  fp_user = frappe.get_doc("User", frappe.session.user)
+  client, url, username, password = make_caldav_session(fp_user)  
+    
   # Fetch the calendar
   calendar = client.calendar(url=doc.caldav_id_url)
-
   # If the calendar could not be found, return an error message
   if not calendar:
     return 'Failed to fetch calendar: ' + doc.caldav_id_url
-
-  # Search for the event
-  events = calendar.search(event=True, expand=True)
-
+  # Search for the event for events scheduled from yesterday to 30 days onwards. Not overdue
+  start_date = datetime.now() - timedelta(days=1)  # Yesterday
+  end_date = datetime.now() + timedelta(days=30)  # 30 days from now
+  events = calendar.search(start=start_date, end=end_date, event=True, expand=True)
   # Loop through the events
   for event in events:
     # If this event matches the document's event UID, remove it
     if event.vobject_instance.vevent.uid.value == doc.event_uid:
       event.delete()
+      frappe.msgprint(_('Event removed successfully'))
       return 'Event removed successfully.'
 
   # If no matching event was found, return a message indicating this
+  frappe.throw(_('No matching event found.'))
   return 'No matching event found.'
 
 @frappe.whitelist()
-def remove_caldav_event(doc, method=None):
-  if doc.sync_with_caldav and doc.event_uid:
-    # Get CalDav Data from logged in user
-    fp_user = frappe.get_doc("User", frappe.session.user)
-    # Continue if CalDav Data exists on logged in user
-    if fp_user.caldav_url and fp_user.nextcloud_username and fp_user.nextcloud_token:
-      uidstamp = doc.event_uid
-      cal_name = None
-      if doc.caldav_id_url:
-        ucal = str(doc.caldav_id_url).split("/")
-        # Get Calendar Name from URL as last portion in URL
-        cal_name = ucal[len(ucal)-2]
-      
-      # Get CalDav URL, CalDav User and Token
-      if fp_user.caldav_url[-1] == "/":
-        caldav_url = fp_user.caldav_url + "users/" + fp_user.nextcloud_username
-      else:
-        caldav_url = fp_user.caldav_url + "/users/" + fp_user.nextcloud_username
-      caldav_username = fp_user.nextcloud_username
-      caldav_token = get_decrypted_password('User', frappe.session.user, 'nextcloud_token', False)
-      # Set connection to caldav calendar with CalDav user credentials
-      caldav_client = caldav.DAVClient(url=caldav_url, username=caldav_username, password=caldav_token)
-      
-      cal_principal = caldav_client.principal()
-      # Fetching calendars from server
-      calendars = cal_principal.calendars()
-      doExists = False
-      if calendars:
-        # Loop on CalDav User Calendars to check if event exists
-        for c in calendars:
-          scal = str(c.url).split("/")
-          str_user = scal[len(scal)-3]
-          str_cal = scal[len(scal)-2]
-          # Check if CalDav calendar name or calendar name shared by another user matches
-          if str_cal == cal_name or str_cal + "_shared_by_"  in str(doc.caldav_id_url):
-            # Get all events in matched calendar just to inform about existing or new event
-            all_events = c.events()
-            # Loop through events to check if current event exists
-            for url_event in all_events:
-              cal_url = str(url_event).replace("Event: https://", "https://" + caldav_username + ":" + caldav_token +"@")
-              req = requests.get(cal_url)
-              cal = Calendar.from_ical(req.text)
-              for evento in cal.walk('vevent'):
-                if uidstamp in str(evento.decoded('uid').decode('utf-8').lower()):
-                  doExists = True
-                  break
-              if doExists:
-                url_event.delete()
-                frappe.msgprint(_("Deleted Event in CalDav Calendar ") + str(c.name))
-                break
-
 def sync_outside_caldav():
   # Get All Users with CalDav Credentials
   caldav_users = frappe.get_list(
@@ -437,7 +399,7 @@ def sync_outside_caldav():
                     fields = ['*'],
                     filters = [['docstatus', '<', 2], ['event_uid', '=', evento.decoded('uid').decode("utf-8").lower()]]
                   )
-                  print(evento.decoded('uid').decode("utf-8").lower(), len(fp_event))
+                  #print(evento.decoded('uid').decode("utf-8").lower(), len(fp_event))
                   
                   if fp_event:
                     # Check if dtstamp has changed meaning it has been updated on NextCloud   
@@ -454,7 +416,6 @@ def sync_outside_caldav():
                     new_cal_event.caldav_id_url = str(c.url)
                     new_event = prepare_fp_event(new_cal_event, evento)
                     new_event.save()
-                    frappe.db.commit()
                     #print(new_event.as_dict())
                     
 def prepare_fp_event(event, cal_event):
