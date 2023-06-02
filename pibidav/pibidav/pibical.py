@@ -148,6 +148,7 @@ def create_or_update_event_on_caldav(doc, client):
       category = _(doc.event_category)
       event.vobject_instance.vevent.categories.value = [category]
       event.save()
+      frappe.msgprint(_('Event updated successfully.'))
       return 'Event updated successfully.'
 
   # Create uid for new events
@@ -305,7 +306,7 @@ def create_or_update_event_on_caldav(doc, client):
   # Save event
   calendar.save_event(cal.to_ical())
   doc.save()
-  
+  frappe.msgprint(_('Event created successfully.'))
   return 'Event created successfully.'
 
 def remove_event_if_exists(doc, client):
