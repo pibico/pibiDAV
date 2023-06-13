@@ -283,6 +283,9 @@ def upload_file_to_nc(doc, method=None):
   docs_excluded = frappe.get_value("NextCloud Settings", "NextCloud Settings", "nc_doctype_excluded")
   docs_included = frappe.get_value("NextCloud Settings", "NextCloud Settings", "nc_doctype_included")
   nc_url = frappe.get_value("NextCloud Settings", "NextCloud Settings", "nc_backup_url")
+  if not nc_url:
+    return
+    
   if not nc_url[-1] == '/': nc_url += '/'
   ## Check the file attached to parent docType and its inclusion in the list 
   dt = doc.attached_to_doctype
