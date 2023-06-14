@@ -26,6 +26,8 @@ madrid = timezone('Europe/Madrid')
 @frappe.whitelist()
 def get_calendar(nuser):
   fp_user = frappe.get_doc("User", nuser)
+  if not fp_user.get('enable_nextcloud'):
+    return
   caldav_client, caldav_url, caldav_username, caldav_token = make_caldav_session(fp_user)
   if caldav_client == "Failed":
     frappe.throw(_("calDAV Connection Failed"))
@@ -65,8 +67,8 @@ def sync_caldav_event_by_user(doc, method=None):
 
   create_or_update_event_on_caldav(doc)
   
-  frappe.msgprint(_('Synchronization successful.'))
-  return 'Synchronization successful.'
+  #frappe.msgprint(_('Synchronization successful.'))
+  #return 'Synchronization successful.'
 
 def create_or_update_event_on_caldav(doc, method=None):
   """
@@ -79,11 +81,14 @@ def create_or_update_event_on_caldav(doc, method=None):
     Returns:
         str: A message indicating the result of the operation.
   """
+  
+  user = frappe.get_doc('User', frappe.session.user)
+  if not user.get('enable_nextcloud'):
+    return
   # If the document has no CalDAV ID URL, there is no calendar to update
   # Fill CalDav URL with selected CalDav Calendar
   frappe.publish_progress(12, title='Event Progress', description='Synchronizing Event in NC')
   # Fetch the user's CalDAV credentials
-  user = frappe.get_doc('User', frappe.session.user)
   client, url, username, password = make_caldav_session(user)
   # If the CalDAV session could not be created, return an error message
   if client == 'Failed':
@@ -317,6 +322,9 @@ def remove_caldav_event(doc, method=None):
     return 'Document has no CalDAV ID URL.'
   # Get CalDav Data from logged in user
   fp_user = frappe.get_doc("User", frappe.session.user)
+  if not fp_user.get('enable_nextcloud'):
+    return
+    
   client, url, username, password = make_caldav_session(fp_user)  
   
   if not client:
