@@ -318,6 +318,10 @@ def remove_caldav_event(doc, method=None):
   # Get CalDav Data from logged in user
   fp_user = frappe.get_doc("User", frappe.session.user)
   client, url, username, password = make_caldav_session(fp_user)  
+  
+  if not client:
+    frappe.throw(_('User has not calDAV credentials'))
+    return 'User has not calDAV credentials'
     
   # Fetch the calendar
   calendar = client.calendar(url=doc.caldav_id_url)
