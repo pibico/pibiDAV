@@ -9,7 +9,7 @@
  "doctype": "Workspace",
  "extends_another_page": 0,
  "hide_custom": 0,
- "icon": "file",
+ "icon": "milestone",
  "idx": 0,
  "is_default": 0,
  "is_standard": 1,
@@ -86,8 +86,8 @@
    "type": "Link"
   }
  ],
- "modified": "2022-05-08 19:59:06.587831",
- "modified_by": "fad.pibico@gmail.com",
+ "modified": "2023-06-20 21:26:27.256536",
+ "modified_by": "Administrator",
  "module": "Pibidav",
  "name": "pibiDAV",
  "owner": "fad.pibico@gmail.com",

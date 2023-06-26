@@ -1,0 +1,507 @@
+﻿17-Read Only,17-Solo Lectura
+31-Upload and Edit,31-Subida y Edición
+4-Upload Only,4-Subida Unicamente
+Abbreviation,Abreviatura
+About,Acerca de
+About Us Settings,Ajustes Página Acerca de
+Accounting,Financiero
+"Accounts, Invoices, Taxation, and more.","Cuentas, Facturas, Tasas y más."
+Action If Same Rate is Not Maintained,Acción si no se mantiene la misma Tasa
+Active,Activo
+Activity Type,Identificación Actividad
+Add / Remove Columns,Añade / Elimina Columnas
+Add a Filter,Añade Filtro
+Add Blog Category,Añadir Categoria de Blog
+Add Tags,Añade Etiquetas
+AI Extract,Extraído IA
+Alert Channels,Canales de Alerta
+Alert Date,Fecha de Alerta
+Alert Gap,Intervalo sin Alerta
+Alert Log,Registro de Alertas
+Alert Threshold,Umbrales de Alerta
+Alerts Active,Alertas Activas
+Alerts Received,Alertas Recibidas
+Answered,Respondido a Cliente
+Apply Filters,Aplicar Filtros
+Assets,Bienes/Activos
+"Assets, Depreciations, Repairs, and more.","Activos, Depreciaciones, Reparaciones y más."
+Assigned,Asignado
+Assistant Section,Asistente
+Attachment Files,Ficheros Adjuntos
+Attachment Item,Ficheros Controlados
+Attended,Asistió
+Backup Now,Respaldo Ahora
+Backup public and private files along with the database and site config,"Respaldo con base de datos, archivos públicos, privados y site_config.json"
+Bank Reconciliation Tool,Herramienta de Reconciliación Bancaria
+Bill for Rejected Quantity in Purchase Invoice,Factura por cantidad rechazada en la Factura de Compra
+Birthdays,Cumpleaños
+Blanket Order,Pedido Marco
+Blogger,Bloguero
+"Blogs, Website View Tracking, and more.","Blogs, Seguimiento de Vistas Web y más."
+BOM,LdM
+Box,Caja
+Build,Desarrollador
+by Email,Por Email
+by SMS,por SMS
+CalDav Calendar,Calendario CalDav
+CalDav ID Calendar,Calendario CalDav
+CalDav ID URL,ID URL CalDav
+Calendar,Calendario
+Can Submit,Puede Validar
+Cash Flow Statement,Estado de Tesorería
+Chairperson,Presidente
+Change Abbreviation,Cambiar Abreviatura
+Channels,Canales
+Chart of Accounts,Plan Contable
+Check Addon,Extensión NC
+Check Credentials,Comprueba Credenciales
+Check Stock Projected Qty,Comprobar la Cantidad de Estocaje Proyectado
+Child Data,Datos de Tabla
+Child Selector,Selector de Tablas
+Column Width,Ancho de Columna
+Commented,Comentado por Cliente
+Comments Closed,Comentarios Cerrados
+Committed Date,Fecha Contrato Proveedor
+Communication Date,Fecha Comunicación
+Company Fax,Fax Empresa
+Company Phone,Teléfono Empresa
+Company Website,Web Empresa
+Complete by,Completar el
+Configure Account Settings,Configura los Ajustes de Finanzas
+Configure Buying Settings.,Configurar los Ajustes de Compras.
+Configure Columns,Configurar Columnas
+Configure Selling Settings.,Configurar los Ajustes de Ventas.
+Configure the action to stop the transaction or just warn if the same rate is not maintained.,Configurar la transacción de paro o sólo advertir de que no se mantiene la misma tasa
+Confirm action,Confirma la acción
+Connections,Conexiones
+Consequent Event,Evento Consecuente
+Content Phase,Fase de Creación de Contenido
+Contract Number,Numero Contrato
+Copy to Clipboard,Copiar al Portapapeles
+Create,Crear
+Create a Customer,Crear un Cliente
+Create a Fixed Asset Item,Crear un Artículo de Activo Fijo
+Create a Material Request,Crear una Solicitud de Material
+Create a Material Transfer Entry,Crear una Entrada de Transferencia de Material
+Create a Product,Crear un Producto
+Create a Quotation,Crear una Oferta
+Create a Supplier,Crear un Proveedor
+Create an Asset,Crear un Activo
+Create an Asset Category,Crear una Categoría de Activos
+Create and Send Quotation,Crear y Enviar Oferta
+Create Blogger,Crear Bloguero
+Create Department,Crear Departamento
+Create Designation,Crear Puesto
+Create Entry,Crear Entrada
+Create Holiday List,Crear Listado de Vacaciones
+Create in NC,Crear en NC
+Create Income Tax Slab,Crear Tabla IRPF
+Create Lead,Crear Iniciativa
+Create Leave Allocation,Crear Solicitud de Ausencia
+Create Leave Application,Crear Peticion de Ausencia
+Create Leave Type,Crear Tipo de Ausencia
+Create NC Group,Crear Grupo NC
+Create Opportunity,Crear Oportunidad
+Create Payroll Period,Crear Período de Nómina
+Create Salary Component,Crear Componente Salarial
+Create Salary Structure,Crear Estructura Salarial
+Create Your First Purchase Invoice ,Crear la primera Factura de Venta
+Create your first Purchase Order,Crear tu primera Orden de Compra
+Create Your First Sales Invoice ,Crear la primera Factura de Venta
+Create your first Sales Order,Crear tu primer Pedido de Venta
+Customer Comments,Comentarios Cliente
+Customer Date,Fecha Contractual Cliente
+Customer name,Denominación Cliente
+Customer Number,Numero Cliente
+Customer Penalty,Penalizado Cliente
+Customer Submission,Fecha Entrega Cliente
+Customer Updated,Fecha Actualizada Cliente
+Customer Weight,Peso Cliente
+Dashboard,Panel Control
+Data Import,Importación de Datos
+Default In-Transit Warehouse,Almacén en Tránsito por Defecto
+Deleted Event in CalDav,Borrado Evento en CalDav
+Deleted Event in CalDav Calendar,Borrado el Evento en Calendario CalDav 
+Deliver To,Transmitir A
+Deliverable,Entregable
+Deliverable Type,Tipo Entregable
+Deliverables,Entregables
+Deliverables & Settings,Entregables
+Delivery Item,Documentos Entrega
+Delivery Note,Albaran
+Delivery Purpose,Propósito de Envío
+Digits to substitute with abbreviation,Digitos Plantilla a sustituir con Abreviatura
+Disable NC,Desactiva NC
+Discipline,Especialidad
+Dispatch Address Name,Dirección de Entrega
+Distribution,Distribución
+Do you want to save empty doc to prompt?,Quieres gravar primero para ejecutar prompts?
+"DocField Names selected for tagging, comma separated without spaces","Nombre de campo elegido para etiquetado, separado por comas y sin espacios"
+DocFields to use from selected DocType separated by commas without spaces,Cadena de DocFields del DocType elegido a usar separados por comas y sin espacios
+Docs Controller,Control Documentacion
+Docs User,Usuario Documentacion
+DocType Selection,Selección de DocTypes
+DocType Selector,Selector DocTypes
+Document Number,Numero Documento
+Document Responsible,Responsable del Documento
+Document Submission,Transmisión de Documento
+Documentation,Documentación
+Drag and drop files here or upload from,Arrastra y suelta los archivos aquí o súbelos desde
+Due to MicroTemplating never use ' simple quotes in the html code.,Debido al uso de MicroTemplates nunca use comillas simples en el código html
+Edit Filters,Editar Filtros
+Edition,Edición
+Email alert,Alerta por Email
+Email Recipients,Receptores Email
+Employee Grievance,Queja de Empleado
+Employee Onboarding,Oferta de Empleo
+Employee Records to be created by,Los registros de Empleados se crean por
+"Employee, Leaves, and more.","Empleado, Ausencias y más"
+Employees Working on a Holiday,Empleados trabajando en festivo
+Enable NC,Activa NC
+Enable Website Tracking,Activar Seguimiento Web
+Error Creating NC Group,Error creando Grupo en NC
+Event created successfully.,Evento creado satisfactoriamente.
+Event removed successfully.,Evento eliminado correctamente.
+Event Stamp,Sello Evento
+Event UID,UID Evento
+Event updated successfully.,Evento actualizado correctamente.
+"Exact DocType Name wihout quotes, whithout spaces and separated by comma (i.e. Sales Invoice,Purchase Order)",Nombre de DocType Exacto sin espacios y separado por comas
+Feed Data,Datos a Alimentar
+Feeding Section,Sección Asistencia
+Fields to Tag,Campos para Etiquetado
+File Category,Categoría Archivado
+File List,Lista Archivos
+File Structure,Estructuras Carpetas
+Filename,Nombre Archivo
+filter,filtro
+Finally Approved,Aprobado Cliente
+First Select your NC Destination Folder,Primero Selecciona tu Carpeta Destino NC
+Fixed Asset Defaults,Configuración de Activos
+Folder Path,Ruta de Carpeta
+Folder Set,Plantillas Carpetas
+Follow Up Process,Seguimiento
+Free,Libre
+From Opportunity,Desde Oportunidad
+Generate Vcard Book,Generar Libro de Contactos
+Go to Page,Ir a la Página
+GPT Response,Respuesta GPT
+Grievance Type,Tipo de Queja
+Hero with Right Image,Heroe con Imagen a la Derecha
+Hour,Hora
+HR Settings,Configuración de RRHH
+HTML Code,Código HTML
+ID Number,Número ID
+"If checked, Rejected Quantity will be included while making Purchase Invoice from Purchase Receipt.","Si se marca, la cantidad rechazada será incluida al hacerse la factura de Compra desde el Albarán de Compra."
+Import .eml,Importar .eml
+Import .msg,Importar .msg
+Import vCard,Importar vCard
+Importing Contacts,Importando Contactos
+Inclusions,Inclusiones
+Integrate vCard Book,Integrar libro vCard
+Internal Comments,Comentarios Internos
+Introduction to Assets,Introducción a los Activos
+Introduction to Buying,Introducción a Compras
+Introduction to CRM,Introducción al CRM
+Introduction to Selling,Introducción a Ventas
+Introduction to Website,Introducción al Sitio Web
+"Inventory, Warehouses, Analysis, and more.","Inventario, Almacenamientos, Análisis y Más"
+Invitation Accepted,Invitación Aceptada
+Invitations,Invitaciones
+is Group,es Carpeta
+Is HTML,es HTML
+Is SuperStructure,Es Superestructura
+Is Translation,Es Traducción?
+Issuer Native,Edición Nativa
+Item,Producto
+Item Name,Nombre del Producto
+Language,Idioma
+Last Seen,Ultima Actividad
+"Lead, Opportunity, Customer, and more.","Iniciativa, Oportunidad, Cliente y más."
+Leaderboard,Cuadro de Honor
+Learn about Web Pages,Aprender sobre Páginas Web
+Leave Application,Petición de Ausencia
+Let's Set Up the Assets Module.,Configurar el Módulo de Activos.
+Let's Set Up the Buying Module.,Configuremos el Módulo de Compras
+Let's Set Up the Human Resource Module.,Configuremos el módulo de RRHH
+Let's Set Up the Payroll Module.,Configurar el Módulo de Nómina
+Let's Set Up the Selling Module.,Configuremos el Módulo de Ventas.
+Let's Set Up the Stock Module.,Configuremos el Módulo de Productos
+Let's Set Up Your Accounts and Taxes.,Configuremos Cuentas e Impuestos
+Let's Set Up Your CRM.,Configurar el CRM
+Let's Set Up Your Website.,Configuremos su Sitio Web
+Lets create a Tax Template for Sales ,Crear una Plantilla de Impuestos en Ventas
+Let’s create a stock opening entry,Creemos una entrada de apertura de stock
+Let’s create your first  warehouse ,Creemos tu primer almacen
+Library,Biblioteca
+LifeCycle Status,Ciclo de Vida
+Like,Contiene
+List,Lista
+List of DocFields separated by commas without spaces to produce automatic file tagging in FP and NC,Lista de DocField separados por comas y sin espacios para asignar etiquetas automáticas en FP y NC a los archivos
+List View,Vista Lista
+Lists,Listados
+Location,Localización
+Lower Value,Valor Inferior
+Mail Signature,Firma de Correo
+Make a Sales Tax Template,Crear una plantilla de Impuestos en Ventas
+Manage eMails,Gestión eMails
+Manage Stock Movements,Gestionar movimientos de Artículos
+Masters,Maestros
+Minute of Meeting,Acta de Reunión
+Minutes Section,Registros/Actas
+Modules,Módulos
+Month,Mes
+MQTT Settings,Ajustes MQTT
+My Device,Mi Equipo
+My Profile,Mi Perfil
+My Settings,Mis Ajustes
+Name,ID
+name,ID
+Native,Original Nativo
+Native Files,Archivos Originales
+Native multipart,Multiparte nativo
+Native pdf,pdf Nativo
+NC Commands,Ordenes NC
+NC Doctypes Excluded,DocTypes Excluidos de NC
+NC Doctypes Included,DocTypes incluidos para NC
+NC Enable,Activa NC
+NC File List,Lista Archivos NC
+NC File Upload,Subir Archivos a NC
+NC Folder,Carpeta NC
+NC Folder Creation,Creación de Carpetas en NC
+NC Folder Internal Link,Enlace Interno Carpeta NC
+NC Folder Share Link,Enlace Compartido Carpeta NC
+NC Group Already Exists,Grupo NC ya Existe
+NC Group Created,Grupo NC Creado
+NC Path,Ruta NC
+NC Private Link,Enlace privado NC
+NC Share Link,Enlace Compartido NC
+New Chart,Nuevo Gráfico
+New Shortcut,Nuevo Atajo
+NextCloud Backup Credentials,Credenciales NextCloud Backup
+NextCloud Backup Enable,Activa NextCloud Backup
+NextCloud Credentials,Credenciales NextCloud
+NextCloud Credentials are correct,Credenciales NC correctas
+NextCloud Settings,Ajustes NextCloud
+No contacts selected.,No hay contactos seleccionados.
+No message associated,No hay asociado ningún mensaje
+Non Participant,No Participante
+OCR Extract,Extraído OCR
+OCR Extraction in progress,Extracción OCR en ejecución
+Off From Time,Fuera Desde
+Off To Time,Fuera Hasta
+Only one recipient can be provided,Solo se puede proporcionar un destinatario
+Optional,Opcional
+Overview,Información General
+Page Title,Título de Página
+Parent File Structure,Nodo Padre
+Parent Folder,Carpeta Padre
+Parent Path,Ruta Padre
+Parties,Participantes
+Pending Close,Comentarios pendientes cierre
+Phase,Fase
+Please provide a proper prompt,Por favor proporciona un prompt adecuado
+PO Name,Denominación Orden Compra
+prepare eMail,Preparar eMail
+Print Language,Idioma de Impresión
+Production Phase,Fase de Producción
+Production Unit,Unidad Producida
+"Products, Purchases, Analysis, and more.","Productos, Compras, Análisis y más"
+Profile,Perfil
+Published,Publicado
+Purchase an Asset Item,Comprar un Activo
+Purchase Receipt,Albarán de Compra
+QR Key,Llavero RFID/QR
+QR Keys,Llaveros RFID
+QRKey,Llave RFID/QR
+Qualification Stamp,Sello Calificación
+Queued for Backup. It may take a long time depending on your backup files size. Rest Easy!!!,Copia de Respaldo en cola. Puede llevar mucho tiempo dependiendo del tamaño de los archivos
+Quick Access,Acceso Rápido
+Quotation,Oferta
+Rate per Minute,Tasa por minuto
+Raw File,Archivo Fuente
+Rebuild Tree,Reconstruir Árbol
+Recipient,Destinatario
+Recreate,Recrea
+Recreate Folders in NC,Recrea las carpetas en NC
+Refresh Files List,Refrescar Indice NC
+Reminders,Recordatorios
+Rendered HTML,HTML
+Report,Informe
+Report an Issue,Informar de una Incidencia
+Report View,Vista Informe
+Reports & Masters,Informes y Maestros
+Request for Quotation,Petición de Oferta
+Required,Requerido
+Reset Customizations,Eliminar Personalizaciones
+Reset to default,Resetear por Defecto
+Restrict Backdated Leave Application ,Restringir Solicitudes de Vacaciones Retroactivas
+Retail,Al por menor
+Retirement Age,Edad de Jubilación
+Review Chart of Accounts,Revisar Plan Contable
+Review Process,Proceso de Revision
+Review Stock Settings,Revisar los Ajustes de Productos
+RFI Answer,Respuesta Solicitud Información
+RFI Answered,Solicitud Información Respondida
+RFI Closed,Solicitud de Información Cerrada
+RFI Pending,Solicitud Informacion Pendiente
+RFI Request,Solicitud Informacion
+RFID Tag,Control Llaves Tag
+Role Allowed to Override Stop Action,Rol permitido para sobreescribir Acción de Paro
+Root Dir Name,Nombre Directorio Raiz
+"Salary, Compensation, and more.","Salrios, Compensaciones y más"
+Sales Order,Pedido de Venta
+Save Customizations,Guardar Personalizaciones
+Secret,Clave
+Seed,Germen
+Select NC Folder,Elige Carpeta NC
+Select NextCloud Destination Folder,Elige la carpeta de destino en NextCloud
+Send Email,Enviar Correo
+Send Invitation,Enviar Invitación
+Send Leave Notification,Enviar Notificación de Ausente
+Sensor Log,Registro de Sensores
+Sensor Readings,Lecturas de Sensor
+Sent Or Received,Enviado o Recibido
+Serial,N.Serie
+Set all private,Establecer todos privados
+Set all public,Establecer todos públicos
+Set the frequency for holiday reminders,Establecer la frecuencia de los recordatorios de Vacaciones
+Set up your Warehouse,Configurar tu Almacenamiento
+Settings Section,Sección de Ajustes
+Setup a Warehouse,Configurar un Almacenamiento
+Share Link,Enlace Compartido
+Share URL,Comparte URL
+Sharing Option,Opción Compartir
+Shipping Address Name,Dirección de Despacho
+Shortener,Recorte
+Show Form Tour,Mostrar un Tour en Formulario
+Show Preview,Previsualización
+Show Saved,Mostrar Guardados
+Signature Item,Firmas de Correo
+Signature Picture,Imagen Firma
+SMS alert,Alerta por SMS
+SMS Recipients,Receptores SMS
+Source Lang,Idioma Origen
+Spain,España
+Standard with Numbers,Estándar con Numeración
+Standard Working Hours,Horas de Trabajo Normales
+Start and End Dates,Control Actividad
+Stock,Productos
+Submitted,Transmitido
+Summarization,Sumarización
+Superseeded,Superado
+Supplier Attachments,Archivos de Proveedor
+Supplier Delivery,Fecha Entrega Proveedor
+Supplier Number,Numero Proveedor
+Supplier Penalty,Penalizado Proveedor
+Supplier Weight,Peso Proveedor
+Sure you want to ask chatGPT?,Seguro de preguntar a chatGPT
+Sync with CalDav,Sincronizar con CalDav
+Synchronization successful.,Sincronización correcta.
+System User,Usuario del Sistema
+Take a walk through Stock Settings,Dar un paseo por los Ajustes de Productos
+Target Lang,Idioma Destino
+Team Members Subtitle,Subtítulos Miembros del Equipo
+This is based on Alerts received from this Sensor,Mapa basado en Alertas recibidas desde este Sensor
+Timesheet,Parte de Trabajo
+to Customer,Envio a Cliente
+To Customer,A Cliente
+to External,Envio a Terceros
+To ReIssue,A reeditar
+To Review,A Revisar
+Toggle Full Width,Alterna Vista Completa
+Toggle Theme,Ajustar Aspecto
+Transcription Language,Idioma Destino
+Tree,Árbol
+Unit of Measure (UOM),Unidad de Medida (UdM)
+UOM,UdM
+Update Settings,Actualizar Ajustes
+Update Stock Opening Balance,Actualizar el Balance de Apertura de Estocaje
+Updated Date,Fecha actualizada Proveedor
+Updated/Created Event in Calendar,Actualizado/Creado un Evento de Calendario 
+Upload to NextCloud,Subir a NextCloud
+Uploaded To NC,Subido a NC
+Uploaded To NextCloud,Subido a NextCloud
+Upper Value,Valor Superior
+User Forum,Foro de Usuarios
+User Prompt,Prompt de Usuario
+Validated,Validado
+vCard Create,Crear vCard
+vCard Download,Descargar vCard
+vCard Integration,Integración vCard
+vCard QR Code,Código QR vCard
+vCard Text,Texto vCard
+Vendor,Proveedor
+Watch Tutorial,Ver el Tutorial
+Watch Video,Mirar el Video
+Web Page,Página Web
+Work Anniversaries ,Aniversarios de Trabajo
+Work Place,Area de Control
+WorkCenter,Area de Control
+WorkCenter Occupancy,Ocupacion Area
+WorkCenter Schedule,Horario Area
+Workship,Area de Control
+Workship Occupancy,Ocupación de Área
+Workship Schedule,Horario Area
+You can only reply to one message at a time,Sólo puedes responder a un mensaje de cada vez
+You have selected a file and not a folder,Se ha seleccionado un archivo y no una carpeta
+You must select one message,Debes elegir un mensaje
+Transaction Feed,Alimentar Transacción
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,

@@ -215,7 +215,7 @@ user_data_fields = [
 # 	"pibidav.auth.validate"
 # ]
 
-fixtures = ['Role Profile', 'Role', 'Custom Field', 'Client Script', 'Property Setter', 'Translation']
+fixtures = ['Role Profile', 'Role', 'Custom Field', 'Client Script', 'Property Setter']
 
 treeviews = ['Folder Set']
 
