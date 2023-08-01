@@ -109,8 +109,8 @@ def create_or_update_event_on_caldav(doc, method=None):
     return 'Failed to fetch calendar: ' + doc.caldav_id_url
   
   # Search for the event for events scheduled from yesterday to 30 days onwards. Not overdue
-  start_date = datetime.now() - timedelta(days=1)  # Yesterday
-  end_date = datetime.now() + timedelta(days=30)  # 30 days from now
+  start_date = datetime.now() - timedelta(days=720)  # Yesterday
+  end_date = datetime.now() + timedelta(days=720)  # 30 days from now
   events = calendar.date_search(start=start_date, end=end_date)
 
   # Try to find an existing event to update
