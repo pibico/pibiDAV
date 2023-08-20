@@ -2,14 +2,40 @@
  {
   "docstatus": 0,
   "doctype": "Client Script",
+  "dt": "Item",
+  "enabled": 1,
+  "modified": "2021-09-28 18:47:38.867398",
+  "name": "Item-Form",
+  "parent": null,
+  "parentfield": null,
+  "parenttype": null,
+  "script": "frappe.ui.form.on(\"Item\", \"onload\", function(frm) {\n  frm.set_query(\"item_group\", function() {\n    return {\n            \"filters\": {\n                \"is_group\": \"0\",\n            }\n    };\n  });\n});",
+  "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
   "dt": "Event",
   "enabled": 1,
-  "modified": "2022-05-10 17:28:13.494705",
+  "modified": "2023-06-02 22:41:12.402740",
   "name": "Event-Form",
   "parent": null,
   "parentfield": null,
   "parenttype": null,
-  "script": "frappe.ui.form.on('Event', {\n onload(frm) {\n   if (frm.doc.sync_with_caldav) {\n\t  sync_caldav(frm);    \n   }\n   frm.fields_dict.minute_item.grid.get_field('consequent_event').get_query = function(doc, cdt, cdn) {\n     var child = locals[cdt][cdn];\n     //console.log(child);\n     return {    \n       filters:[\n         ['name', '!=', doc.name],\n         ['status', '!=', 'Closed']\n       ]\n     };\n   };\n   frm.add_custom_button(__(\"Send Invitation\"), function() {\n      //console.log(__(\"Your Code here\"));\n      Invitations();\n\t}, __(\"Invitations\"));\n },\n refresh(frm) {\n   if (frm.doc.sync_with_caldav) {\n\t  sync_caldav(frm);    \n   }\n },\n sync_with_caldav(frm) {\n   if (frm.doc.sync_with_caldav) {\n      sync_caldav(frm);\n   }\n   frm.add_custom_button(__(\"Send Invitation\"), function() {\n      //console.log(__(\"Your Code here\"));\n      Invitations();\n\t}, __(\"Invitations\"));\n },\n validate(frm) {\n   if (frm.doc.sync_with_caldav) {\n     if (frm.doc.caldav_id_calendar === undefined) {\n       msgprint(__(\"Please Select a CalDav Calendar\"));\n       frappe.validated = false;\n     }       \n   }     \n }\n});\nfunction sync_caldav(frm) {\n  if (frappe.session.user != 'Administrator') {\n    frappe.call({\n      method: \"pibidav.pibidav.pibical.get_calendar\",\n      args: {\n        nuser: frappe.session.user,\n      },\n      callback(r) {\n        var data = r.message;\n        var options = [];\n        if (data.length > 0) {\n          for (var i = 0; i < data.length; i++) {\n            options.push({\n              'label': data[i].name,\n              'value': data[i].url\n            });\n\t      }\n        }     \n        frm.set_df_property(\"caldav_id_calendar\", \"options\", options);\n        frm.set_value(\"caldav_id_calendar\", options[data.length-1].value);\n        frm.refresh_field(\"caldav_id_calendar\");\n      }\n    });\n  }      \n}\nfunction Invitations() {\n  var d = new frappe.ui.Dialog({\n    title: __('Invitations'),\n\tfields: [\n\t  {\n\t    fieldtype: 'HTML',\n\t\tfieldname: 'text_area'\n\t  }\n\t],\n\tprimary_action_label: __('Send Email'),\n\tprimary_action: () => console.log(__('Send Email'))\n  });\n\n  d.fields_dict.text_area.$wrapper.html('<div style=\"height: 100;\"><h4>In Progress - Preparing Invitation Communication</h4></div>');\n  d.show();\n}",
+  "script": "frappe.ui.form.on('Event', {\n onload(frm) {\n   if (frm.doc.sync_with_caldav) {\n\t  sync_caldav(frm);    \n   }\n   frm.fields_dict.minute_item.grid.get_field('consequent_event').get_query = function(doc, cdt, cdn) {\n     var child = locals[cdt][cdn];\n     //console.log(child);\n     return {    \n       filters:[\n         ['name', '!=', doc.name],\n         ['status', '!=', 'Closed']\n       ]\n     };\n   };\n   frm.add_custom_button(__(\"Send Invitation\"), function() {\n      //console.log(__(\"Your Code here\"));\n      Invitations();\n\t}, __(\"Invitations\"));\n },\n refresh(frm) {\n   if (frm.doc.sync_with_caldav) {\n\t  sync_caldav(frm);\n   }\n },\n sync_with_caldav(frm) {\n   if (frm.doc.sync_with_caldav) {\n      sync_caldav(frm);\n   } else {\n     frm.set_value(\"caldav_id_url\", null);\n     frm.refresh_field(\"caldav_id_url\");\n     frm.set_value(\"event_uid\", null);\n     frm.refresh_field(\"event_uid\");\n     frm.set_value(\"event_stamp\", null);\n     frm.refresh_field(\"event_stamp\");\n     frm.save();  \n   }\n   frm.add_custom_button(__(\"Send Invitation\"), function() {\n      //console.log(__(\"Your Code here\"));\n      Invitations();\n\t}, __(\"Invitations\"));\n },\n validate(frm) {\n   if (frm.doc.sync_with_caldav) {\n     if (frm.doc.caldav_id_calendar === undefined) {\n       msgprint(__(\"Please Select a CalDav Calendar\"));\n       frappe.validated = false;\n     }       \n   }     \n }\n});\nfunction sync_caldav(frm) {\n  if (frappe.session.user != 'Administrator') {\n    frappe.call({\n      method: \"pibidav.pibidav.pibical.get_calendar\",\n      args: {\n        nuser: frappe.session.user,\n      },\n      callback(r) {\n        var data = r.message;\n        var options = [];\n        if (data.length > 0) {\n          for (var i = 0; i < data.length; i++) {\n            options.push({\n              'label': data[i].name,\n              'value': data[i].url\n            });\n\t      }\n        }     \n        frm.set_df_property(\"caldav_id_calendar\", \"options\", options);\n        frm.set_value(\"caldav_id_calendar\", options[data.length-1].value);\n        frm.refresh_field(\"caldav_id_calendar\");\n      }\n    });\n  }      \n}\nfunction Invitations() {\n  var d = new frappe.ui.Dialog({\n    title: __('Invitations'),\n\tfields: [\n\t  {\n\t    fieldtype: 'HTML',\n\t\tfieldname: 'text_area'\n\t  }\n\t],\n\tprimary_action_label: __('Send Email'),\n\tprimary_action: () => console.log(__('Send Email'))\n  });\n\n  d.fields_dict.text_area.$wrapper.html('<div style=\"height: 100;\"><h4>In Progress - Preparing Invitation Communication</h4></div>');\n  d.show();\n}",
+  "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
+  "dt": "HS Document",
+  "enabled": 1,
+  "modified": "2022-05-17 16:42:01.971336",
+  "name": "HS Document-Form",
+  "parent": null,
+  "parentfield": null,
+  "parenttype": null,
+  "script": "frappe.ui.form.on('HS Document', {\n  onload(frm) {\n    if (frm.doc.__islocal) {\n      frappe.db.get_list('Deliverable Type', { filters: { department: 'Prevenci\u00f3n - PBC' }, fields: ['name'], limit: 500 }).then(res => {\n\t    for(var i in res){\n\t      let hs_docs = frm.add_child('hs_documents');\n\t\t  hs_docs.deliverable_type = res[i].name;\n\t\t  hs_docs.status = 'Ausente';\n\t\t}\n\t\tfrm.refresh_fields('hs_documents');\n\t  }); \n\t}\n  }\n});",
   "view": "Form"
  }
 ]
