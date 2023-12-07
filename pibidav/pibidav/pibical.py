@@ -113,6 +113,7 @@ def create_or_update_event_on_caldav(doc, method=None):
   end_date = datetime.now() + timedelta(days=720)  # 30 days from now
   events = calendar.date_search(start=start_date, end=end_date)
 
+  """
   # Try to find an existing event to update
   for event in events:
     # If this event matches the document's event UID, update it
@@ -145,6 +146,41 @@ def create_or_update_event_on_caldav(doc, method=None):
       frappe.publish_progress(100, title='Event Progress', description='Synchronizing Event in NC')
       frappe.msgprint(_('Event updated successfully.'))
       return 'Event updated successfully.'
+  """
+  
+  for event in events:
+    if hasattr(event.instance, 'vevent') and hasattr(event.instance.vevent, 'uid'):
+      vevent = event.instance.vevent
+      if vevent.uid.value == doc.event_uid:
+        # Update event logic
+        # DTSTAMP from current time
+        doc.event_stamp = datetime.now()
+        event.vobject_instance.vevent.dtstamp.value = doc.event_stamp
+        # DTSTART from start
+        dtstart = datetime.strptime(doc.starts_on, '%Y-%m-%d %H:%M:%S')
+        if doc.all_day:
+          dtstart = date(dtstart.year, dtstart.month, dtstart.day)
+        else:  
+          dtstart = datetime(dtstart.year, dtstart.month, dtstart.day, dtstart.hour, dtstart.minute, dtstart.second, tzinfo=madrid) 
+        event.vobject_instance.vevent.dtstart.value = dtstart
+        # DTEND if end
+        if doc.ends_on:
+          dtend = datetime.strptime(doc.ends_on, '%Y-%m-%d %H:%M:%S')
+          if doc.all_day:
+            dtend = date(dtend.year, dtend.month, dtend.day)
+          else:  
+            dtend = datetime(dtend.year, dtend.month, dtend.day, dtend.hour, dtend.minute, dtend.second, tzinfo=madrid)
+          event.vobject_instance.vevent.dtend.value = dtend
+        # SUMMARY from subject
+        event.vobject_instance.vevent.summary.value = doc.subject
+        # DESCRIPTION if any
+        if doc.description: event.vobject_instance.vevent.description.value = doc.description
+        # LOCATION if any
+        if doc.location: event.vobject_instance.vevent.location.value = doc.location
+        event.save()
+        frappe.publish_progress(100, title='Event Progress', description='Synchronizing Event in NC')
+        frappe.msgprint(_('Event updated successfully.'))
+        return 'Event updated successfully.'
 
   # Create uid for new events
   uid_date = datetime.now().strftime("%Y%m%dT%H%M%S")
@@ -454,19 +490,30 @@ def prepare_fp_event(event, cal_event):
     event.subject = (_("Untitled event"))
   else:
     event.subject = cal_event.decoded('summary').decode("utf-8")
+
   # starts_on
+  dtstart = None
   if isinstance(cal_event.decoded('dtstart'), datetime):
     event.all_day = False
-    event.starts_on = cal_event.decoded('dtstart').astimezone().strftime("%Y-%m-%d %H:%M:%S")
+    dtstart = cal_event.decoded('dtstart').astimezone()
+    event.starts_on = dtstart.strftime("%Y-%m-%d %H:%M:%S")
   else:
     event.all_day = True
-    event.starts_on = cal_event.decoded('dtstart').strftime("%Y-%m-%d")
+    dtstart = cal_event.decoded('dtstart')
+    event.starts_on = dtstart.strftime("%Y-%m-%d")
+  
   # ends_on
+  event.ends_on = None
   if 'dtend' in cal_event:
+    dtend = None
     if isinstance(cal_event.decoded('dtend'), datetime):
-      event.ends_on = cal_event.decoded('dtend').astimezone().strftime("%Y-%m-%d %H:%M:%S")
+      dtend = cal_event.decoded('dtend').astimezone()
     else:
-      event.ends_on = cal_event.decoded('dtend').strftime("%Y-%m-%d")
+      dtend = cal_event.decoded('dtend')
+    
+    if dtend and dtend > dtstart:
+      event.ends_on = dtend.strftime("%Y-%m-%d %H:%M:%S" if isinstance(dtend, datetime) else "%Y-%m-%d")
+  
   # event_dtstamp
   event.event_stamp = cal_event.decoded('dtstamp').astimezone().strftime("%Y-%m-%d %H:%M:%S")
   # event_uid
