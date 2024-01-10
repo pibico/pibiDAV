@@ -137,7 +137,15 @@ function CreateFolder(frm) {
     }
   }).then(function(r) {
     let doCreate = r.message;
-    console.log(doCreate);
+    //console.log(doCreate);
+    let carpeta = '';
+    let numero_oferta = '';
+    
+    if (frm.doc.doctype === 'Quotation') {
+      carpeta = frm.doc.descripcion;
+      numero_oferta = frm.doc.numero_oferta;
+    }
+    
     if (doCreate) {
       let d = new frappe.ui.Dialog({
         title: 'Create NC Folder',
@@ -145,12 +153,14 @@ function CreateFolder(frm) {
           {
             label: (__('Enter Abbreviation')),
             fieldname: 'abbreviation',
-            fieldtype: 'Data'
+            fieldtype: 'Data',
+            default: numero_oferta
           },
           {
             label: (__('Enter Folder Name')),
             fieldname: 'strmain',
-            fieldtype: 'Data'
+            fieldtype: 'Data',
+            default: carpeta
           },
           {
             label: (__('Select Folder Set')),

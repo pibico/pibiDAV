@@ -2,3 +2,4 @@
 frappe
 caldav
 icalendar
+ilanza_pibico_settings
