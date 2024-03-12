@@ -95,14 +95,6 @@ for item in nc_list:
 # 	"Event": "frappe.desk.doctype.event.event.has_permission",
 # }
 
-jenv = {
-  "methods": [
-    "timestamp_to_date:pibidav.jinja_filters.timestamp_to_date",
-    "ts_to_date:pibidav.jinja_filters.ts_to_date"
-  ]
-}
-
-
 # DocType Class
 # ---------------
 # Override standard doctype classes
@@ -121,11 +113,6 @@ doc_events = {
 #  },
   "File": {
     "after_insert": ["pibidav.pibidav.custom.upload_file_to_nc"]
-  },
-  "Event": {
-    "after_insert": "pibidav.pibidav.pibical.sync_caldav_event_by_user",
-    "on_update": "pibidav.pibidav.pibical.sync_caldav_event_by_user",
-    "on_trash": "pibidav.pibidav.pibical.remove_caldav_event",
   }
 # 	"*": {
 # 		"on_update": "method",
@@ -141,11 +128,11 @@ scheduler_events = {
 # 	"all": [
 # 		"pibidav.tasks.all"
 # 	],
-  "cron": {
-    "*/1 * * * *": [
-      "pibidav.pibidav.pibical.sync_outside_caldav"
-    ]
-  },
+#  "cron": {
+#    "*/1 * * * *": [
+#      "pibidav.pibidav.pibical.sync_outside_caldav"
+#    ]
+#  },
   "daily": [
     "pibidav.pibidav.doctype.nextcloud_settings.nextcloud_settings.daily_backup"
   ],
@@ -215,7 +202,7 @@ user_data_fields = [
 # 	"pibidav.auth.validate"
 # ]
 
-fixtures = ['Role Profile', 'Role', 'Custom Field', 'Client Script', 'Property Setter']
+fixtures = ['Custom Field']
 
 treeviews = ['Folder Set']
 
