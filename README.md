@@ -1,15 +1,15 @@
 ## pibiDAV
-pibiDAV is a Frappe App to integrate webDAV, calDAV and cardDAV (Future) with a NextCloud Server, used as (DMS), for a copy of Frappe Files uploaded and tagged to NextCloud while uploading files to Frappe.
+pibiDAV is a Frappe App to integrate webDAV with a NextCloud Server, used as (DMS), for a copy of Frappe Files uploaded and tagged to NextCloud while uploading files to Frappe.
 ## License
 MIT# pibiDAV
 ## Requirements
-Requires a Frappe server instance (refer to https://github.com/frappe/frappe), and has dependencies on CalDAV (refer to https://github.com/python-caldav/caldav) and iCalendar (refer to https://github.com/collective/icalendar). It also uses a tweaked code of pyocclient but this is embedded already in pibiDAV.
+Requires a Frappe server instance (refer to https://github.com/frappe/frappe). It also uses a tweaked code of pyocclient but this is embedded already in pibiDAV.
 ## Compatibility
-PibiDAV has been tested on Frappe/ERPNext version-13 only.
+PibiDAV branch version-15 is dedicated for Frappe/ERPNext version-15 only.
 ## Installation
 From the frappe-bench folder, execute
 ```
-$ bench get-app pibidav --branch develop https://github.com/pibico/pibidav.git
+$ bench get-app pibidav --branch version-15 https://github.com/pibico/pibidav.git
 $ bench install-app pibidav
 ```
 If you are using a multi-tenant environment, use the following command
@@ -39,7 +39,6 @@ To get the permissions from NextCloud into Frappe we will fill the User NextClou
 ![imagen](https://user-images.githubusercontent.com/69711454/165817057-d765dd68-ae4f-4ab9-9edf-2fa438a0d012.png)
 After that we will go at the bottom of de User Settings Form to provide the NextCloud User Credentials. In this example is the System Manager or Administrator having the SuperUser NextCloud Credentials for having access to the full NextCloud Folder SuperStructure.
 ![imagen](https://user-images.githubusercontent.com/69711454/165817406-eeb6fc05-3fa7-4e14-8798-3712c4a2b26c.png)
-For CalDAV integration we will provide also the url for the User Calendars, in the way https://domain.com/remote.php/dav/principals/ (do not forget the / at the end).
 ### 3. Hooks for NextCloud Integration
 Provided we have access to the frappe-bench folder, we must hook the Doctypes included in the integration, by adding the following code to hooks.py of pibidav app:
 ```
@@ -88,6 +87,3 @@ The result is seen on the image for a new Client Structure called CUSTOMER as ab
 ![imagen](https://user-images.githubusercontent.com/69711454/165841656-f5b458d8-b15d-47ff-8738-bafe8c5bd08a.png)
 
 There is an automation to make automatic folders upon creation of selected included doctypes, but try to see if you can make it running. This is an Easter Egg for you to discover.
-
-### 6. CalDAV integration with Calendar App in NextCloud.
-This portion is explained in pibiCal (refer to https://github.com/pibico/pibical/tree/version-13) The code from pibiCal has been integrated into pibiDav to achieve the syncronization between Frappe and NextCloud CalDAV Server.
