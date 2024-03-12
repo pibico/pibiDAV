@@ -1,9 +1,10 @@
-// Copyright (c) 2022, pibiCo and Contributors
+// Copyright (c) 2024, pibiCo and Contributors
 // MIT License. See license.txt
 
-frappe.ui.form.on(doctype.name, {
+//frappe.ui.form.on(doctype.name, {
+frappe.ui.form.on(cur_frm.doctype, {
   refresh: function(frm) {
-    // if doctyp is saved
+    // if doctype is saved
     if (!frm.doc.__islocal) {
       frappe.db.get_value("PibiDAV Addon",
         {"ref_doctype": frm.doc.doctype, "ref_docname": frm.doc.name},

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../apps/pibidav/pibidav/public/js/dist/nc_upload.js"],
+  "sourcesContent": ["// Copyright (c) 2024, pibiCo and Contributors\n// MIT License. See license.txt\n\n/*\nimport NcBrowser from './nc_browser';\n\nfrappe.provide('frappe.ui');\nfrappe.ui.pibiDocs = NcBrowser;\n*/\n\nif (frappe.require) {\n\tfrappe.require(\"nc_browser.bundle.js\");\n} else {\n\tfrappe.ready(function () {\n\t\tfrappe.require(\"nc_browser.bundle.js\");\n\t});\n}"],
+  "mappings": "MAUI,OAAO,QACV,OAAO,QAAQ,sBAAsB,EAErC,OAAO,MAAM,UAAY,CACxB,OAAO,QAAQ,sBAAsB,CACtC,CAAC",
+  "names": []
+}

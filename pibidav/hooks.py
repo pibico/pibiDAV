@@ -14,7 +14,7 @@ app_license = "MIT"
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/pibidav/css/pibidav.css"
-app_include_js = "/assets/pibidav/js/pibidav.js"
+app_include_js = "pibidav.bundle.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/pibidav/css/pibidav.css"
@@ -36,7 +36,8 @@ app_include_js = "/assets/pibidav/js/pibidav.js"
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
-nc_list = ["Customer","Project","Sales Invoice","Purchase Invoice","Supplier","Event","Quotation","Purchase Order","Task","Timesheet"]
+#nc_list = ["Customer","Project","Sales Invoice","Purchase Invoice","Supplier","Event","Quotation","Purchase Order","Task","Timesheet","Contact"]
+nc_list = ["Contact", "Event"]
 doctype_js = {}
 for item in nc_list:
   doctype_js[item] = "public/js/dist/nc_pibidav.js"
@@ -94,6 +95,13 @@ for item in nc_list:
 # has_permission = {
 # 	"Event": "frappe.desk.doctype.event.event.has_permission",
 # }
+
+jinja = {
+  "methods": [
+    "pibidav.jinja.timestamp_to_date",
+    "pibidav.jinja.ts_to_date"
+  ]
+}
 
 # DocType Class
 # ---------------
