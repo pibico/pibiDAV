@@ -210,7 +210,12 @@ user_data_fields = [
 # 	"pibidav.auth.validate"
 # ]
 
-fixtures = ['Custom Field']
+fixtures = [
+  {
+    "dt": "Custom Field",
+    "filters": {"module": ["like", "Pibidav"]}
+  }
+]
 
 treeviews = ['Folder Set']
 
