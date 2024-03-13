@@ -49,7 +49,8 @@ nc_list = [
   "Task",
   "Timesheet",
   "Item",
-  "Employee"
+  "Employee",
+  "GM Work Order"
 ]
 
 doctype_js = {}

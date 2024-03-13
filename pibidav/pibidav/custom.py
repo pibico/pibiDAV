@@ -500,17 +500,17 @@ def get_nc_files_in_folder(folder, start=0, page_length=20):
 
 @frappe.whitelist()
 def make_nc_session():
-    nc_settings = frappe.get_doc('NextCloud Settings', 'NextCloud Settings')
-    if nc_settings.nc_backup_enable:
-      nc_token = get_decrypted_password('NextCloud Settings', 'NextCloud Settings', 'nc_backup_token', True)
-      args = {
-        "verify_certs": False
-      }
-      session = nextcloud.Client(nc_settings.nc_backup_url, **args)
-      session.login(nc_settings.nc_backup_username, nc_token)
-      return session
-    else:
-      frappe.msgprint(_("NextCloud Integration not Enabled"))  
+  nc_settings = frappe.get_doc('NextCloud Settings', 'NextCloud Settings')
+  if nc_settings.nc_backup_enable:
+    nc_token = get_decrypted_password('NextCloud Settings', 'NextCloud Settings', 'nc_backup_token', True)
+    args = {
+      "verify_certs": False
+    }
+    session = nextcloud.Client(nc_settings.nc_backup_url, **args)
+    session.login(nc_settings.nc_backup_username, nc_token)
+    return session
+  else:
+    frappe.msgprint(_("NextCloud Integration not Enabled"))  
     
 @frappe.whitelist()
 def create_nc_group(alias):
