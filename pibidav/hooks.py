@@ -36,8 +36,22 @@ app_include_js = "pibidav.bundle.js"
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
-#nc_list = ["Customer","Project","Sales Invoice","Purchase Invoice","Supplier","Event","Quotation","Purchase Order","Task","Timesheet","Contact"]
-nc_list = ["Contact", "Event"]
+nc_list = [
+  "Contact",
+  "Event",
+  "Customer",
+  "Supplier",
+  "Project",
+  "Sales Invoice",
+  "Purchase Invoice",
+  "Quotation",
+  "Purchase Order",
+  "Task",
+  "Timesheet",
+  "Item",
+  "Employee"
+]
+
 doctype_js = {}
 for item in nc_list:
   doctype_js[item] = "public/js/dist/nc_pibidav.js"
