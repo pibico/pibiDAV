@@ -1,7 +1,7 @@
 {
  "charts": [],
  "content": "[{\"id\":\"azQJesz1jX\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"></span><a href=\\\"/app/home\\\">Inicio</a><span class=\\\"h4\\\"><span class=\\\"h5\\\"> &gt; </span></span>pibiDAV<br>\",\"col\":12}},{\"id\":\"XQTScKtokJ\",\"type\":\"card\",\"data\":{\"card_name\":\"Documents\",\"col\":4}},{\"id\":\"OIx7Apgo_M\",\"type\":\"card\",\"data\":{\"card_name\":\"Configuraci\u00f3n\",\"col\":4}}]",
- "creation": "2024-03-13 11:36:18.703229",
+ "creation": "2024-03-13 21:05:19.524313",
  "custom_blocks": [],
  "docstatus": 0,
  "doctype": "Workspace",
@@ -9,7 +9,7 @@
  "hide_custom": 0,
  "icon": "pibidav",
  "idx": 0,
- "indicator_color": "green",
+ "indicator_color": "",
  "is_hidden": 0,
  "label": "pibiDAV",
  "links": [
@@ -102,13 +102,13 @@
    "type": "Link"
   }
  ],
- "modified": "2024-03-13 12:20:39.778607",
+ "modified": "2024-03-13 21:18:25.743550",
  "modified_by": "Administrator",
  "module": "Pibidav",
  "name": "pibiDAV",
  "number_cards": [],
  "owner": "Administrator",
- "parent_page": "",
+ "parent_page": "pibiTools",
  "public": 1,
  "quick_lists": [],
  "roles": [
