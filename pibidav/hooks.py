@@ -30,6 +30,10 @@ app_include_js = "pibidav.bundle.js"
 # include js in page
 # page_js = {"page" : "public/js/file.js"}
 
+app_include_icons = [
+	"pibidav/icons/timeless/icons.svg"
+]
+
 # include js in doctype views
 # doctype_js = {"doctype" : "public/js/doctype.js"}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
@@ -228,6 +232,10 @@ user_data_fields = [
 fixtures = [
   {
     "dt": "Custom Field",
+    "filters": {"module": ["like", "Pibidav"]}
+  },
+  {
+    "dt": "Workspace",
     "filters": {"module": ["like", "Pibidav"]}
   }
 ]
