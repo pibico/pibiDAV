@@ -47,7 +47,7 @@
     "type": "Link"
    }
   ],
-  "modified": "2024-03-13 21:04:46.103577",
+  "modified": "2024-03-14 20:09:42.296818",
   "module": "Pibidav",
   "name": "pibiTools",
   "number_cards": [],
@@ -56,7 +56,7 @@
   "quick_lists": [],
   "restrict_to_domain": null,
   "roles": [],
-  "sequence_id": 2.0,
+  "sequence_id": 3.0,
   "shortcuts": [
    {
     "color": "Grey",
@@ -244,7 +244,7 @@
     "type": "Link"
    }
   ],
-  "modified": "2024-03-13 21:18:25.743550",
+  "modified": "2024-03-14 20:09:42.334196",
   "module": "Pibidav",
   "name": "pibiDAV",
   "number_cards": [],
@@ -272,7 +272,7 @@
     "role": "NextCloud User"
    }
   ],
-  "sequence_id": 2.0,
+  "sequence_id": 4.0,
   "shortcuts": [],
   "title": "pibiDAV"
  }

@@ -11,7 +11,6 @@ frappe.ui.form.on(cur_frm.doctype, {
       ).then(r => {
         let nc_enable = r.message.nc_enable;
         //console.log(r);
-        debugger;
         if (nc_enable !== 1) { 
           frm.add_custom_button(__("Enable NC"), function() {
             frappe.db.get_value("PibiDAV Addon",
