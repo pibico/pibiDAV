@@ -1,7 +1,7 @@
 {
  "charts": [],
- "content": "[{\"id\":\"w6ozBdED5x\",\"type\":\"header\",\"data\":{\"text\":\"<a href=\\\"/app/home\\\">Inicio</a><span class=\\\"h4\\\"><span class=\\\"h5\\\"> &gt; pibiTools</span><br></span>\",\"col\":12}},{\"id\":\"6HSp1mPlJs\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"pibiDAV\",\"col\":4}},{\"id\":\"_AaAq8zS_l\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"HGmx43Fb6J\",\"type\":\"card\",\"data\":{\"card_name\":\"Tools\",\"col\":4}}]",
- "creation": "2024-03-13 22:09:20.590707",
+ "content": "[{\"id\":\"w6ozBdED5x\",\"type\":\"header\",\"data\":{\"text\":\"<a href=\\\"/app/home\\\">Inicio</a><span class=\\\"h4\\\"><span class=\\\"h5\\\"> &gt; pibiTools</span><br></span>\",\"col\":12}},{\"id\":\"6HSp1mPlJs\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"pibiDAV\",\"col\":4}},{\"id\":\"LT0xdGpBtC\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"pibiAID\",\"col\":4}},{\"id\":\"_AaAq8zS_l\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"HGmx43Fb6J\",\"type\":\"card\",\"data\":{\"card_name\":\"Tools\",\"col\":4}}]",
+ "creation": "2024-03-16 01:01:25.088416",
  "custom_blocks": [],
  "docstatus": 0,
  "doctype": "Workspace",
@@ -9,7 +9,7 @@
  "hide_custom": 0,
  "icon": "pibico",
  "idx": 0,
- "indicator_color": "green",
+ "indicator_color": "",
  "is_hidden": 0,
  "label": "pibiTools",
  "links": [
@@ -33,7 +33,7 @@
    "type": "Link"
   }
  ],
- "modified": "2024-03-14 20:09:42.296818",
+ "modified": "2024-03-16 08:50:32.411249",
  "modified_by": "Administrator",
  "module": "Pibidav",
  "name": "pibiTools",
@@ -45,6 +45,13 @@
  "roles": [],
  "sequence_id": 3.0,
  "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "pibiAID",
+   "type": "URL",
+   "url": "/app/pibiaid"
+  },
   {
    "color": "Grey",
    "doc_view": "List",

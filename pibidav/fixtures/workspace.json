@@ -1,14 +1,14 @@
 [
  {
   "charts": [],
-  "content": "[{\"id\":\"w6ozBdED5x\",\"type\":\"header\",\"data\":{\"text\":\"<a href=\\\"/app/home\\\">Inicio</a><span class=\\\"h4\\\"><span class=\\\"h5\\\"> &gt; pibiTools</span><br></span>\",\"col\":12}},{\"id\":\"6HSp1mPlJs\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"pibiDAV\",\"col\":4}},{\"id\":\"_AaAq8zS_l\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"HGmx43Fb6J\",\"type\":\"card\",\"data\":{\"card_name\":\"Tools\",\"col\":4}}]",
+  "content": "[{\"id\":\"w6ozBdED5x\",\"type\":\"header\",\"data\":{\"text\":\"<a href=\\\"/app/home\\\">Inicio</a><span class=\\\"h4\\\"><span class=\\\"h5\\\"> &gt; pibiTools</span><br></span>\",\"col\":12}},{\"id\":\"6HSp1mPlJs\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"pibiDAV\",\"col\":4}},{\"id\":\"LT0xdGpBtC\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"pibiAID\",\"col\":4}},{\"id\":\"_AaAq8zS_l\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"HGmx43Fb6J\",\"type\":\"card\",\"data\":{\"card_name\":\"Tools\",\"col\":4}}]",
   "custom_blocks": [],
   "docstatus": 0,
   "doctype": "Workspace",
   "for_user": "",
   "hide_custom": 0,
   "icon": "pibico",
-  "indicator_color": "green",
+  "indicator_color": "",
   "is_hidden": 0,
   "label": "pibiTools",
   "links": [
@@ -47,7 +47,7 @@
     "type": "Link"
    }
   ],
-  "modified": "2024-03-14 20:09:42.296818",
+  "modified": "2024-03-16 08:50:32.411249",
   "module": "Pibidav",
   "name": "pibiTools",
   "number_cards": [],
@@ -58,6 +58,22 @@
   "roles": [],
   "sequence_id": 3.0,
   "shortcuts": [
+   {
+    "color": "Grey",
+    "doc_view": "List",
+    "format": null,
+    "icon": null,
+    "kanban_board": null,
+    "label": "pibiAID",
+    "link_to": null,
+    "parent": "pibiTools",
+    "parentfield": "shortcuts",
+    "parenttype": "Workspace",
+    "restrict_to_domain": null,
+    "stats_filter": null,
+    "type": "URL",
+    "url": "/app/pibiaid"
+   },
    {
     "color": "Grey",
     "doc_view": "List",
@@ -79,7 +95,7 @@
  },
  {
   "charts": [],
-  "content": "[{\"id\":\"azQJesz1jX\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"></span><a href=\\\"/app/home\\\">Inicio</a><span class=\\\"h4\\\"><span class=\\\"h5\\\"> &gt; </span></span>pibiDAV<br>\",\"col\":12}},{\"id\":\"XQTScKtokJ\",\"type\":\"card\",\"data\":{\"card_name\":\"Documents\",\"col\":4}},{\"id\":\"OIx7Apgo_M\",\"type\":\"card\",\"data\":{\"card_name\":\"Configuración\",\"col\":4}}]",
+  "content": "[{\"id\":\"azQJesz1jX\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"></span><a href=\\\"https://aiduct-pro.espib.co/app/home\\\">Inicio</a> &gt; <a href=\\\"/app/pibitools\\\">pibiTools</a> &gt; pibiDAV<br>\",\"col\":12}},{\"id\":\"XQTScKtokJ\",\"type\":\"card\",\"data\":{\"card_name\":\"Documents\",\"col\":4}},{\"id\":\"OIx7Apgo_M\",\"type\":\"card\",\"data\":{\"card_name\":\"Configuración\",\"col\":4}}]",
   "custom_blocks": [],
   "docstatus": 0,
   "doctype": "Workspace",
@@ -244,7 +260,7 @@
     "type": "Link"
    }
   ],
-  "modified": "2024-03-14 20:09:42.334196",
+  "modified": "2024-03-16 08:57:28.120163",
   "module": "Pibidav",
   "name": "pibiDAV",
   "number_cards": [],
