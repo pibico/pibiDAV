@@ -137,53 +137,62 @@ function CreateFolder(frm) {
     }
   }).then(function(r) {
     let doCreate = r.message;
-    //console.log(doCreate);
     if (doCreate) {
+      let default_abbreviation = '';
+      let default_strmain = '';
+      let default_folder_set = '';
+
+      if (frm.doc.doctype === 'Quotation') {
+        // Set default values for Quotation doctype
+        default_abbreviation = frm.doc.numero_oferta || '';
+        default_strmain = frm.doc.cliente_abreviado + '_' + frm.doc.descripcion || '';
+        default_folder_set = '(OFR) Plantilla de Oferta';
+      }
+
       let d = new frappe.ui.Dialog({
         title: 'Create NC Folder',
         fields: [
           {
-            label: (__('Enter Abbreviation')),
+            label: __('Enter Abbreviation'),
             fieldname: 'abbreviation',
-            fieldtype: 'Data'
+            fieldtype: 'Data',
+            default: default_abbreviation
           },
           {
-            label: (__('Enter Folder Name')),
+            label: __('Enter Folder Name'),
             fieldname: 'strmain',
-            fieldtype: 'Data'
+            fieldtype: 'Data',
+            default: default_strmain
           },
           {
-            label: (__('Select Folder Set')),
+            label: __('Select Folder Set'),
             fieldname: 'folder_set',
             fieldtype: 'Link',
             options: 'Folder Set',
+            default: default_folder_set,
             filters: {'parent_folder_set': ''}
           },
           {
-            label: (__('Sharing Option')),
+            label: __('Sharing Option'),
             fieldname: 'sharing_option',
             fieldtype: 'Select',
             options: ['','4-Upload Only','17-Read Only','31-Upload and Edit']
           },
           {
-            label: (__('Sharing Password')),
+            label: __('Sharing Password'),
             fieldname: 'secret',
             fieldtype: 'Data'
           }
         ],
         primary_action_label: 'Create',
         primary_action(values) {
-          //console.log(values);
-          if (values.abbreviation === undefined || values.strmain === undefined || values.folder_set === undefined){
-            frappe.throw(__('Complete all data Abbreviation, Folder Name and Folder Set'));
+          if (!values.abbreviation || !values.strmain || !values.folder_set){
+            frappe.throw(__('Complete all data: Abbreviation, Folder Name, and Folder Set'));
             return false;
           }
-          let secret = ''
-          if (values.secret !== undefined) {
-            secret = values.secret;
-          }
+          let secret = values.secret || '';
           if (secret.length > 0 && secret.length < 10){
-            frappe.throw(__('Sharing password must be greater than 10 chars long and not usual'));
+            frappe.throw(__('Sharing password must be greater than 10 characters long and not usual'));
             return false;
           }
           frappe.call({
