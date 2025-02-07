@@ -260,7 +260,7 @@
     "type": "Link"
    }
   ],
-  "modified": "2024-09-03 13:54:32.704533",
+  "modified": "2024-11-28 10:05:22.809554",
   "module": "Pibidav",
   "name": "pibiDAV",
   "number_cards": [],
@@ -288,7 +288,7 @@
     "role": "NextCloud User"
    }
   ],
-  "sequence_id": 13.0,
+  "sequence_id": 17.0,
   "shortcuts": [],
   "title": "pibiDAV"
  }
