@@ -1856,37 +1856,63 @@ class Client(object):
         :raises: Exception if the path cannot be resolved
         """
         try:
-            # Construct the WebDAV endpoint URL for the fileid
+            # Try using the file info endpoint first
+            fileinfo = self.file_info(path='/', properties=['{http://owncloud.org/ns}fileid'])
+            if fileinfo and hasattr(fileinfo, 'attributes'):
+                file_id_from_info = fileinfo.attributes.get('{http://owncloud.org/ns}fileid')
+                if file_id_from_info == str(fileid):
+                    return '/'
+            
+            # If not root, try to get file info by searching
+            # Use WebDAV REPORT method to search for the file by ID
+            report_body = f'''<?xml version="1.0" encoding="UTF-8"?>
+            <oc:filter-files xmlns:oc="http://owncloud.org/ns" xmlns:d="DAV:">
+                <oc:filter-rules>
+                    <oc:fileid>{fileid}</oc:fileid>
+                </oc:filter-rules>
+            </oc:filter-files>'''
+            
+            # Make REPORT request to search for the file
+            res = self._session.request(
+                'REPORT',
+                self._get_dav_path('/'),
+                data=report_body,
+                headers={'Content-Type': 'application/xml'}
+            )
+            
+            if res.status_code == 207:  # Multi-status response
+                tree = ET.fromstring(res.content)
+                # Find the href element in the response
+                for response in tree.findall('.//{DAV:}response'):
+                    href = response.find('{DAV:}href')
+                    if href is not None:
+                        path = parse.unquote(href.text)
+                        # Strip the DAV path prefix
+                        return self._strip_dav_path(path)
+            
+            # Fallback to the original method with modifications
             url = f"{self.url}apps/files/?fileid={fileid}"
+            res = self._session.get(url, allow_redirects=True)
 
-            # Make a GET request to retrieve the location header with the resolved path
-            res = self._session.get(url, allow_redirects=False)
-
-            # Log the entire redirect response for debugging
-            if res.status_code in [301, 302, 303]:  # Redirect statuses
-                location = res.headers.get("Location")
-                if not location:
-                    raise Exception("Location header missing in response.")
-
-                # Log the redirected URL
-                if self._debug:
-                    print(f"Redirected URL: {location}")
-
-                # Extract and decode the path from the URL
-                parsed_location = parse.urlparse(location)
-                resolved_path = parse.unquote(parsed_location.path)
-
-                # Log query parameters (e.g., dir=) for further inspection
-                query_params = parse.parse_qs(parsed_location.query)
-                if self._debug:
-                    print(f"Query Parameters: {query_params}")
-
-                # Look for the `dir` parameter in the query parameters
+            if res.status_code == 200:
+                # Parse the response URL which should contain the path
+                final_url = res.url
+                parsed_url = parse.urlparse(final_url)
+                query_params = parse.parse_qs(parsed_url.query)
+                
+                # Look for the dir parameter
                 if "dir" in query_params:
-                    return query_params["dir"][0]  # Return the first value of the 'dir' parameter
-
-                # If `dir` is not found, fallback to the path
-                return self._strip_dav_path(resolved_path)
+                    return query_params["dir"][0]
+                
+                # Try to extract from the URL path
+                if "/apps/files/" in final_url:
+                    # Extract path after /apps/files/
+                    path_match = final_url.split("/apps/files/")
+                    if len(path_match) > 1 and path_match[1]:
+                        return "/" + parse.unquote(path_match[1].rstrip('/'))
+                
+                # If still not found, return root
+                return "/"
             else:
                 raise Exception(f"Failed to resolve fileid {fileid}: HTTP {res.status_code}")
         except Exception as e:

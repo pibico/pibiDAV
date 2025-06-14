@@ -235,6 +235,10 @@ fixtures = [
     "filters": {"module": ["like", "Pibidav"]}
   },
   {
+    "dt": "Client Script",
+    "filters": {"module": ["like", "Pibidav"]}
+  },
+  {
     "dt": "Workspace",
     "filters": {"module": ["like", "Pibidav"]}
   }

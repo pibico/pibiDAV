@@ -12,7 +12,8 @@
   "nc_enable",
   "create_nc_folder",
   "use_default_folder",
-  "nc_folder"
+  "nc_folder",
+  "file_storage_mode"
  ],
  "fields": [
   {
@@ -59,6 +60,14 @@
    "fieldname": "nc_enable",
    "fieldtype": "Check",
    "label": "NC Enable"
+  },
+  {
+   "default": "keep_in_frappe",
+   "fieldname": "file_storage_mode",
+   "fieldtype": "Select",
+   "label": "File Storage Mode",
+   "options": "keep_in_frappe\nreplace_with_link",
+   "description": "Keep in Frappe: Files remain in Frappe and are also uploaded to NextCloud\nReplace with Link: Files are uploaded to NextCloud and replaced with links in Frappe"
   }
  ],
  "index_web_pages_for_search": 1,

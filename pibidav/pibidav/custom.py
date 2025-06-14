@@ -307,6 +307,13 @@ def upload_file_to_nc(doc, method=None):
       return
     ## Continues if NC Integration is enabled and NC Destination Folder given
     if document.nc_enable and document.nc_folder:
+      ## Get file storage mode from settings
+      file_storage_mode = frappe.db.get_value("Reference Item", 
+        {"parent": "NextCloud Settings", "reference_doctype": dt}, 
+        "file_storage_mode")
+      if not file_storage_mode:
+        file_storage_mode = "keep_in_frappe"
+      
       local_site = frappe.utils.get_url()
       ## Get current logged user and makes session in NC
       nc_user = frappe.get_doc("User", frappe.session.user)
@@ -338,9 +345,21 @@ def upload_file_to_nc(doc, method=None):
             fptag.uploaded_to_nextcloud = 1
             fptag.tagid = strtag['tagid']
             fptag.save()
+      
+      ## Handle file storage mode
+      if file_storage_mode == "replace_with_link":
+        # Delete the physical file in Frappe and replace with NC public share link
+        if os.path.exists(local_path):
+          os.remove(local_path)
+        # Update file URL to point to NextCloud public share link for external access
+        doc.file_url = doc.share_link  # Use the public share link
+        # Note: is_remote_file is automatically set by Frappe when file_url contains http/https
             
       doc.save()
       nc.logout()
+      
+      # Update addon attachment items after upload
+      update_attachment_item(dt, dn)
         
       return {'fname': doc, 'local_path': local_path, 'local_site': share.get_link()}
   else:
@@ -421,6 +440,8 @@ def update_attachment_item(dt, dn):
           doc.append("attachment_item", json_item)
           doc.save()
           frappe.db.commit()
+  
+  return doc
 
 @frappe.whitelist()
 def upload_nc_file(remote_path, local_file):
@@ -650,32 +671,52 @@ def get_folder_path_from_link(fileid):
     """
     if not fileid:
         frappe.log_error("No fileid provided to get_folder_path_from_link.")
-        return "Error: fileid is empty."
+        return "/"  # Return root path as fallback
 
     try:
         # Create a NextCloud session
         nc_session = make_nc_session()
         if not nc_session or nc_session == "Failed":
             frappe.log_error("Failed to establish session with NextCloud.")
-            return "Error: Unable to establish session with NextCloud."
+            return "/"  # Return root path as fallback
 
         # Log the fileid for debugging
         frappe.logger().info(f"Fetching directory for fileid: {fileid}")
 
-        # Use the NextCloud session to fetch the folder path
-        folder_path = nc_session.get_path_from_fileid(fileid)
-        #nc_session.logout()
-
-        if folder_path:
-            frappe.logger().info(f"Retrieved folder path for fileid {fileid}: {folder_path}")
-            return folder_path
-        else:
-            frappe.log_error(f"Folder path not found for fileid: {fileid}")
-            return "Folder path not found."
+        # Try multiple methods to get the folder path
+        folder_path = None
+        
+        # Method 1: Try the get_path_from_fileid method
+        try:
+            folder_path = nc_session.get_path_from_fileid(fileid)
+            if folder_path and folder_path != "/":
+                frappe.logger().info(f"Retrieved folder path for fileid {fileid}: {folder_path}")
+                return folder_path
+        except Exception as e:
+            frappe.logger().warning(f"get_path_from_fileid failed: {e}")
+        
+        # Method 2: Try to get file info directly
+        try:
+            # List all files and search for the fileid
+            all_files = nc_session.list('/', depth='infinity', properties=['{http://owncloud.org/ns}fileid'])
+            for file_info in all_files:
+                if hasattr(file_info, 'attributes') and file_info.attributes.get('{http://owncloud.org/ns}fileid') == str(fileid):
+                    folder_path = file_info.path
+                    if folder_path.endswith('/'):
+                        folder_path = folder_path[:-1]  # Remove trailing slash
+                    frappe.logger().info(f"Found folder path via list search for fileid {fileid}: {folder_path}")
+                    return folder_path
+        except Exception as e:
+            frappe.logger().warning(f"List search failed: {e}")
+        
+        # If all methods fail, return root path
+        frappe.logger().warning(f"Could not determine folder path for fileid {fileid}, using root path")
+        return "/"
+        
     except Exception as e:
-        # Log the error with a full traceback for debugging
+        # Log the error but return root path instead of error message
         frappe.log_error(message=f"Error retrieving folder path for fileid {fileid}: {e}", title="NextCloud Path Retrieval Error")
-        return f"Error retrieving folder path: {e}"
+        return "/"  # Return root path as fallback
 
 @frappe.whitelist()
 def create_nc_subfolder(parent_folder, folder_name):
@@ -702,3 +743,28 @@ def create_nc_subfolder(parent_folder, folder_name):
     except Exception as e:
         frappe.log_error(message=f"Error creating NextCloud subfolder: {str(e)}", title="NextCloud Folder Creation Error")
         return frappe.throw(_("Failed to create folder in NextCloud: {0}").format(str(e)))
+
+@frappe.whitelist()
+def refresh_addon_attachments(dt, dn):
+    """
+    Refresh the addon attachment items to sync with current file status
+    """
+    try:
+        addon_doc = update_attachment_item(dt, dn)
+        if addon_doc:
+            # Return the updated attachment items
+            return {
+                'status': 'success',
+                'attachment_items': [item.as_dict() for item in addon_doc.attachment_item]
+            }
+        else:
+            return {
+                'status': 'error',
+                'message': 'Addon not found'
+            }
+    except Exception as e:
+        frappe.log_error(message=f"Error refreshing addon attachments: {str(e)}", title="Addon Refresh Error")
+        return {
+            'status': 'error',
+            'message': str(e)
+        }

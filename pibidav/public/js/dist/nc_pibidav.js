@@ -2,6 +2,8 @@ frappe.ui.form.on(cur_frm.doctype, {
     refresh: function (frm) {
         if (!frm.doc.__islocal) {
             managePibiDAVAddon(frm);
+            // Set up file upload listener
+            setupFileUploadListener(frm);
         }
     },
     after_save: function (frm) {
@@ -39,6 +41,10 @@ function addNextCloudButtons(frm) {
 
     frm.add_custom_button(__("Check Addon"), function () {
         handleCheckAddon(frm);
+    }, __("NC"));
+    
+    frm.add_custom_button(__("Refresh Attachments"), function () {
+        refreshAddonAttachments(frm);
     }, __("NC"));
 
     frm.add_custom_button(frappe.utils.icon('nextcloud', 'md'), function () {
@@ -277,5 +283,46 @@ function createNextCloudFolder(frm, values) {
         }
     }).then(r => {
         frappe.msgprint(r.message);
+    });
+}
+
+// Setup file upload listener
+function setupFileUploadListener(frm) {
+    // Remove any existing listeners to prevent duplicates
+    frm.attachments && frm.attachments.remove_file_listeners && frm.attachments.remove_file_listeners();
+    
+    // Add listener for file uploads
+    if (frm.attachments) {
+        frm.attachments.on_finish_upload = function() {
+            // Wait a moment for the file to be processed in backend
+            setTimeout(() => {
+                refreshAddonAttachments(frm);
+            }, 2000);
+        };
+    }
+}
+
+// Refresh addon attachment items
+function refreshAddonAttachments(frm) {
+    frappe.call({
+        method: "pibidav.pibidav.custom.refresh_addon_attachments",
+        args: {
+            dt: frm.doc.doctype,
+            dn: frm.doc.name
+        },
+        callback: function(r) {
+            if (r.message && r.message.status === 'success') {
+                frappe.show_alert({
+                    message: __('NextCloud attachments refreshed'),
+                    indicator: 'green'
+                }, 3);
+                
+                // If addon form is open, refresh it
+                if (frappe.get_route_str().includes('PibiDAV Addon')) {
+                    frappe.model.clear_doc('PibiDAV Addon', `pbc_${frm.doc.name}`);
+                    frappe.set_route('Form', 'PibiDAV Addon', `pbc_${frm.doc.name}`);
+                }
+            }
+        }
     });
 }
