@@ -1,7 +1,7 @@
 {
  "charts": [],
  "content": "[{\"id\":\"azQJesz1jX\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"></span><a href=\\\"https://aiduct-pro.espib.co/app/home\\\">Inicio</a> &gt; <a href=\\\"/app/pibitools\\\">pibiTools</a> &gt; pibiDAV<br>\",\"col\":12}},{\"id\":\"XQTScKtokJ\",\"type\":\"card\",\"data\":{\"card_name\":\"Documents\",\"col\":4}},{\"id\":\"OIx7Apgo_M\",\"type\":\"card\",\"data\":{\"card_name\":\"Configuraci\u00f3n\",\"col\":4}}]",
- "creation": "2024-12-06 23:17:35.907677",
+ "creation": "2025-01-03 17:07:38.077636",
  "custom_blocks": [],
  "docstatus": 0,
  "doctype": "Workspace",
@@ -102,13 +102,13 @@
    "type": "Link"
   }
  ],
- "modified": "2024-12-06 23:18:00.867514",
- "modified_by": "Administrator",
+ "modified": "2025-05-22 09:29:32.469945",
+ "modified_by": "francisco.alaez@pibico.es",
  "module": "Pibidav",
  "name": "pibiDAV",
  "number_cards": [],
  "owner": "Administrator",
- "parent_page": "pibiTools",
+ "parent_page": "",
  "public": 1,
  "quick_lists": [],
  "roles": [
@@ -122,7 +122,7 @@
    "role": "NextCloud User"
   }
  ],
- "sequence_id": 11.0,
+ "sequence_id": 6.0,
  "shortcuts": [],
  "title": "pibiDAV"
 }

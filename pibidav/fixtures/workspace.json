@@ -1,7 +1,7 @@
 [
  {
   "charts": [],
-  "content": "[{\"id\":\"w6ozBdED5x\",\"type\":\"header\",\"data\":{\"text\":\"<a href=\\\"/app/home\\\">Inicio</a><span class=\\\"h4\\\"><span class=\\\"h5\\\"> &gt; pibiTools</span><br></span>\",\"col\":12}},{\"id\":\"Xyxm-ti2im\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"AI Home\",\"col\":12}}]",
+  "content": "[{\"id\":\"w6ozBdED5x\",\"type\":\"header\",\"data\":{\"text\":\"<a href=\\\"/app/home\\\">Inicio</a><span class=\\\"h4\\\"><span class=\\\"h5\\\"> &gt; pibiTools</span><br></span>\",\"col\":12}}]",
   "custom_blocks": [],
   "docstatus": 0,
   "doctype": "Workspace",
@@ -12,7 +12,7 @@
   "is_hidden": 0,
   "label": "pibiTools",
   "links": [],
-  "modified": "2024-12-07 10:10:19.730958",
+  "modified": "2025-05-22 09:31:20.118853",
   "module": "Pibidav",
   "name": "pibiTools",
   "number_cards": [],
@@ -21,7 +21,7 @@
   "quick_lists": [],
   "restrict_to_domain": null,
   "roles": [],
-  "sequence_id": 3.0,
+  "sequence_id": 11.0,
   "shortcuts": [],
   "title": "pibiTools"
  },
@@ -201,11 +201,11 @@
     "type": "Link"
    }
   ],
-  "modified": "2024-12-06 20:06:36.470352",
+  "modified": "2025-05-22 09:29:32.469945",
   "module": "Pibidav",
   "name": "pibiDAV",
   "number_cards": [],
-  "parent_page": "pibiTools",
+  "parent_page": "",
   "public": 1,
   "quick_lists": [],
   "restrict_to_domain": null,
@@ -229,7 +229,7 @@
     "role": "NextCloud User"
    }
   ],
-  "sequence_id": 4.0,
+  "sequence_id": 6.0,
   "shortcuts": [],
   "title": "pibiDAV"
  }
