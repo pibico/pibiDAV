@@ -671,52 +671,31 @@ def get_folder_path_from_link(fileid):
     """
     if not fileid:
         frappe.log_error("No fileid provided to get_folder_path_from_link.")
-        return "/"  # Return root path as fallback
+        return "/"
 
     try:
         # Create a NextCloud session
         nc_session = make_nc_session()
         if not nc_session or nc_session == "Failed":
             frappe.log_error("Failed to establish session with NextCloud.")
-            return "/"  # Return root path as fallback
+            return "/"
 
         # Log the fileid for debugging
         frappe.logger().info(f"Fetching directory for fileid: {fileid}")
 
-        # Try multiple methods to get the folder path
-        folder_path = None
-        
-        # Method 1: Try the get_path_from_fileid method
-        try:
-            folder_path = nc_session.get_path_from_fileid(fileid)
-            if folder_path and folder_path != "/":
-                frappe.logger().info(f"Retrieved folder path for fileid {fileid}: {folder_path}")
-                return folder_path
-        except Exception as e:
-            frappe.logger().warning(f"get_path_from_fileid failed: {e}")
-        
-        # Method 2: Try to get file info directly
-        try:
-            # List all files and search for the fileid
-            all_files = nc_session.list('/', depth='infinity', properties=['{http://owncloud.org/ns}fileid'])
-            for file_info in all_files:
-                if hasattr(file_info, 'attributes') and file_info.attributes.get('{http://owncloud.org/ns}fileid') == str(fileid):
-                    folder_path = file_info.path
-                    if folder_path.endswith('/'):
-                        folder_path = folder_path[:-1]  # Remove trailing slash
-                    frappe.logger().info(f"Found folder path via list search for fileid {fileid}: {folder_path}")
-                    return folder_path
-        except Exception as e:
-            frappe.logger().warning(f"List search failed: {e}")
-        
-        # If all methods fail, return root path
-        frappe.logger().warning(f"Could not determine folder path for fileid {fileid}, using root path")
-        return "/"
+        # Use the NextCloud session to fetch the folder path
+        folder_path = nc_session.get_path_from_fileid(fileid)
+
+        if folder_path:
+            frappe.logger().info(f"Retrieved folder path for fileid {fileid}: {folder_path}")
+            return folder_path
+        else:
+            frappe.log_error(f"Folder path not found for fileid: {fileid}")
+            return "/"
         
     except Exception as e:
-        # Log the error but return root path instead of error message
         frappe.log_error(message=f"Error retrieving folder path for fileid {fileid}: {e}", title="NextCloud Path Retrieval Error")
-        return "/"  # Return root path as fallback
+        return "/"
 
 @frappe.whitelist()
 def create_nc_subfolder(parent_folder, folder_name):
