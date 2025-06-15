@@ -1862,7 +1862,7 @@ class Client(object):
             # Make a GET request to retrieve the location header with the resolved path
             res = self._session.get(url, allow_redirects=False)
 
-            # Log the entire redirect response for debugging
+            # Handle redirect responses (older NextCloud versions)
             if res.status_code in [301, 302, 303]:  # Redirect statuses
                 location = res.headers.get("Location")
                 if not location:
@@ -1887,6 +1887,25 @@ class Client(object):
 
                 # If `dir` is not found, fallback to the path
                 return self._strip_dav_path(resolved_path)
+            
+            # Handle HTTP 200 responses (newer NextCloud versions)
+            elif res.status_code == 200:
+                # Use WebDAV to search for the file by ID
+                try:
+                    files = self.list('/', depth='infinity', properties=['{http://owncloud.org/ns}fileid'])
+                    for file_info in files:
+                        if hasattr(file_info, 'attributes') and file_info.attributes.get('{http://owncloud.org/ns}fileid') == str(fileid):
+                            path = file_info.path
+                            # Remove trailing slash for folders
+                            if path.endswith('/') and path != '/':
+                                path = path.rstrip('/')
+                            return path
+                except Exception as e:
+                    if self._debug:
+                        print(f"WebDAV search failed: {e}")
+                
+                # If WebDAV search fails, return root
+                return "/"
             else:
                 raise Exception(f"Failed to resolve fileid {fileid}: HTTP {res.status_code}")
         except Exception as e:
