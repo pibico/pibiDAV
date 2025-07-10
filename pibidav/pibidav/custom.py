@@ -6,7 +6,7 @@ import frappe
 from frappe import _, msgprint, throw, enqueue
 from frappe.utils import cint, cstr
 
-import json, time, requests, sys, hashlib, re, os
+import json, time, requests, sys, hashlib, re, os, io
 
 from datetime import date, datetime, timedelta
 
@@ -747,3 +747,193 @@ def refresh_addon_attachments(dt, dn):
             'status': 'error',
             'message': str(e)
         }
+
+
+@frappe.whitelist()
+def get_file_content(doc, method=None):
+    """
+    Hook method to get file content, handling NextCloud share links properly.
+    Returns the actual file content for NextCloud shared files.
+    """
+    # Check if this is a URL-based file (NextCloud share link or other URL)
+    if doc.file_url and doc.file_url.startswith('http'):
+        # Check if this is a NextCloud share link
+        if _is_nextcloud_share_link(doc.file_url):
+            # Download from NextCloud share link
+            content_info = _download_nextcloud_share(doc)
+            if content_info:
+                # Update the file name if we got the real filename
+                if content_info.get('filename') and doc.file_name != content_info['filename']:
+                    # Store original file_name
+                    original_name = doc.file_name
+                    doc.file_name = content_info['filename']
+                    # Also update in database if needed
+                    if original_name == os.path.basename(doc.file_url):
+                        # Only update if the file_name was just the share ID
+                        frappe.db.set_value('File', doc.name, 'file_name', content_info['filename'])
+                return content_info['content']
+        
+        # Check if this is a NextCloud file with folder path (WebDAV access)
+        elif hasattr(doc, 'uploaded_to_nextcloud') and doc.uploaded_to_nextcloud and hasattr(doc, 'folder_path') and doc.folder_path:
+            # Download using WebDAV
+            return _download_nextcloud_webdav(doc)
+        
+        # For other URLs, try direct download
+        else:
+            try:
+                response = requests.get(doc.file_url, timeout=30, verify=False, allow_redirects=True)
+                if response.status_code == 200:
+                    # Try to get filename from headers
+                    content_disposition = response.headers.get('Content-Disposition', '')
+                    if 'filename=' in content_disposition:
+                        import re
+                        match = re.search(r'filename[^;=\n]*=(([\'"]).*?\2|[^;\n]*)', content_disposition)
+                        if match:
+                            suggested_filename = match.group(1).strip('"\'')
+                            if suggested_filename and doc.file_name != suggested_filename:
+                                doc.file_name = suggested_filename
+                    return response.content
+            except Exception as e:
+                frappe.log_error(f"Error downloading file from URL: {str(e)}", 
+                               "PibiDAV get_file_content")
+    
+    # For normal files, return None to let Frappe handle it normally
+    return None
+
+
+def _is_nextcloud_share_link(url):
+    """Check if URL is a NextCloud public share link"""
+    # NextCloud share links typically have patterns like:
+    # https://cloud.example.com/s/SHAREID
+    # https://cloud.example.com/index.php/s/SHAREID
+    return '/s/' in url or '/public.php' in url
+
+
+def _download_nextcloud_share(doc):
+    """Download file from NextCloud public share link"""
+    try:
+        # Convert share link to download link
+        download_url = _convert_share_to_download_url(doc.file_url)
+        
+        # Make request with proper headers
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (compatible; Frappe/pibiDAV)',
+            'Accept': '*/*'
+        }
+        
+        response = requests.get(download_url, headers=headers, timeout=60, verify=False, allow_redirects=True)
+        
+        if response.status_code == 200:
+            # Extract filename from Content-Disposition header
+            content_disposition = response.headers.get('Content-Disposition', '')
+            filename = None
+            
+            if 'filename=' in content_disposition:
+                import re
+                # Handle different filename encoding formats
+                match = re.search(r'filename\*?=([^;]+)', content_disposition)
+                if match:
+                    filename_part = match.group(1).strip()
+                    # Handle RFC 5987 encoded filenames (UTF-8)
+                    if "UTF-8''" in filename_part:
+                        filename = filename_part.split("UTF-8''")[1]
+                        # URL decode the filename
+                        from urllib.parse import unquote
+                        filename = unquote(filename)
+                    else:
+                        # Regular filename
+                        filename = filename_part.strip('"\'')
+            
+            # If no filename in header, try to get from NextCloud API
+            if not filename and doc.file_name == os.path.basename(doc.file_url):
+                # File name is just the share ID, we need the real name
+                # Try to get file info from NextCloud
+                info_url = doc.file_url.rstrip('/') + '/download'
+                filename = 'document.pdf'  # Default fallback
+            
+            # Use existing filename if we couldn't determine a better one
+            if not filename:
+                filename = doc.file_name
+            
+            return {
+                'filename': filename,
+                'content': response.content
+            }
+        else:
+            frappe.log_error(f"Failed to download NextCloud share. Status: {response.status_code}, URL: {doc.file_url}", 
+                           "PibiDAV NextCloud Share")
+            return None
+            
+    except Exception as e:
+        frappe.log_error(f"Error downloading NextCloud share link: {str(e)}", 
+                       "PibiDAV NextCloud Share")
+        return None
+
+
+def _convert_share_to_download_url(share_url):
+    """Convert NextCloud share URL to direct download URL"""
+    from urllib.parse import urlparse, parse_qs
+    
+    # Parse the URL
+    parsed_url = urlparse(share_url)
+    
+    # Extract share ID from various URL formats
+    share_id = None
+    if '/s/' in parsed_url.path:
+        # Format: /s/SHAREID or /index.php/s/SHAREID
+        parts = parsed_url.path.split('/s/')
+        if len(parts) > 1:
+            share_id = parts[1].split('/')[0].split('?')[0]
+    
+    if not share_id:
+        # Try query parameters
+        query_params = parse_qs(parsed_url.query)
+        if 'share' in query_params:
+            share_id = query_params['share'][0]
+    
+    if share_id:
+        # Construct download URL
+        # NextCloud download format: /s/SHAREID/download
+        base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
+        
+        # Handle different NextCloud URL structures
+        if '/index.php' in parsed_url.path:
+            download_url = f"{base_url}/index.php/s/{share_id}/download"
+        else:
+            download_url = f"{base_url}/s/{share_id}/download"
+        
+        return download_url
+    
+    # If we can't parse it, try appending /download
+    if share_url.endswith('/'):
+        return share_url + 'download'
+    else:
+        return share_url + '/download'
+
+
+def _download_nextcloud_webdav(doc):
+    """Download file from NextCloud using WebDAV (for non-public files)"""
+    try:
+        # Get NextCloud session
+        nc_session = make_nc_session()
+        if not nc_session:
+            frappe.log_error("Could not establish NextCloud session", 
+                           "PibiDAV WebDAV Download")
+            return None
+        
+        # Construct remote path
+        remote_path = doc.folder_path
+        if not remote_path.endswith('/'):
+            remote_path += '/'
+        remote_path += doc.file_name
+        
+        # Get file content from NextCloud
+        file_content = nc_session.get_file_contents(remote_path)
+        nc_session.logout()
+        
+        return file_content
+        
+    except Exception as e:
+        frappe.log_error(f"Error downloading NextCloud file via WebDAV {doc.file_name}: {str(e)}", 
+                       "PibiDAV WebDAV Download")
+        return None
