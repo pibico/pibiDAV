@@ -1,0 +1,18 @@
+[project]
+name = "pibidav"
+authors = [
+    { name = "pibiCo", email = "pibico.sl@gmail.com" }
+]
+description = "WebDAV, CalDAV and CardDAV Integration between Frappe and NextCloud"
+requires-python = ">=3.11"
+dynamic = ["version"]
+dependencies = []
+
+[tool.bench.frappe-dependencies]
+frappe = ">=15,<16"
+erpnext = ">=15,<16"
+payments = ">=15,<16"
+hrms = ">=15,<16"
+
+[tool.setuptools]
+py-modules = ['pibidav']
