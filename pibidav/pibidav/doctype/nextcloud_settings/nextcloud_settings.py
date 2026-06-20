@@ -151,7 +151,7 @@ class NextCloudSettings(Document):
       remote_path = '{0}/{1}'.format(self.upload_path, remote_fileobj)
     
     try:
-      response = self.session.put_file(remote_path = remote_path, local_source_file = filebackup)
+      response = self.session.put_file(remote_path = remote_path, local_source_file = filebackup, chunked = False)
       return response
     except Exception as e:
       return "Failed"
