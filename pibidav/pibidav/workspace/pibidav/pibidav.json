@@ -1,7 +1,7 @@
 {
  "charts": [],
  "content": "[{\"id\":\"azQJesz1jX\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"></span><a href=\\\"https://aiduct-pro.espib.co/app/home\\\">Inicio</a> &gt; <a href=\\\"/app/pibitools\\\">pibiTools</a> &gt; pibiDAV<br>\",\"col\":12}},{\"id\":\"XQTScKtokJ\",\"type\":\"card\",\"data\":{\"card_name\":\"Documents\",\"col\":4}},{\"id\":\"OIx7Apgo_M\",\"type\":\"card\",\"data\":{\"card_name\":\"Configuraci\u00f3n\",\"col\":4}}]",
- "creation": "2024-12-06 23:17:35.907677",
+ "creation": "2025-01-27 13:17:47.060043",
  "custom_blocks": [],
  "docstatus": 0,
  "doctype": "Workspace",
@@ -13,6 +13,45 @@
  "is_hidden": 0,
  "label": "pibiDAV",
  "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Configuraci\u00f3n",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Categor\u00eda Archivado",
+   "link_count": 0,
+   "link_to": "File Category",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "NextCloud Settings",
+   "link_count": 0,
+   "link_to": "NextCloud Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Plantillas Carpetas",
+   "link_count": 0,
+   "link_to": "Folder Set",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
   {
    "hidden": 0,
    "is_query_report": 0,
@@ -61,48 +100,9 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Configuraci\u00f3n",
-   "link_count": 3,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "File Category",
-   "link_count": 0,
-   "link_to": "File Category",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "NextCloud Settings",
-   "link_count": 0,
-   "link_to": "NextCloud Settings",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Folder Set",
-   "link_count": 0,
-   "link_to": "Folder Set",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
   }
  ],
- "modified": "2024-12-06 23:18:00.867514",
+ "modified": "2025-01-27 13:37:26.856019",
  "modified_by": "Administrator",
  "module": "Pibidav",
  "name": "pibiDAV",
@@ -122,7 +122,7 @@
    "role": "NextCloud User"
   }
  ],
- "sequence_id": 11.0,
+ "sequence_id": 6.0,
  "shortcuts": [],
  "title": "pibiDAV"
 }

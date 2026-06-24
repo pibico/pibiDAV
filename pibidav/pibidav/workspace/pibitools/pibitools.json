@@ -1,7 +1,7 @@
 {
  "charts": [],
  "content": "[{\"id\":\"w6ozBdED5x\",\"type\":\"header\",\"data\":{\"text\":\"<a href=\\\"/app/home\\\">Inicio</a><span class=\\\"h4\\\"><span class=\\\"h5\\\"> &gt; pibiTools</span><br></span>\",\"col\":12}},{\"id\":\"Xyxm-ti2im\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"AI Home\",\"col\":12}}]",
- "creation": "2024-12-06 23:53:55.428319",
+ "creation": "2025-01-27 13:17:44.924078",
  "custom_blocks": [],
  "docstatus": 0,
  "doctype": "Workspace",
@@ -10,10 +10,10 @@
  "icon": "pibico",
  "idx": 0,
  "indicator_color": "",
- "is_hidden": 0,
+ "is_hidden": 1,
  "label": "pibiTools",
  "links": [],
- "modified": "2024-12-07 10:10:19.730958",
+ "modified": "2025-01-27 13:37:26.837234",
  "modified_by": "Administrator",
  "module": "Pibidav",
  "name": "pibiTools",
@@ -23,7 +23,7 @@
  "public": 1,
  "quick_lists": [],
  "roles": [],
- "sequence_id": 3.0,
+ "sequence_id": 5.0,
  "shortcuts": [],
  "title": "pibiTools"
 }
