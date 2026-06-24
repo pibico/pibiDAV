@@ -9,7 +9,7 @@
   "hide_custom": 0,
   "icon": "pibico",
   "indicator_color": "",
-  "is_hidden": 0,
+  "is_hidden": 1,
   "label": "pibiTools",
   "links": [],
   "modified": "2024-12-07 10:10:19.730958",
@@ -53,6 +53,7 @@
     "parent": "pibiDAV",
     "parentfield": "links",
     "parenttype": "Workspace",
+    "report_ref_doctype": null,
     "type": "Card Break"
    },
    {
@@ -70,6 +71,7 @@
     "parent": "pibiDAV",
     "parentfield": "links",
     "parenttype": "Workspace",
+    "report_ref_doctype": null,
     "type": "Link"
    },
    {
@@ -87,6 +89,7 @@
     "parent": "pibiDAV",
     "parentfield": "links",
     "parenttype": "Workspace",
+    "report_ref_doctype": null,
     "type": "Link"
    },
    {
@@ -104,6 +107,7 @@
     "parent": "pibiDAV",
     "parentfield": "links",
     "parenttype": "Workspace",
+    "report_ref_doctype": null,
     "type": "Link"
    },
    {
@@ -121,6 +125,7 @@
     "parent": "pibiDAV",
     "parentfield": "links",
     "parenttype": "Workspace",
+    "report_ref_doctype": null,
     "type": "Card Break"
    },
    {
@@ -138,6 +143,7 @@
     "parent": "pibiDAV",
     "parentfield": "links",
     "parenttype": "Workspace",
+    "report_ref_doctype": null,
     "type": "Link"
    },
    {
@@ -155,6 +161,7 @@
     "parent": "pibiDAV",
     "parentfield": "links",
     "parenttype": "Workspace",
+    "report_ref_doctype": null,
     "type": "Link"
    },
    {
@@ -172,6 +179,7 @@
     "parent": "pibiDAV",
     "parentfield": "links",
     "parenttype": "Workspace",
+    "report_ref_doctype": null,
     "type": "Link"
    },
    {
@@ -189,6 +197,7 @@
     "parent": "pibiDAV",
     "parentfield": "links",
     "parenttype": "Workspace",
+    "report_ref_doctype": null,
     "type": "Link"
    }
   ],
