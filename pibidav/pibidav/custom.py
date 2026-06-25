@@ -704,6 +704,61 @@ def get_folder_path_from_link(fileid):
         return f"Error retrieving folder path: {e}"
 
 @frappe.whitelist()
+def enable_nc_addon(dt, dn, nc_parent_folder=None):
+    """
+    Creates or updates a PibiDAV Addon for the given doctype/docname.
+    If nc_parent_folder contains a NC link, resolves the fileid to a folder path.
+    """
+    import re
+    print(f"enable_nc_addon called: SITE={frappe.local.site}, dt={dt}, dn={dn}, nc_parent_folder={nc_parent_folder[:60] if nc_parent_folder else None}")
+    # Get or create addon
+    addon_name = f"pbc_{dn}"
+    if frappe.db.exists("PibiDAV Addon", addon_name):
+        pibidav = frappe.get_doc("PibiDAV Addon", addon_name)
+    else:
+        pibidav = frappe.new_doc("PibiDAV Addon")
+        pibidav.ref_doctype = dt
+        pibidav.ref_docname = dn
+
+    pibidav.nc_enable = 1
+
+    # If nc_parent_folder has a link, resolve it to a path
+    if nc_parent_folder:
+        pibidav.nc_folder_internal_link = nc_parent_folder
+        # Extract fileid from link
+        match = re.search(r'/f/(\d+)', nc_parent_folder)
+        if match:
+            fileid = match.group(1)
+            try:
+                nc_session = make_nc_session()
+                print(f"enable_nc_addon: NC session created, resolving fileid {fileid}")
+                if nc_session and nc_session != "Failed":
+                    folder_path = nc_session.get_path_from_fileid(fileid)
+                    print(f"enable_nc_addon: folder_path = {folder_path}")
+                    if folder_path and folder_path.startswith("/"):
+                        pibidav.nc_folder = folder_path
+            except Exception as e:
+                print(f"enable_nc_addon: ERROR resolving fileid {fileid}: {e}")
+                frappe.log_error(f"Could not resolve fileid {fileid}: {e}", "enable_nc_addon")
+
+    # If nc_folder still empty, try default from settings
+    if not pibidav.nc_folder:
+        settings = frappe.db.get_value("Reference Item",
+            {"parent": "NextCloud Settings", "reference_doctype": dt},
+            ['nc_folder', 'use_default_folder'], as_dict=1)
+        if settings and settings.use_default_folder and settings.nc_folder:
+            pibidav.nc_folder = settings.nc_folder
+
+    pibidav.save()
+    frappe.db.commit()
+
+    return {
+        "name": pibidav.name,
+        "nc_folder": pibidav.nc_folder,
+        "nc_enable": pibidav.nc_enable
+    }
+
+@frappe.whitelist()
 def create_nc_subfolder(parent_folder, folder_name):
     try:
         session = make_nc_session()

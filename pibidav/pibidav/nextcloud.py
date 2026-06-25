@@ -1850,47 +1850,80 @@ class Client(object):
     def get_path_from_fileid(self, fileid):
         """
         Retrieves the full path of a file or directory based on its fileid.
+        Uses WebDAV SEARCH method for efficient lookup by fileid.
+        Falls back to redirect method for older NextCloud versions.
 
         :param fileid: The fileid for the desired file or directory
         :return: Full path of the file or directory
         :raises: Exception if the path cannot be resolved
         """
+        # Method 1: WebDAV SEARCH (fast, works on NC 20+)
         try:
-            # Construct the WebDAV endpoint URL for the fileid
-            url = f"{self.url}apps/files/?fileid={fileid}"
+            username = self._session.auth[0]
+            search_url = self.url + 'remote.php/dav'
 
-            # Make a GET request to retrieve the location header with the resolved path
+            search_body = (
+                '<?xml version="1.0" encoding="UTF-8"?>'
+                '<d:searchrequest xmlns:d="DAV:" xmlns:oc="http://owncloud.org/ns">'
+                '<d:basicsearch>'
+                '<d:select><d:prop><oc:fileid/></d:prop></d:select>'
+                '<d:from><d:scope>'
+                '<d:href>/files/' + parse.quote(username) + '</d:href>'
+                '<d:depth>infinity</d:depth>'
+                '</d:scope></d:from>'
+                '<d:where><d:eq>'
+                '<d:prop><oc:fileid/></d:prop>'
+                '<d:literal>' + str(fileid) + '</d:literal>'
+                '</d:eq></d:where>'
+                '</d:basicsearch>'
+                '</d:searchrequest>'
+            )
+
+            res = self._session.request(
+                'SEARCH',
+                search_url,
+                headers={'Content-Type': 'application/xml'},
+                data=search_body
+            )
+
+            print(f"get_path_from_fileid SEARCH: url={search_url}, status={res.status_code}, response_len={len(res.text)}, body={res.text[:300]}")
+
+            if res.status_code in [200, 207]:
+                tree = ET.fromstring(res.content)
+                for response in tree.findall('{DAV:}response'):
+                    href_elem = response.find('{DAV:}href')
+                    if href_elem is not None:
+                        href = parse.unquote(href_elem.text)
+                        # Strip the /remote.php/dav/files/{username} prefix
+                        dav_prefix = '/remote.php/dav/files/' + username
+                        if href.startswith(dav_prefix):
+                            path = href[len(dav_prefix):]
+                        else:
+                            path = self._strip_dav_path(href)
+                        if path.endswith('/') and path != '/':
+                            path = path[:-1]
+                        return path
+        except Exception:
+            pass
+
+        # Method 2: Redirect method (fallback for older NC versions)
+        try:
+            url = f"{self.url}apps/files/?fileid={fileid}"
             res = self._session.get(url, allow_redirects=False)
 
-            # Log the entire redirect response for debugging
-            if res.status_code in [301, 302, 303]:  # Redirect statuses
+            if res.status_code in [301, 302, 303]:
                 location = res.headers.get("Location")
-                if not location:
-                    raise Exception("Location header missing in response.")
+                if location:
+                    parsed_location = parse.urlparse(location)
+                    query_params = parse.parse_qs(parsed_location.query)
+                    if "dir" in query_params:
+                        return query_params["dir"][0]
+                    resolved_path = parse.unquote(parsed_location.path)
+                    return self._strip_dav_path(resolved_path)
+        except Exception:
+            pass
 
-                # Log the redirected URL
-                if self._debug:
-                    print(f"Redirected URL: {location}")
-
-                # Extract and decode the path from the URL
-                parsed_location = parse.urlparse(location)
-                resolved_path = parse.unquote(parsed_location.path)
-
-                # Log query parameters (e.g., dir=) for further inspection
-                query_params = parse.parse_qs(parsed_location.query)
-                if self._debug:
-                    print(f"Query Parameters: {query_params}")
-
-                # Look for the `dir` parameter in the query parameters
-                if "dir" in query_params:
-                    return query_params["dir"][0]  # Return the first value of the 'dir' parameter
-
-                # If `dir` is not found, fallback to the path
-                return self._strip_dav_path(resolved_path)
-            else:
-                raise Exception(f"Failed to resolve fileid {fileid}: HTTP {res.status_code}")
-        except Exception as e:
-            raise Exception(f"Error retrieving path for fileid {fileid}: {e}")
+        raise Exception(f"Could not resolve fileid {fileid}")
 
     @staticmethod
     def _normalize_path(path):
