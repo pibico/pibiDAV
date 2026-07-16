@@ -1,5 +1,1 @@
-# frappe -- https://github.com/frappe/frappe is installed via 'bench init'
-frappe
-payments
-erpnext
-hrms
+# frappe, payments, erpnext, hrms are bench-managed apps -- never list them here
