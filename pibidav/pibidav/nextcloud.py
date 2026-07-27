@@ -14,6 +14,7 @@ import requests
 import xml.etree.ElementTree as ET
 import os
 import math
+import uuid
 import six
 from six.moves.urllib import parse
 
@@ -354,6 +355,7 @@ class Client(object):
         self._session = requests.session()
         self._session.verify = self._verify_certs
         self._session.auth = (user_id, password)
+        self._user_id = user_id
 
         try:
             self._update_capabilities()
@@ -362,10 +364,12 @@ class Client(object):
             if self._dav_endpoint_version == 1:
                 self._davpath = url_components.path + 'remote.php/dav/files/' + parse.quote(user_id)
                 self._webdav_url = self.url + 'remote.php/dav/files/' + parse.quote(user_id)
+                self._uploads_url = self.url + 'remote.php/dav/uploads/' + parse.quote(user_id)
 
             else:
                 self._davpath = url_components.path + 'remote.php/webdav'
                 self._webdav_url = self.url + 'remote.php/webdav'
+                self._uploads_url = None
 
         except HTTPResponseError as e:
             self._session.close()
@@ -781,6 +785,11 @@ class Client(object):
         """Uploads a file using chunks. If the file is smaller than
         ``chunk_size`` it will be uploaded directly.
 
+        Uses the NextCloud v2 chunked upload protocol (MKCOL + PUT + MOVE)
+        when the uploads endpoint is available. Falls back to a direct PUT
+        for empty files, single-chunk files, or when the v2 endpoint is
+        not available (dav v0).
+
         :param remote_path: path to the target file. A target directory can
         also be specified instead by appending a "/"
         :param local_source_file: path to the local file to upload
@@ -789,8 +798,6 @@ class Client(object):
         :raises: HTTPResponseError in case an HTTP error status was returned
         """
         chunk_size = kwargs.get('chunk_size', 10 * 1024 * 1024)
-        result = True
-        transfer_id = int(time.time())
 
         remote_path = self._normalize_path(remote_path)
         if remote_path.endswith('/'):
@@ -807,7 +814,9 @@ class Client(object):
         if kwargs.get('keep_mtime', True):
             headers['X-OC-MTIME'] = str(int(stat_result.st_mtime))
 
+        # Empty files: direct PUT
         if size == 0:
+            file_handle.close()
             return self._make_dav_request(
                 'PUT',
                 remote_path,
@@ -817,29 +826,64 @@ class Client(object):
 
         chunk_count = int(math.ceil(float(size) / float(chunk_size)))
 
-        if chunk_count > 1:
-            headers['OC-CHUNKED'] = '1'
+        # Single chunk or no v2 uploads endpoint: direct PUT
+        if chunk_count <= 1 or self._uploads_url is None:
+            data = file_handle.read()
+            file_handle.close()
+            return self._make_dav_request(
+                'PUT',
+                remote_path,
+                data=data,
+                headers=headers
+            )
 
-        for chunk_index in range(0, int(chunk_count)):
-            data = file_handle.read(chunk_size)
-            if chunk_count > 1:
-                chunk_name = '%s-chunking-%s-%i-%i' % \
-                             (remote_path, transfer_id, chunk_count,
-                              chunk_index)
-            else:
-                chunk_name = remote_path
+        # --- v2 chunked upload protocol ---
+        transfer_id = uuid.uuid4().hex
 
-            if not self._make_dav_request(
+        try:
+            # 1. MKCOL: create staging directory
+            self._make_uploads_request(
+                'MKCOL',
+                '/' + transfer_id
+            )
+
+            # 2. PUT each chunk into the staging directory
+            for chunk_index in range(chunk_count):
+                data = file_handle.read(chunk_size)
+                self._make_uploads_request(
                     'PUT',
-                    chunk_name,
-                    data=data,
-                    headers=headers
-            ):
-                result = False
-                break
+                    '/' + transfer_id + '/' + str(chunk_index),
+                    data=data
+                )
 
-        file_handle.close()
-        return result
+            # 3. MOVE .file to assemble chunks into final destination
+            dest_url = self._webdav_url + parse.quote(
+                self._encode_string(remote_path)
+            )
+            move_headers = {
+                'Destination': dest_url,
+                'OC-Total-Length': str(size),
+            }
+            move_headers.update(headers)
+            self._make_uploads_request(
+                'MOVE',
+                '/' + transfer_id + '/.file',
+                headers=move_headers
+            )
+        except Exception:
+            # Best-effort cleanup of the staging directory
+            try:
+                self._make_uploads_request(
+                    'DELETE',
+                    '/' + transfer_id
+                )
+            except Exception:
+                pass
+            raise
+        finally:
+            file_handle.close()
+
+        return True
 
     def mkdir(self, path):
         """Creates a remote directory
@@ -1966,6 +2010,30 @@ class Client(object):
         if res.status_code in [204, 201]:
             return True
         raise HTTPResponseError(res)
+
+    def _make_uploads_request(self, method, path, **kwargs):
+        """Makes a WebDAV request to the uploads endpoint.
+
+        :param method: HTTP method
+        :param path: path relative to the uploads endpoint
+        :returns: raw :class:`requests.Response`
+        :raises: HTTPResponseError in case an HTTP error status was returned
+        """
+        if self._debug:
+            print('Uploads request: %s %s' % (method, path))
+            if kwargs.get('headers'):
+                print('Headers: ', kwargs.get('headers'))
+
+        res = self._session.request(
+            method,
+            self._uploads_url + parse.quote(self._encode_string(path)),
+            **kwargs
+        )
+        if self._debug:
+            print('Uploads status: %i' % res.status_code)
+        if res.status_code >= 400:
+            raise HTTPResponseError(res)
+        return res
 
     def _parse_dav_response(self, res):
         """Parses the DAV responses from a multi-status response
