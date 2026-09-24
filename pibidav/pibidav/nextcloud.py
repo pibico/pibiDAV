@@ -354,6 +354,7 @@ class Client(object):
         self._session = requests.session()
         self._session.verify = self._verify_certs
         self._session.auth = (user_id, password)
+        self._user_id = user_id
 
         try:
             self._update_capabilities()
@@ -817,29 +818,56 @@ class Client(object):
 
         chunk_count = int(math.ceil(float(size) / float(chunk_size)))
 
-        if chunk_count > 1:
-            headers['OC-CHUNKED'] = '1'
-
-        for chunk_index in range(0, int(chunk_count)):
-            data = file_handle.read(chunk_size)
-            if chunk_count > 1:
-                chunk_name = '%s-chunking-%s-%i-%i' % \
-                             (remote_path, transfer_id, chunk_count,
-                              chunk_index)
-            else:
-                chunk_name = remote_path
-
-            if not self._make_dav_request(
-                    'PUT',
-                    chunk_name,
-                    data=data,
-                    headers=headers
-            ):
-                result = False
-                break
+        if chunk_count <= 1:
+            data = file_handle.read()
+            file_handle.close()
+            return self._make_dav_request('PUT', remote_path, data=data, headers=headers)
 
         file_handle.close()
-        return result
+        # Nextcloud ya no ensambla el chunking v1 (nombre-chunking-<id>-<n>-<i> + OC-Chunked):
+        # deja los trozos como ficheros sueltos. Se usa chunking v2 (dav/uploads + MOVE .file)
+        # y, si no está disponible (p. ej. sesión de enlace público), una única subida PUT.
+        user_id = getattr(self, '_user_id', None)
+        if user_id and '/remote.php/dav/files/' in self._webdav_url:
+            return self._put_file_chunked_v2(remote_path, local_source_file, size, chunk_size, headers)
+        with open(local_source_file, 'rb') as fh:
+            return self._make_dav_request('PUT', remote_path, data=fh, headers=headers)
+
+    def _put_file_chunked_v2(self, remote_path, local_source_file, size, chunk_size, headers):
+        """Sube un fichero grande con el chunking v2 de Nextcloud y lo ensambla con MOVE."""
+        upload_url = self.url + 'remote.php/dav/uploads/' + parse.quote(self._user_id)             + '/pibidav-' + str(int(time.time() * 1000))
+        destination = self._webdav_url + parse.quote(self._encode_string(self._normalize_path(remote_path)))
+        base_headers = {'Destination': destination, 'OC-Total-Length': str(size)}
+
+        res = self._session.request('MKCOL', upload_url, headers=base_headers)
+        if res.status_code not in [201]:
+            raise HTTPResponseError(res)
+        try:
+            with open(local_source_file, 'rb', 8192) as fh:
+                index = 0
+                while True:
+                    data = fh.read(chunk_size)
+                    if not data:
+                        break
+                    index += 1
+                    res = self._session.request(
+                        'PUT', '%s/%05d' % (upload_url, index), data=data,
+                        headers=dict(base_headers, **{'OC-Chunk-Offset': str((index - 1) * chunk_size)}))
+                    if res.status_code not in [200, 201, 204]:
+                        raise HTTPResponseError(res)
+            move_headers = dict(headers)
+            move_headers.update(base_headers)
+            move_headers['Overwrite'] = 'T'
+            res = self._session.request('MOVE', upload_url + '/.file', headers=move_headers)
+            if res.status_code not in [200, 201, 204]:
+                raise HTTPResponseError(res)
+            return True
+        except Exception:
+            try:
+                self._session.request('DELETE', upload_url)
+            except Exception:
+                pass
+            raise
 
     def mkdir(self, path):
         """Creates a remote directory
