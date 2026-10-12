@@ -164,6 +164,7 @@ class NextCloudSettings(Document):
 @frappe.whitelist()
 def take_backup():
   """Enqueue long job for taking backup to NC"""
+  frappe.only_for("System Manager")
   enqueue("pibidav.pibidav.doctype.nextcloud_settings.nextcloud_settings.start_backup", queue='long', timeout=3000)
   frappe.msgprint(_("Queued for Backup. It may take a long time depending on your backup files size. Rest Easy!!!"))
   

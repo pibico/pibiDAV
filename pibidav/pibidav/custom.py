@@ -17,6 +17,25 @@ from frappe.utils.file_manager import get_file_path
 
 import frappe.desk.doctype.tag.tag as tag
 
+NC_ROLES = ("System Manager", "Docs Controller", "NextCloud User")
+
+def require_nc_role():
+  frappe.only_for(NC_ROLES)
+
+def require_nc_admin():
+  # Same rule the Folder Set tree applies in JS, now enforced on the server
+  if "System Manager" not in frappe.get_roles() and not checkNCuser():
+    frappe.throw(_("Not permitted"), frappe.PermissionError)
+
+def check_nc_name(*values):
+  for value in values:
+    if value and ("/" in value or "\\" in value or ".." in value):
+      frappe.throw(_("Invalid name for a NextCloud folder: {0}").format(value))
+
+def check_nc_path(path):
+  if not path or not path.startswith("/") or ".." in path.split("/"):
+    frappe.throw(_("Invalid NextCloud path: {0}").format(path))
+
 @frappe.whitelist()
 def checkNCuser():
   ncuser = frappe.get_value("NextCloud Settings", "NextCloud Settings", "nc_backup_username")
@@ -38,6 +57,10 @@ def doCreateFolder(doctype):
 
 @frappe.whitelist()
 def create_nc_folder(dt, dn, abbr, strmain, folder_set, sharing_option=None, secret=None):
+  frappe.has_permission(dt, "write", doc=dn, throw=True)
+  check_nc_name(abbr, strmain)
+  if sharing_option and sharing_option.split('-')[0] not in ("4", "17", "31"):
+    frappe.throw(_("Invalid sharing option"))
   doc = frappe.get_doc(doctype=dt, docname=dn)
   ## Check docs excluded and included in the NC Integration
   docs_excluded = frappe.get_value("NextCloud Settings", "NextCloud Settings", "nc_doctype_excluded")
@@ -75,7 +98,7 @@ def create_nc_folder(dt, dn, abbr, strmain, folder_set, sharing_option=None, sec
 
     ## Create Folders if needed data are filled in logged in as superuser in NC
     if node_name and path and abbreviation and strmain:
-      create_nc_dirs(node_name, path, abbreviation, strmain, digits)
+      make_nc_dirs(node_name, path, abbreviation, strmain, digits)
       nclog = make_nc_session()
       ## Get data fileid from dir
       fileinfo = nclog.file_info(root_path, properties=['{http://owncloud.org/ns}fileid'])
@@ -119,7 +142,6 @@ def create_nc_folder(dt, dn, abbr, strmain, folder_set, sharing_option=None, sec
       pibidav.save()
       nclog.logout()
 
-@frappe.whitelist()
 def get_native(parent, filetype):
   native_list = frappe.db.get_list('Deliverable Item',
     filters={
@@ -135,6 +157,7 @@ def get_native(parent, filetype):
 
 @frappe.whitelist()
 def check_nextcloud():
+  frappe.only_for("System Manager")
   doc = frappe.get_doc("NextCloud Settings", "NextCloud Settings")
   nc_url = doc.nc_backup_url
   nc_username = doc.nc_backup_username
@@ -165,7 +188,6 @@ def make_nc_session_user(user):
     frappe.msgprint(_("User has not enabled NC"))
     return "Failed"
 
-@frappe.whitelist()
 def get_nc_nodes(path):
   nc_user = frappe.get_doc("User", frappe.session.user)
   nc = make_nc_session_user(nc_user)
@@ -273,7 +295,6 @@ def tag_file_nc(nc_session, filepath, tags):
       pass
   return fileid, nc_tags
   
-@frappe.whitelist()
 def upload_file_to_nc(doc, method=None):
   ## Tag File in Frappe
   _tag_list = tag_file_fp(doc)
@@ -372,7 +393,6 @@ def upload_file_to_nc(doc, method=None):
   else:
     return
 
-@frappe.whitelist()
 def get_nc_settings(doctype):
   use_default = frappe.get_list("Reference Item", {"parent": "NextCloud Settings", "reference_doctype": doctype}, "use_default_folder")
   if use_default:
@@ -384,6 +404,7 @@ def get_nc_settings(doctype):
 
 @frappe.whitelist()
 def update_attachment_item(dt, dn):
+  frappe.has_permission(dt, "write", doc=dn, throw=True)
   nc_url = frappe.get_value("NextCloud Settings", "NextCloud Settings", "nc_backup_url")
   if not nc_url[-1] == '/': nc_url += '/'
   ## Get a list of all files attached to doctype and uploaded to NC
@@ -448,7 +469,6 @@ def update_attachment_item(dt, dn):
           doc.save()
           frappe.db.commit()
 
-@frappe.whitelist()
 def upload_nc_file(remote_path, local_file):
   ## Get bench path
   fname = frappe.get_doc('File', local_file)
@@ -525,7 +545,6 @@ def get_nc_files_in_folder(folder, start=0, page_length=20):
     'has_more': len(nodes) > page_length
   }
 
-@frappe.whitelist()
 def make_nc_session():
   nc_settings = frappe.get_doc('NextCloud Settings', 'NextCloud Settings')
   if nc_settings.nc_backup_enable:
@@ -539,7 +558,6 @@ def make_nc_session():
   else:
     frappe.msgprint(_("NextCloud Integration not Enabled"))  
     
-@frappe.whitelist()
 def create_nc_group(alias):
   ## Login in NC as superuser
   nclient = make_nc_session()
@@ -557,6 +575,12 @@ def create_nc_group(alias):
     
 @frappe.whitelist()
 def create_nc_dirs(node_name, path, abbrv, strmain, digits):
+  require_nc_admin()
+  check_nc_name(abbrv, strmain)
+  check_nc_path(path)
+  return make_nc_dirs(node_name, path, abbrv, strmain, digits)
+
+def make_nc_dirs(node_name, path, abbrv, strmain, digits):
   """ Create folders in NC Instance on path
     node_name = '(BPJ) Project' 
     path = "/Projects/"
@@ -649,6 +673,7 @@ def check_addon(dt, dn):
 @frappe.whitelist()
 def fetch_nc_folder_internal_link_from_addon(addon_name):
     pibidav = frappe.get_doc("PibiDAV Addon", addon_name)
+    pibidav.check_permission("write")
     if not pibidav.nc_folder:
         frappe.throw(_("No NC Folder defined in the Addon."))
 
@@ -674,8 +699,9 @@ def get_folder_path_from_link(fileid):
     :param fileid: File ID from the NextCloud folder link
     :return: Full path of the folder or an error message
     """
-    if not fileid:
-        frappe.log_error("No fileid provided to get_folder_path_from_link.")
+    require_nc_role()
+    fileid = cint(fileid)
+    if fileid <= 0:
         return "Error: fileid is empty."
 
     try:
@@ -710,6 +736,7 @@ def enable_nc_addon(dt, dn, nc_parent_folder=None):
     If nc_parent_folder contains a NC link, resolves the fileid to a folder path.
     """
     import re
+    frappe.has_permission(dt, "write", doc=dn, throw=True)
     print(f"enable_nc_addon called: SITE={frappe.local.site}, dt={dt}, dn={dn}, nc_parent_folder={nc_parent_folder[:60] if nc_parent_folder else None}")
     # Get or create addon
     addon_name = f"pbc_{dn}"
@@ -760,6 +787,10 @@ def enable_nc_addon(dt, dn, nc_parent_folder=None):
 
 @frappe.whitelist()
 def create_nc_subfolder(parent_folder, folder_name):
+    require_nc_role()
+    check_nc_name(folder_name)
+    if ".." in (parent_folder or "").split("/"):
+        frappe.throw(_("Invalid NextCloud path: {0}").format(parent_folder))
     try:
         session = make_nc_session()
         if session == "Failed":
