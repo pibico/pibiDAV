@@ -61,7 +61,7 @@
   },
   {
    "fieldname": "secret",
-   "fieldtype": "Data",
+   "fieldtype": "Password",
    "label": "Secret",
    "read_only": 1
   },
@@ -107,7 +107,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-05-10 13:26:58.019254",
+ "modified": "2026-10-13 00:30:00.000000",
  "modified_by": "Administrator",
  "module": "Pibidav",
  "name": "PibiDAV Addon",
@@ -133,7 +133,19 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "All",
+   "role": "NextCloud User",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Docs Controller",
    "share": 1,
    "write": 1
   }
