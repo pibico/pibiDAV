@@ -296,6 +296,9 @@ def tag_file_nc(nc_session, filepath, tags):
   return fileid, nc_tags
   
 def upload_file_to_nc(doc, method=None):
+  ## Folders have no file_url: nothing to tag or upload
+  if doc.is_folder or not doc.file_url:
+    return
   ## Tag File in Frappe
   _tag_list = tag_file_fp(doc)
   ## Method only valid for Files, not WebSites
