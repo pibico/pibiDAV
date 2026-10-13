@@ -8,7 +8,8 @@
   "card_push_enabled",
   "card_pull_enabled",
   "calendar_section",
-  "cal_enabled",
+  "cal_push_enabled",
+  "cal_pull_enabled",
   "sync_section",
   "sync_interval",
   "audit_retention_days"
@@ -40,9 +41,17 @@
   },
   {
    "default": "0",
-   "fieldname": "cal_enabled",
+   "description": "Events marked to sync are written to the user's own calendar",
+   "fieldname": "cal_push_enabled",
    "fieldtype": "Check",
-   "label": "Calendar Sync"
+   "label": "Frappe to CalDAV"
+  },
+  {
+   "default": "0",
+   "description": "Events of the calendars each user syncs are imported as Private, owned by that user",
+   "fieldname": "cal_pull_enabled",
+   "fieldtype": "Check",
+   "label": "CalDAV to Frappe"
   },
   {
    "fieldname": "sync_section",
@@ -66,7 +75,7 @@
  ],
  "issingle": 1,
  "links": [],
- "modified": "2026-10-13 12:00:00.000000",
+ "modified": "2026-10-13 15:00:00.000000",
  "modified_by": "Administrator",
  "module": "Pibidav Core",
  "name": "DAV Settings",
