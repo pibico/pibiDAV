@@ -22,20 +22,10 @@ MAX_VCF_BYTES = 5 * 1024 * 1024
 MAX_VCARDS = 5000
 
 
-def legacy_uid(contact_name):
-	"""UID that pibicard stored in Contact.cr_vcard_text, so exported and synced copies
-	keep the same identity. Transitional: remove with pibicard and its cr_* fields."""
-	if not frappe.db.has_column("Contact", "cr_vcard_text"):
-		return None
-	text = frappe.db.get_value("Contact", contact_name, "cr_vcard_text") or ""
-	match = re.search(r"^UID:(.+)$", text, re.MULTILINE)
-	return match.group(1).strip() if match else None
-
-
 def card_uid(contact_name):
 	return (
 		frappe.db.get_value("DAV Card Link", {"contact": contact_name}, "uid")
-		or legacy_uid(contact_name)
+		or frappe.db.get_value("Contact", contact_name, "dav_uid")
 		or vcard.new_uid()
 	)
 
@@ -124,11 +114,10 @@ def import_vcf(file_url, link_doctype=None, link_name=None):
 
 
 def known_contact(uid, emails):
-	"""Existing Contact for a vCard: by sync link, by pibicard UID, or by e-mail."""
+	"""Existing Contact for a vCard: by sync link, by vCard UID, or by e-mail."""
 	name = frappe.db.get_value("DAV Card Link", {"uid": uid}, "contact") if uid else None
-	if not name and uid and frappe.db.has_column("Contact", "cr_vcard_text"):
-		pattern = "%UID:" + uid.replace("%", r"\%").replace("_", r"\_") + "%"
-		name = frappe.db.get_value("Contact", {"cr_vcard_text": ("like", pattern)})
+	if not name and uid:
+		name = frappe.db.get_value("Contact", {"dav_uid": uid})
 	if not name and emails:
 		name = frappe.db.get_value("Contact Email", {"email_id": ("in", emails), "parenttype": "Contact"}, "parent")
 	return name
@@ -150,10 +139,13 @@ def run_import(file_name, user, link_doctype=None, link_name=None):
 			frappe.db.savepoint("pibidav_vcf_item")
 			try:
 				data = vcard.summary(card)
-				if known_contact(vcard.uid_of(card), data["emails"]):
+				uid = vcard.uid_of(card)
+				if known_contact(uid, data["emails"]):
 					counts["existing"] += 1
 					continue
 				contact = vcard.apply(frappe.new_doc("Contact"), card)
+				if uid and len(uid) <= 140:
+					contact.dav_uid = uid  # a later import of the same vCard finds it
 				if link_doctype and link_name:
 					contact.append("links", {"link_doctype": link_doctype, "link_name": link_name})
 				contact.insert()

@@ -115,9 +115,11 @@ def handle_card(account, collection, href, etag, text):
 		log_operation(account, "pull_item", uid, detail=f"Contact {contact.name} updated")
 		return "updated"
 
-	# Same vCard already known through another account (shared address book) or uploaded
-	# earlier by pibicard (UID kept in Contact.cr_vcard_text): link it
-	known = frappe.db.get_value("DAV Card Link", {"uid": uid}, "contact") or legacy_contact(uid)
+	# Same vCard already known through another account (shared address book) or by its
+	# UID (Contact.dav_uid, kept from pibicard): link it
+	known = frappe.db.get_value("DAV Card Link", {"uid": uid}, "contact") or frappe.db.get_value(
+		"Contact", {"dav_uid": uid}
+	)
 	if known and frappe.has_permission("Contact", "read", known):
 		save_link(account, collection, known, uid, href, etag)
 		log_operation(account, "pull_item", uid, detail=f"linked to Contact {known}")
@@ -157,14 +159,6 @@ def resolve_other_pending(uid, contact):
 		save_link(account, collection, contact, uid, p.href, p.etag)
 		frappe.db.set_value("DAV Pending Contact", p.name, {"status": "Linked", "contact": contact})
 		log_operation(account, "pending_link", uid, detail=f"Contact {contact} (same vCard handled by another account)")
-
-
-def legacy_contact(uid):
-	"""Contact whose pibicard vCard has this UID. Transitional: remove with pibicard."""
-	if not frappe.db.has_column("Contact", "cr_vcard_text"):
-		return None
-	pattern = "%UID:" + uid.replace("%", r"\%").replace("_", r"\_") + "%"
-	return frappe.db.get_value("Contact", {"cr_vcard_text": ("like", pattern)})
 
 
 def save_link(account, collection, contact, uid, href, etag):
