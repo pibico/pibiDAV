@@ -8,7 +8,6 @@ permissions are checked as that person: nobody sees or changes through pibiDAV
 what they could not see or change themselves.
 """
 
-from contextlib import contextmanager
 from xml.sax.saxutils import escape
 
 import frappe
@@ -24,18 +23,9 @@ from pibidav.pibidav_core.discovery import (
 	sync_changes,
 	tag,
 )
+from pibidav.pibidav_core.permissions import acting_as
 
 BATCH = 50
-
-
-@contextmanager
-def acting_as(user):
-	previous = frappe.session.user
-	frappe.set_user(user)
-	try:
-		yield
-	finally:
-		frappe.set_user(previous)
 
 
 def settings():
@@ -260,3 +250,9 @@ def run_due_syncs():
 			timeout=900,
 		)
 
+
+def on_contact_trash(doc, method=None):
+	"""Deleting a Contact in Frappe only drops its sync rows; the server is not touched."""
+	for name in frappe.get_all("DAV Card Link", filters={"contact": doc.name}, pluck="name"):
+		frappe.delete_doc("DAV Card Link", name, ignore_permissions=True)
+	frappe.db.set_value("DAV Pending Contact", {"contact": doc.name}, "contact", None)

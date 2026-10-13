@@ -1,0 +1,121 @@
+{
+ "actions": [],
+ "autoname": "hash",
+ "creation": "2026-10-13 16:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "event",
+  "dav_account",
+  "user",
+  "dav_collection",
+  "column_break_a",
+  "uid",
+  "href",
+  "etag",
+  "rrule_kept",
+  "last_sync"
+ ],
+ "fields": [
+  {
+   "fieldname": "event",
+   "fieldtype": "Link",
+   "label": "Event",
+   "options": "Event",
+   "in_list_view": 1,
+   "reqd": 1,
+   "search_index": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "dav_account",
+   "fieldtype": "Link",
+   "label": "DAV Account",
+   "options": "DAV Account",
+   "reqd": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User",
+   "options": "User",
+   "fetch_from": "dav_account.user",
+   "read_only": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "dav_collection",
+   "fieldtype": "Link",
+   "label": "Calendar",
+   "options": "DAV Collection",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "column_break_a",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "uid",
+   "fieldtype": "Data",
+   "label": "UID",
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "href",
+   "fieldtype": "Small Text",
+   "label": "Href",
+   "read_only": 1
+  },
+  {
+   "fieldname": "etag",
+   "fieldtype": "Data",
+   "label": "ETag",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rrule_kept",
+   "fieldtype": "Check",
+   "label": "Recurrence Kept on Server",
+   "read_only": 1,
+   "default": "0",
+   "description": "The server repeats this event in a way Frappe cannot show; its rule is never overwritten"
+  },
+  {
+   "fieldname": "last_sync",
+   "fieldtype": "Datetime",
+   "label": "Last Sync",
+   "read_only": 1,
+   "in_list_view": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-13 16:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Pibidav Cal",
+ "name": "DAV Cal Link",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "delete": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Desk User",
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "event"
+}

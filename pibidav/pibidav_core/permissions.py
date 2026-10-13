@@ -3,6 +3,8 @@
 
 """Owner-only access for rows that belong to a DAV Account (field `user`)."""
 
+from contextlib import contextmanager
+
 import frappe
 
 from pibidav.pibidav_core.doctype.dav_account.dav_account import is_admin
@@ -30,3 +32,18 @@ def card_link_query(user=None):
 
 def pending_contact_query(user=None):
 	return owner_condition("DAV Pending Contact", user)
+
+
+def cal_link_query(user=None):
+	return owner_condition("DAV Cal Link", user)
+
+
+@contextmanager
+def acting_as(user):
+	"""Run sync work as the account owner, so Frappe permissions are theirs."""
+	previous = frappe.session.user
+	frappe.set_user(user)
+	try:
+		yield
+	finally:
+		frappe.set_user(previous)

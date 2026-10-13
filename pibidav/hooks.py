@@ -61,6 +61,7 @@ doctype_js = {}
 for item in nc_list:
   doctype_js[item] = ["public/js/dist/nc_pibidav.js"]
 doctype_js["Contact"].append("public/js/dav_contact.js")
+doctype_js["Event"].append("public/js/dav_event.js")
 
 doctype_list_js = {"Contact": "public/js/dav_contact_list.js"}
 
@@ -123,6 +124,7 @@ permission_query_conditions = {
   "DAV Collection": "pibidav.pibidav_core.doctype.dav_collection.dav_collection.get_permission_query_conditions",
   "DAV Card Link": "pibidav.pibidav_core.permissions.card_link_query",
   "DAV Pending Contact": "pibidav.pibidav_core.permissions.pending_contact_query",
+  "DAV Cal Link": "pibidav.pibidav_core.permissions.cal_link_query",
 }
 
 has_permission = {
@@ -130,7 +132,11 @@ has_permission = {
   "DAV Collection": "pibidav.pibidav_core.doctype.dav_collection.dav_collection.has_permission",
   "DAV Card Link": "pibidav.pibidav_core.permissions.has_owner_permission",
   "DAV Pending Contact": "pibidav.pibidav_core.permissions.has_owner_permission",
+  "DAV Cal Link": "pibidav.pibidav_core.permissions.has_owner_permission",
 }
+
+# Sync bookkeeping must never block deleting a Contact or an Event
+ignore_links_on_delete = ["DAV Card Link", "DAV Cal Link", "DAV Pending Contact"]
 
 jinja = {
   "methods": [
@@ -160,6 +166,13 @@ doc_events = {
   },
   "User": {
     "on_update": ["pibidav.pibidav_core.doctype.dav_account.dav_account.disable_accounts_of_user"]
+  },
+  "Contact": {
+    "on_trash": ["pibidav.pibidav_card.sync.on_contact_trash"]
+  },
+  "Event": {
+    "on_update": ["pibidav.pibidav_cal.sync.on_event_update"],
+    "on_trash": ["pibidav.pibidav_cal.sync.on_event_trash"]
   }
 # 	"*": {
 # 		"on_update": "method",
@@ -181,7 +194,10 @@ scheduler_events = {
 #    ]
 #  },
   "cron": {
-    "*/5 * * * *": ["pibidav.pibidav_card.sync.run_due_syncs"]
+    "*/5 * * * *": [
+      "pibidav.pibidav_card.sync.run_due_syncs",
+      "pibidav.pibidav_cal.sync.run_due_syncs"
+    ]
   },
   "daily": [
     "pibidav.pibidav.doctype.nextcloud_settings.nextcloud_settings.daily_backup",
