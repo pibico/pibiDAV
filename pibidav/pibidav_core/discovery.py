@@ -111,6 +111,11 @@ def discover(account):
 		doc.flags.from_discovery = True
 		doc.save(ignore_permissions=True)  # rows mirror the server; the owner only toggles sync
 		found.append(doc.name)
+	# Collections that no longer exist on the server stop syncing (they would fail with 404)
+	for name in frappe.get_all(
+		"DAV Collection", filters={"dav_account": account.name, "name": ("not in", found or [""]), "sync_enabled": 1}, pluck="name"
+	):
+		frappe.db.set_value("DAV Collection", name, "sync_enabled", 0)
 	log_operation(account, "discover", resource=home, detail=f"{len(found)} collections")
 	return found
 

@@ -2,3 +2,4 @@
 
 [post_model_sync]
 pibidav.patches.v15_0.adopt_pibicard_contacts
+pibidav.patches.v15_0.unique_dav_links

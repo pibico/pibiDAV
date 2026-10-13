@@ -117,15 +117,21 @@ def apply(event, cal):
 	if rule is None:
 		event.repeat_this_event = 0
 		return True
-	if not rrule_supported(rule):
+	freq = (rule.get("FREQ") or [None])[0]
+	if not rrule_supported(rule) or (freq == "DAILY" and getdate(event.starts_on) != getdate(event.ends_on)):
+		# Frappe only repeats daily events that start and end on the same day
 		event.repeat_this_event = 0
 		return False
 	event.repeat_this_event = 1
-	event.repeat_on = FREQS[rule["FREQ"][0]]
+	event.repeat_on = FREQS[freq]
 	until = (rule.get("UNTIL") or [None])[0]
 	event.repeat_till = getdate(to_local(until)) if until else None
+	days = [cstr(d)[-2:] for d in rule.get("BYDAY", [])]
+	if freq == "WEEKLY" and not days:
+		# RFC 5545: a weekly rule without BYDAY repeats on the weekday of DTSTART
+		days = [list(DAYS)[getdate(event.starts_on).weekday()]]
 	for code, field in DAYS.items():
-		event.set(field, 1 if code in [cstr(d)[-2:] for d in rule.get("BYDAY", [])] else 0)
+		event.set(field, 1 if code in days else 0)
 	return True
 
 
@@ -178,7 +184,9 @@ def build(event, uid, base_text=None, keep_server_rrule=False):
 			days = [code for code, field in DAYS.items() if event.get(field)]
 			if days:
 				rule["BYDAY"] = days
-		if event.repeat_till:
+		if event.repeat_till and event.all_day:
+			rule["UNTIL"] = getdate(event.repeat_till)  # DATE, like DTSTART (RFC 5545 3.3.10)
+		elif event.repeat_till:
 			rule["UNTIL"] = dt.datetime.combine(getdate(event.repeat_till), dt.time(23, 59, 59)).replace(tzinfo=system_tz()).astimezone(dt.timezone.utc)
 		vevent.add("rrule", vRecur(rule))
 	elif not keep_server_rrule:

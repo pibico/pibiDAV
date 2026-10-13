@@ -44,7 +44,12 @@ def link_event(event, collection):
 	if frappe.db.exists("DAV Cal Link", {"event": event, "dav_account": target.dav_account}):
 		frappe.throw(_("This event is already in one of your calendars"))
 	frappe.enqueue(
-		"pibidav.pibidav_cal.sync.push_event", event_name=event, collection_name=target.name, queue="short"
+		"pibidav.pibidav_cal.sync.push_event",
+		event_name=event,
+		collection_name=target.name,
+		queue="short",
+		job_id=f"pibidav-cal-link-{event}-{target.dav_account}",
+		deduplicate=True,
 	)
 	return {"queued": 1}
 

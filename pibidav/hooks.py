@@ -60,10 +60,7 @@ doc_events = {
 
 scheduler_events = {
 	"cron": {
-		"*/5 * * * *": [
-			"pibidav.pibidav_card.sync.run_due_card_syncs",
-			"pibidav.pibidav_cal.sync.run_due_cal_syncs",
-		]
+		"*/5 * * * *": ["pibidav.pibidav_core.engine.run_due_syncs"]
 	},
 	"daily": [
 		"pibidav.pibidav.doctype.nextcloud_settings.nextcloud_settings.daily_backup",

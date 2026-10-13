@@ -8,110 +8,52 @@ permissions are checked as that person: nobody sees or changes through pibiDAV
 what they could not see or change themselves.
 """
 
-from xml.sax.saxutils import escape
-
 import frappe
 from frappe.utils import cint, get_datetime, now_datetime
 
 from pibidav.pibidav_card import vcard
 from pibidav.pibidav_core.audit import log_operation
 from pibidav.pibidav_core.client import DAVClient, DAVError
-from pibidav.pibidav_core.discovery import (
-	XML_HEADERS,
-	mark_synced,
-	parse_multistatus,
-	sync_changes,
-	tag,
-)
+from pibidav.pibidav_core.engine import settings
+from pibidav.pibidav_core.engine import usable as account_usable
 from pibidav.pibidav_core.permissions import acting_as
-
-BATCH = 50
-
-
-def settings():
-	return frappe.get_cached_doc("DAV Settings")
 
 
 def usable(account):
-	return account.enabled and account.status == "Connected" and account.service == "CardDAV"
+	return account_usable(account, "CardDAV")
 
 
-def multiget(client, collection, hrefs):
-	body = (
-		'<card:addressbook-multiget xmlns:d="DAV:" xmlns:card="urn:ietf:params:xml:ns:carddav">'
-		"<d:prop><d:getetag/><card:address-data/></d:prop>"
-		+ "".join(f"<d:href>{escape(h)}</d:href>" for h in hrefs)
-		+ "</card:addressbook-multiget>"
-	)
-	response = client.request("REPORT", collection.href, data=body, headers={**XML_HEADERS, "Depth": "1"})
-	out = {}
-	for href, props, _status in parse_multistatus(response.text)[0]:
-		data = props.get(tag("card", "address-data"))
-		etag = props.get(tag("d", "getetag"))
-		if data is not None and data.text:
-			out[href] = (etag.text if etag is not None else None, data.text)
-	return out
+# ---------- CardDAV → Frappe (called by pibidav_core.engine) ----------
 
 
-# ---------- CardDAV → Frappe ----------
-
-
-def pull_collection(collection_name):
-	collection = frappe.get_doc("DAV Collection", collection_name)
-	account = frappe.get_doc("DAV Account", collection.dav_account)
-	if not (cint(settings().card_pull_enabled) and usable(account) and collection.sync_enabled):
-		return
-	client = DAVClient(account)
-	with acting_as(account.user):
-		try:
-			changed, deleted, token = sync_changes(client, collection)
-		except DAVError as e:
-			if e.status not in (403, 409):
-				log_operation(account, "pull", collection.href, "Error", str(e))
-				raise
-			# The server forgot our sync token: start again with a full sync
-			collection.sync_token = None
-			changed, deleted, token = sync_changes(client, collection)
-		hrefs = list(changed)
-		counts = {"updated": 0, "linked": 0, "pending": 0, "skipped": 0, "removed": 0}
-		for i in range(0, len(hrefs), BATCH):
-			for href, (etag, text) in multiget(client, collection, hrefs[i : i + BATCH]).items():
-				frappe.db.savepoint("pibidav_card_item")
-				try:
-					counts[handle_card(account, collection, href, etag or changed.get(href), text)] += 1
-				except Exception as e:
-					# One bad vCard must not stop the rest of the address book
-					frappe.db.rollback(save_point="pibidav_card_item")
-					log_operation(account, "pull_item", href, "Error", str(e))
-					counts["skipped"] += 1
-		for href in deleted:
-			# The vCard left this address book; the Contact stays in Frappe
-			for doctype in ("DAV Card Link", "DAV Pending Contact"):
-				for name in frappe.get_all(doctype, filters={"dav_account": account.name, "href": href}, pluck="name"):
-					frappe.delete_doc(doctype, name, ignore_permissions=True)
-					counts["removed"] += 1
-		mark_synced(collection, token)
-		log_operation(account, "pull", collection.href, detail=str(counts))
-		frappe.db.commit()
-	return counts
-
-
-def handle_card(account, collection, href, etag, text):
+def handle_item(account, collection, href, etag, text):
 	card = vcard.parse(text)
 	uid = vcard.uid_of(card)
 	if not uid:
 		log_operation(account, "pull_item", href, "Skipped", "vCard without UID")
 		return "skipped"
-	link = frappe.db.get_value("DAV Card Link", {"dav_account": account.name, "uid": uid}, ["name", "contact", "etag"], as_dict=True)
+	link = frappe.db.get_value(
+		"DAV Card Link", {"dav_account": account.name, "uid": uid}, ["name", "contact", "etag", "href", "last_sync"], as_dict=True
+	)
 	if link:
 		if link.etag == etag:
+			if link.href != href:  # moved to another address book of the account
+				frappe.db.set_value("DAV Card Link", link.name, {"href": href, "dav_collection": collection.name})
 			return "skipped"
 		contact = frappe.get_doc("Contact", link.contact)
 		if not frappe.has_permission("Contact", "write", contact):
 			log_operation(account, "pull_item", uid, "Skipped", "no write permission on the Contact")
 			return "skipped"
+		if link.last_sync and get_datetime(contact.modified) > get_datetime(link.last_sync):
+			# Edited in Frappe and on the server since the last sync: Frappe's version stays,
+			# the server copy is not applied (Upload to CardDAV replaces it)
+			frappe.db.set_value("DAV Card Link", link.name, {"etag": etag, "href": href, "last_sync": now_datetime()})
+			log_operation(account, "pull_item", uid, "Conflict", f"Contact {contact.name} changed in Frappe and on the server; Frappe kept")
+			return "conflict"
 		vcard.apply(contact, card).save()
-		frappe.db.set_value("DAV Card Link", link.name, {"etag": etag, "href": href, "last_sync": now_datetime()})
+		frappe.db.set_value(
+			"DAV Card Link", link.name, {"etag": etag, "href": href, "dav_collection": collection.name, "last_sync": now_datetime()}
+		)
 		log_operation(account, "pull_item", uid, detail=f"Contact {contact.name} updated")
 		return "updated"
 
@@ -147,6 +89,16 @@ def handle_card(account, collection, href, etag, text):
 	)
 	doc.save(ignore_permissions=True)  # owned by the account user; filled by the sync job
 	return "pending"
+
+
+def remove_item(account, href):
+	"""The vCard left the account's address books: its sync rows go, the Contact stays."""
+	removed = 0
+	for doctype in ("DAV Card Link", "DAV Pending Contact"):
+		for name in frappe.get_all(doctype, filters={"dav_account": account.name, "href": href}, pluck="name"):
+			frappe.delete_doc(doctype, name, ignore_permissions=True)
+			removed += 1
+	return removed
 
 
 def resolve_other_pending(uid, contact):
@@ -265,30 +217,7 @@ def push_contact(client, account, collection, contact_name):
 	return "done"
 
 
-# ---------- scheduler ----------
-
-
-def run_due_card_syncs():
-	"""Cron entry: enqueue the pull of every collection whose interval has passed."""
-	if not cint(settings().card_pull_enabled):
-		return
-	interval = cint(settings().sync_interval) or 15
-	collections = frappe.get_all(
-		"DAV Collection",
-		filters={"service": "CardDAV", "sync_enabled": 1},
-		fields=["name", "dav_account", "last_sync"],
-	)
-	for c in collections:
-		if c.last_sync and (now_datetime() - get_datetime(c.last_sync)).total_seconds() < interval * 60:
-			continue
-		frappe.enqueue(
-			"pibidav.pibidav_card.sync.pull_collection",
-			collection_name=c.name,
-			queue="short",
-			job_id=f"pibidav-card-{c.name}",
-			deduplicate=True,
-			timeout=900,
-		)
+# ---------- Contact doc_events ----------
 
 
 def on_contact_trash(doc, method=None):
