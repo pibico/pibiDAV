@@ -31,16 +31,16 @@ doctype_js["Event"].append("public/js/dav_event.js")
 doctype_list_js = {"Contact": "public/js/dav_contact_list.js"}
 
 permission_query_conditions = {
-	"DAV Account": "pibidav.pibidav_core.doctype.dav_account.dav_account.get_permission_query_conditions",
-	"DAV Collection": "pibidav.pibidav_core.doctype.dav_collection.dav_collection.get_permission_query_conditions",
+	"DAV Account": "pibidav.pibidav_core.permissions.account_query",
+	"DAV Collection": "pibidav.pibidav_core.permissions.collection_query",
 	"DAV Card Link": "pibidav.pibidav_core.permissions.card_link_query",
 	"DAV Pending Contact": "pibidav.pibidav_core.permissions.pending_contact_query",
 	"DAV Cal Link": "pibidav.pibidav_core.permissions.cal_link_query",
 }
 
 has_permission = {
-	"DAV Account": "pibidav.pibidav_core.doctype.dav_account.dav_account.has_permission",
-	"DAV Collection": "pibidav.pibidav_core.doctype.dav_collection.dav_collection.has_permission",
+	"DAV Account": "pibidav.pibidav_core.permissions.has_owner_edit_permission",
+	"DAV Collection": "pibidav.pibidav_core.permissions.has_owner_edit_permission",
 	"DAV Card Link": "pibidav.pibidav_core.permissions.has_owner_permission",
 	"DAV Pending Contact": "pibidav.pibidav_core.permissions.has_owner_permission",
 	"DAV Cal Link": "pibidav.pibidav_core.permissions.has_owner_permission",

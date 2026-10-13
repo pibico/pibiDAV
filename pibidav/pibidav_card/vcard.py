@@ -21,6 +21,16 @@ def new_uid():
 	return str(uuid.uuid4())
 
 
+BINARY = ("photo", "logo", "sound", "key")
+
+
+def without_binaries(card):
+	"""vCard text without photos and other binary properties, to keep in the database."""
+	for key in BINARY:
+		card.contents.pop(key, None)
+	return card.serialize()
+
+
 def parse(text):
 	try:
 		return vobject.readOne(text)

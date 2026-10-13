@@ -10,6 +10,7 @@ from frappe.utils.password import remove_encrypted_password
 
 from pibidav.pibidav_core.audit import log_operation
 from pibidav.pibidav_core.client import (
+	USER_AGENT,
 	DAVClient,
 	DAVError,
 	get_logger,
@@ -39,13 +40,14 @@ class DAVAccount(Document):
 			self.status = "Pending"
 
 	def validate_owner_changes(self):
-		if is_admin():
+		# Status, login and check results are set by pibiDAV's own code (from_server)
+		if is_admin() or self.flags.from_server:
 			return
 		if self.is_new():
 			frappe.throw(_("Only an administrator can create DAV accounts"), frappe.PermissionError)
 		before = self.get_doc_before_save()
 		for df in self.meta.fields:
-			if df.fieldtype in ("Section Break", "Column Break") or df.read_only or df.fieldname in OWNER_EDITABLE:
+			if df.fieldtype in ("Section Break", "Column Break", "Tab Break") or df.fieldname in OWNER_EDITABLE:
 				continue
 			if before and before.get(df.fieldname) != self.get(df.fieldname):
 				frappe.throw(_("Only an administrator can change {0}").format(_(df.label)), frappe.PermissionError)
@@ -74,22 +76,6 @@ class DAVAccount(Document):
 			self.db_set({"status": "Pending", "last_error": None})
 
 
-def has_permission(doc, ptype=None, user=None, debug=False):
-	user = user or frappe.session.user
-	if is_admin(user):
-		return True
-	if ptype in ("create", "delete"):
-		return False
-	return doc.user == user
-
-
-def get_permission_query_conditions(user=None):
-	user = user or frappe.session.user
-	if is_admin(user):
-		return ""
-	return f"`tabDAV Account`.`user` = {frappe.db.escape(user)}"
-
-
 def get_own_account(name):
 	account = frappe.get_doc("DAV Account", name)
 	if account.user != frappe.session.user:
@@ -110,7 +96,7 @@ def mark(account, status, error=None):
 	account.db_set({"status": status, "last_check": now_datetime(), "last_error": (error or None) and error[:500]})
 
 
-@frappe.whitelist()
+@frappe.whitelist(methods=["POST"])
 def test_connection(name):
 	account = frappe.get_doc("DAV Account", name)
 	account.check_permission("read")
@@ -138,8 +124,8 @@ def start_login_flow(name):
 		response = requests.post(
 			base + "/index.php/login/v2",
 			timeout=account.timeout or 15,
-			verify=bool(account.verify_tls),
-			headers={"User-Agent": "pibiDAV/15 (Frappe)"},
+			headers={"User-Agent": USER_AGENT},
+			allow_redirects=False,
 		)
 		response.raise_for_status()
 		data = response.json()
@@ -166,7 +152,8 @@ def poll_login_flow(name):
 			poll["endpoint"],
 			data={"token": poll["token"]},
 			timeout=account.timeout or 15,
-			verify=bool(account.verify_tls),
+			headers={"User-Agent": USER_AGENT},
+			allow_redirects=False,
 		)
 	except requests.RequestException as e:
 		return {"status": "waiting", "error": str(e)}
@@ -189,6 +176,7 @@ def poll_login_flow(name):
 		log_operation(account, "login_flow_done", result="Error", detail="login mismatch")
 		return {"status": "error", "error": str(e)}
 	account.app_password = result.get("appPassword")
+	account.flags.from_server = True  # login_name comes from the server
 	account.save()
 	log_operation(account, "login_flow_done")
 	return {"status": "done", **test_connection(name)}

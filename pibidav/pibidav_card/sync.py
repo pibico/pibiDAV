@@ -120,7 +120,7 @@ def handle_card(account, collection, href, etag, text):
 	known = frappe.db.get_value("DAV Card Link", {"uid": uid}, "contact") or frappe.db.get_value(
 		"Contact", {"dav_uid": uid}
 	)
-	if known and frappe.has_permission("Contact", "read", known):
+	if known and frappe.has_permission("Contact", "write", known):
 		save_link(account, collection, known, uid, href, etag)
 		log_operation(account, "pull_item", uid, detail=f"linked to Contact {known}")
 		return "linked"
@@ -141,7 +141,7 @@ def handle_card(account, collection, href, etag, text):
 			"company_name": data["company_name"],
 			"emails": "\n".join(data["emails"]),
 			"phones": "\n".join(p for p, _m in data["phones"]),
-			"vcard": text,
+			"vcard": vcard.without_binaries(card),
 			"status": "Pending" if doc.status != "Discarded" else "Discarded",
 		}
 	)
@@ -150,10 +150,15 @@ def handle_card(account, collection, href, etag, text):
 
 
 def resolve_other_pending(uid, contact):
-	"""The same vCard waiting in other accounts (shared address book) now has a Contact."""
+	"""The same vCard waiting in other accounts (shared address book) now has a Contact.
+	Each of those rows is linked only if its owner may edit that Contact."""
 	for p in frappe.get_all(
-		"DAV Pending Contact", filters={"uid": uid, "status": "Pending"}, fields=["name", "dav_account", "dav_collection", "href", "etag"]
+		"DAV Pending Contact",
+		filters={"uid": uid, "status": "Pending"},
+		fields=["name", "user", "dav_account", "dav_collection", "href", "etag"],
 	):
+		if not frappe.has_permission("Contact", "write", contact, user=p.user):
+			continue
 		account = frappe.get_doc("DAV Account", p.dav_account)
 		collection = frappe.get_doc("DAV Collection", p.dav_collection) if p.dav_collection else None
 		save_link(account, collection, contact, uid, p.href, p.etag)

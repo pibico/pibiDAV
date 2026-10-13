@@ -17,7 +17,8 @@
   "sync_section",
   "sync_interval",
   "column_break_sync",
-  "audit_retention_days"
+  "audit_retention_days",
+  "allow_private_servers"
  ],
  "fields": [
   {
@@ -101,11 +102,18 @@
    "fieldtype": "Int",
    "label": "Keep Audit Log (days)",
    "non_negative": 1
+  },
+  {
+   "default": "0",
+   "description": "Allow DAV servers whose address is in a private network (for a Nextcloud in the same LAN). Off, the ERP server cannot be used to reach internal hosts.",
+   "fieldname": "allow_private_servers",
+   "fieldtype": "Check",
+   "label": "Allow Private Servers"
   }
  ],
  "issingle": 1,
  "links": [],
- "modified": "2026-10-13 18:00:00.000000",
+ "modified": "2026-10-14 01:00:00.000000",
  "modified_by": "Administrator",
  "module": "Pibidav Core",
  "name": "DAV Settings",

@@ -23,19 +23,3 @@ class DAVCollection(Document):
 				continue
 			if before and before.get(df.fieldname) != self.get(df.fieldname):
 				frappe.throw(_("Only the sync switch can be changed"), frappe.PermissionError)
-
-
-def has_permission(doc, ptype=None, user=None, debug=False):
-	user = user or frappe.session.user
-	if is_admin(user):
-		return True
-	if ptype in ("create", "delete"):
-		return False
-	return doc.user == user
-
-
-def get_permission_query_conditions(user=None):
-	user = user or frappe.session.user
-	if is_admin(user):
-		return ""
-	return f"`tabDAV Collection`.`user` = {frappe.db.escape(user)}"

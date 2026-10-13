@@ -18,7 +18,6 @@
   "username",
   "login_name",
   "timeout",
-  "verify_tls",
   "credential_section",
   "app_password",
   "column_break_cred",
@@ -118,12 +117,6 @@
    "label": "Timeout (s)"
   },
   {
-   "default": "1",
-   "fieldname": "verify_tls",
-   "fieldtype": "Check",
-   "label": "Verify TLS Certificate"
-  },
-  {
    "fieldname": "credential_section",
    "fieldtype": "Section Break",
    "label": "Credential"
@@ -153,7 +146,7 @@
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-10-13 13:00:00.000000",
+ "modified": "2026-10-14 01:00:00.000000",
  "modified_by": "Administrator",
  "module": "Pibidav Core",
  "name": "DAV Account",

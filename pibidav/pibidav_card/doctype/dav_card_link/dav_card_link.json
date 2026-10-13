@@ -85,7 +85,7 @@
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-10-13 14:00:00.000000",
+ "modified": "2026-10-14 01:00:00.000000",
  "modified_by": "Administrator",
  "module": "Pibidav Card",
  "name": "DAV Card Link",
@@ -102,7 +102,7 @@
   {
    "read": 1,
    "role": "Desk User",
-   "write": 1
+   "write": 0
   }
  ],
  "sort_field": "modified",
