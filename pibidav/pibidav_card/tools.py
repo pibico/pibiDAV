@@ -16,6 +16,7 @@ from frappe import _
 from PIL import Image
 
 from pibidav.pibidav_card import vcard
+from pibidav.pibidav_card.sync import contact_uid
 from pibidav.pibidav_core.permissions import acting_as
 
 MAX_VCF_BYTES = 5 * 1024 * 1024
@@ -23,11 +24,7 @@ MAX_VCARDS = 5000
 
 
 def card_uid(contact_name):
-	return (
-		frappe.db.get_value("DAV Card Link", {"contact": contact_name}, "uid")
-		or frappe.db.get_value("Contact", contact_name, "dav_uid")
-		or vcard.new_uid()
-	)
+	return contact_uid(contact_name) or vcard.new_uid()
 
 
 def card_text(contact):

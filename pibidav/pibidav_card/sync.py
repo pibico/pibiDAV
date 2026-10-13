@@ -188,44 +188,76 @@ def push_contacts(contact_names, collection_name):
 	if not (cint(settings().card_push_enabled) and usable(account)) or collection.read_only:
 		return
 	client = DAVClient(account)
-	done = 0
+	counts = {"done": 0, "conflict": 0, "error": 0}
 	with acting_as(account.user):
 		for name in contact_names:
+			frappe.db.savepoint("pibidav_push_item")
 			try:
-				push_contact(client, account, collection, name)
-				done += 1
-			except DAVError as e:
-				log_operation(account, "push_item", name, "Error", str(e))
-			frappe.publish_realtime(
-				"pibidav_card_push", {"done": done, "total": len(contact_names), "contact": name}, user=account.user
-			)
-		frappe.db.commit()
-	return done
+				counts[push_contact(client, account, collection, name)] += 1
+			except Exception as e:
+				frappe.db.rollback(save_point="pibidav_push_item")
+				log_operation(account, "push_item", name, "Error", str(e) if isinstance(e, DAVError) else repr(e))
+				counts["error"] += 1
+			frappe.db.commit()  # every vCard already on the server keeps its link
+	frappe.publish_realtime(
+		"pibidav_card_push",
+		{**counts, "total": len(contact_names), "address_book": collection.display_name},
+		user=account.user,
+	)
+	return counts
+
+
+def contact_uid(contact_name):
+	"""The UID this Contact already has (in any address book, or kept from pibicard)."""
+	return frappe.db.get_value("DAV Card Link", {"contact": contact_name}, "uid") or frappe.db.get_value(
+		"Contact", contact_name, "dav_uid"
+	)
+
+
+def put_card(client, href, text, condition):
+	return client.request(
+		"PUT", href, data=text.encode(), headers={"Content-Type": "text/vcard; charset=utf-8", **condition}
+	)
 
 
 def push_contact(client, account, collection, contact_name):
+	"""Upload one Contact. Returns 'done', or 'conflict' when the server copy changed
+	since the last sync (it is not overwritten: the next pull brings it)."""
 	contact = frappe.get_doc("Contact", contact_name)
 	contact.check_permission("read")
 	link = frappe.db.get_value(
 		"DAV Card Link", {"dav_account": account.name, "contact": contact.name}, ["uid", "href", "etag"], as_dict=True
 	)
+	current = None
 	if link and link.href:
-		current = client.request("GET", link.href)
-		text = vcard.build(contact, link.uid, base_text=current.text)
-		response = client.request(
-			"PUT", link.href, data=text.encode(), headers={"Content-Type": "text/vcard; charset=utf-8", "If-Match": current.headers.get("ETag") or "*"}
-		)
 		uid, href = link.uid, link.href
+		try:
+			current = client.request("GET", href)
+		except DAVError as e:
+			if e.status != 404:
+				raise
+			# Deleted on the server: upload it again at the same place
 	else:
-		# Reuse the UID the contact already has in another address book, so all copies stay the same contact
-		uid = frappe.db.get_value("DAV Card Link", {"contact": contact.name}, "uid") or vcard.new_uid()
+		uid = contact_uid(contact.name) or vcard.new_uid()
 		href = collection.href.rstrip("/") + "/" + uid + ".vcf"
-		text = vcard.build(contact, uid)
-		response = client.request(
-			"PUT", href, data=text.encode(), headers={"Content-Type": "text/vcard; charset=utf-8", "If-None-Match": "*"}
-		)
+
+	try:
+		if current is not None:
+			server_etag = current.headers.get("ETag")
+			if link.etag and server_etag and server_etag != link.etag:
+				raise DAVError("changed on the server", 412)
+			text = vcard.build(contact, uid, base_text=current.text)
+			response = put_card(client, href, text, {"If-Match": server_etag} if server_etag else {})
+		else:
+			response = put_card(client, href, vcard.build(contact, uid), {"If-None-Match": "*"})
+	except DAVError as e:
+		if e.status != 412:
+			raise
+		log_operation(account, "push_item", uid, "Conflict", f"Contact {contact.name}: the server copy changed; not overwritten")
+		return "conflict"
 	save_link(account, collection, contact.name, uid, href, response.headers.get("ETag"))
 	log_operation(account, "push_item", uid, detail=f"Contact {contact.name}")
+	return "done"
 
 
 # ---------- scheduler ----------

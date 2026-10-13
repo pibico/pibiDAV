@@ -30,6 +30,17 @@ pibidav.card.push = function (contacts, after) {
 					args: { contacts: JSON.stringify(contacts), collection: values.collection },
 				}).then((res) => {
 					frappe.show_alert({ message: __("{0} contacts queued", [res.message.queued]), indicator: "blue" });
+					frappe.realtime.off("pibidav_card_push");
+					frappe.realtime.on("pibidav_card_push", (data) => {
+						frappe.realtime.off("pibidav_card_push");
+						const parts = [__("{0} of {1} uploaded to {2}", [data.done, data.total, data.address_book])];
+						if (data.conflict) parts.push(__("{0} changed on the server, not overwritten", [data.conflict]));
+						if (data.error) parts.push(__("{0} failed, see DAV Audit Log", [data.error]));
+						frappe.show_alert(
+							{ message: parts.join(". "), indicator: data.error ? "red" : data.conflict ? "orange" : "green" },
+							10
+						);
+					});
 					after && after();
 				});
 			},
