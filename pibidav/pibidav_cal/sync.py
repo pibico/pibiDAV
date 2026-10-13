@@ -123,8 +123,6 @@ def handle_resource(account, collection, href, etag, text):
 		return "skipped"
 	if link:
 		event = frappe.get_doc("Event", link.event)
-	elif adopted := adopt_legacy_event(account, uid):
-		event = frappe.get_doc("Event", adopted)
 	else:
 		event = frappe.new_doc("Event")
 		event.event_type = "Private"
@@ -136,21 +134,6 @@ def handle_resource(account, collection, href, etag, text):
 	if not supported:
 		log_operation(account, "pull_item", uid, "Partial", "recurrence not representable in Frappe; kept on the server")
 	return "updated" if link else "created"
-
-
-def adopt_legacy_event(account, uid):
-	"""Transition from pibical: reuse the Event it imported with this UID instead of
-	creating a duplicate. pibical created them as Administrator and often Public;
-	the adopted Event becomes Private and owned by the account user.
-	Remove once pibical is uninstalled and its event_uid field is gone."""
-	if not frappe.db.has_column("Event", "event_uid"):
-		return None
-	for name in frappe.get_all("Event", filters={"event_uid": uid}, pluck="name"):
-		if not frappe.db.exists("DAV Cal Link", {"event": name}):
-			frappe.db.set_value("Event", name, {"owner": account.user, "event_type": "Private"}, update_modified=False)
-			log_operation(account, "adopt", uid, detail=f"Event {name} imported by pibical is now Private and owned by {account.user}")
-			return name
-	return None
 
 
 def remove_resource(account, href):

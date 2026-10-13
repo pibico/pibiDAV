@@ -188,11 +188,6 @@ scheduler_events = {
 # 	"all": [
 # 		"pibidav.tasks.all"
 # 	],
-#  "cron": {
-#    "*/1 * * * *": [
-#      "pibidav.pibidav.pibical.sync_outside_caldav"
-#    ]
-#  },
   "cron": {
     "*/5 * * * *": [
       "pibidav.pibidav_card.sync.run_due_card_syncs",
