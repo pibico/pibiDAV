@@ -6,6 +6,7 @@ import requests
 from frappe import _
 from frappe.model.document import Document
 from frappe.utils import now_datetime
+from frappe.utils.password import remove_encrypted_password
 
 from pibidav.pibidav_core.audit import log_operation
 from pibidav.pibidav_core.client import (
@@ -58,8 +59,18 @@ class DAVAccount(Document):
 		if other:
 			frappe.throw(_("The server login {0} is already assigned to {1}").format(self.username, other))
 
+	def before_save(self):
+		# A new server login invalidates the credential of the previous one
+		if not self.is_new() and self.has_value_changed("username"):
+			self.login_name = None
+			self.app_password = None
+			self.flags.drop_credential = True
+
 	def on_update(self):
-		if self.has_value_changed("app_password") and self.app_password:
+		if self.flags.drop_credential:
+			remove_encrypted_password(self.doctype, self.name, "app_password")
+			self.db_set({"status": "Pending", "last_error": None})
+		elif self.has_value_changed("app_password") and self.app_password:
 			self.db_set({"status": "Pending", "last_error": None})
 
 
@@ -165,9 +176,18 @@ def poll_login_flow(name):
 		return {"status": "error", "error": _("Status {0}").format(response.status_code)}
 	frappe.cache.delete_value(f"pibidav:loginflow:{name}")
 	result = response.json()
-	if (result.get("loginName") or "").lower() != account.username.lower():
+	# The login may be the account id or its e-mail: ask the server who it really is
+	account.login_name = result.get("loginName")
+	client = DAVClient(account, password=result.get("appPassword"))
+	try:
+		verify_identity(account, client)
+	except DAVError as e:
+		try:
+			client.revoke_nextcloud_app_password()
+		except DAVError:
+			get_logger().warning(f"Could not revoke a mismatching app password for DAV Account {name}")
 		log_operation(account, "login_flow_done", result="Error", detail="login mismatch")
-		return {"status": "error", "error": _("You logged in as {0}, but this account is for {1}").format(result.get("loginName"), account.username)}
+		return {"status": "error", "error": str(e)}
 	account.app_password = result.get("appPassword")
 	account.save()
 	log_operation(account, "login_flow_done")

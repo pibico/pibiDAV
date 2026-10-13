@@ -16,6 +16,7 @@
   "dav_path",
   "column_break_srv",
   "username",
+  "login_name",
   "timeout",
   "verify_tls",
   "credential_section",
@@ -104,6 +105,13 @@
    "reqd": 1
   },
   {
+   "description": "Login used to create the app password (account id or e-mail). Set by Connect.",
+   "fieldname": "login_name",
+   "fieldtype": "Data",
+   "label": "Login Name",
+   "read_only": 1
+  },
+  {
    "default": "15",
    "fieldname": "timeout",
    "fieldtype": "Int",
@@ -145,7 +153,7 @@
  ],
  "index_web_pages_for_search": 0,
  "links": [],
- "modified": "2026-10-13 12:00:00.000000",
+ "modified": "2026-10-13 13:00:00.000000",
  "modified_by": "Administrator",
  "module": "Pibidav Core",
  "name": "DAV Account",

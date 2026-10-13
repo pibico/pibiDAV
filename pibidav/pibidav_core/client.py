@@ -55,7 +55,7 @@ class DAVClient:
 			password = account.get_password("app_password", raise_exception=False)
 		if not password:
 			raise DAVError(_("The account has no credential yet"))
-		self.session.auth = (account.username, password)
+		self.session.auth = (account.login_name or account.username, password)
 
 	def url(self, path=""):
 		"""Absolute URL inside this server; refuses to leave it."""
@@ -84,6 +84,10 @@ class DAVClient:
 		body = '<?xml version="1.0"?><d:propfind xmlns:d="DAV:"><d:prop><d:current-user-principal/></d:prop></d:propfind>'
 		self.request("PROPFIND", "", data=body, headers={"Depth": "0", "Content-Type": "application/xml; charset=utf-8"})
 		return True
+
+	def revoke_nextcloud_app_password(self):
+		"""Delete the app password used by this session on the Nextcloud server."""
+		self.request("DELETE", self.base_url + "/ocs/v2.php/core/apppassword", headers={"OCS-APIRequest": "true"})
 
 	def nextcloud_user_id(self):
 		"""Login of the authenticated user, from the Nextcloud OCS API."""
