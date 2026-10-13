@@ -18,6 +18,9 @@ from frappe.utils.file_manager import get_file_path
 import frappe.desk.doctype.tag.tag as tag
 
 NC_ROLES = ("System Manager", "Docs Controller", "NextCloud User")
+# Public share links (no password, no expiry) are only created for invoices:
+# they are sent by hand to the accounting advisor at month end
+PUBLIC_LINK_DOCTYPES = ("Purchase Invoice", "Sales Invoice")
 
 def require_nc_role():
   frappe.only_for(NC_ROLES)
@@ -358,19 +361,20 @@ def upload_file_to_nc(doc, method=None):
 
       ## Get Shared Link from NC - call directly (not via enqueue)
       share_link = ""
-      try:
-        frappe.logger().info(f"Attempting to create share for: {nc_path}")
-        share = nc.share_file_with_link(path=nc_path)
-        frappe.logger().info(f"share_file_with_link returned: {share}")
-        if share:
-          share_link = share.get_link()
-          frappe.logger().info(f"Share link created successfully: {share_link}")
-        else:
-          frappe.logger().warning(f"share_file_with_link returned None")
-      except Exception as e:
-        frappe.log_error(f"Error creating share link: {str(e)}", "PibiDAV Share Link")
-        frappe.logger().error(f"Full exception details: {type(e).__name__}: {str(e)}")
-        share_link = ""
+      if doc.attached_to_doctype in PUBLIC_LINK_DOCTYPES:
+        try:
+          frappe.logger().info(f"Attempting to create share for: {nc_path}")
+          share = nc.share_file_with_link(path=nc_path)
+          frappe.logger().info(f"share_file_with_link returned: {share}")
+          if share:
+            share_link = share.get_link()
+            frappe.logger().info(f"Share link created successfully: {share_link}")
+          else:
+            frappe.logger().warning(f"share_file_with_link returned None")
+        except Exception as e:
+          frappe.log_error(f"Error creating share link: {str(e)}", "PibiDAV Share Link")
+          frappe.logger().error(f"Full exception details: {type(e).__name__}: {str(e)}")
+          share_link = ""
 
       ## Update and save File in frappe updated with NC data
       doc.uploaded_to_nextcloud = 1
