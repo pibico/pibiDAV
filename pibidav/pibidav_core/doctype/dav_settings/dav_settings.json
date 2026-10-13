@@ -6,12 +6,15 @@
  "field_order": [
   "contacts_section",
   "card_push_enabled",
+  "column_break_card",
   "card_pull_enabled",
   "calendar_section",
   "cal_push_enabled",
+  "column_break_cal",
   "cal_pull_enabled",
   "sync_section",
   "sync_interval",
+  "column_break_sync",
   "audit_retention_days"
  ],
  "fields": [
@@ -26,6 +29,10 @@
    "fieldname": "card_push_enabled",
    "fieldtype": "Check",
    "label": "Frappe to CardDAV"
+  },
+  {
+   "fieldname": "column_break_card",
+   "fieldtype": "Column Break"
   },
   {
    "default": "0",
@@ -47,6 +54,10 @@
    "label": "Frappe to CalDAV"
   },
   {
+   "fieldname": "column_break_cal",
+   "fieldtype": "Column Break"
+  },
+  {
    "default": "0",
    "description": "Events of the calendars each user syncs are imported as Private, owned by that user",
    "fieldname": "cal_pull_enabled",
@@ -66,6 +77,10 @@
    "options": "5\n15\n30\n60"
   },
   {
+   "fieldname": "column_break_sync",
+   "fieldtype": "Column Break"
+  },
+  {
    "default": "730",
    "fieldname": "audit_retention_days",
    "fieldtype": "Int",
@@ -75,7 +90,7 @@
  ],
  "issingle": 1,
  "links": [],
- "modified": "2026-10-13 15:00:00.000000",
+ "modified": "2026-10-13 15:30:00.000000",
  "modified_by": "Administrator",
  "module": "Pibidav Core",
  "name": "DAV Settings",
