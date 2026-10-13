@@ -115,6 +115,14 @@ for item in nc_list:
 # 	"Event": "frappe.desk.doctype.event.event.has_permission",
 # }
 
+permission_query_conditions = {
+  "DAV Account": "pibidav.pibidav_core.doctype.dav_account.dav_account.get_permission_query_conditions",
+}
+
+has_permission = {
+  "DAV Account": "pibidav.pibidav_core.doctype.dav_account.dav_account.has_permission",
+}
+
 jinja = {
   "methods": [
     "pibidav.jinja.timestamp_to_date",
@@ -140,6 +148,9 @@ doc_events = {
 #  },
   "File": {
     "after_insert": ["pibidav.pibidav.custom.upload_file_to_nc"]
+  },
+  "User": {
+    "on_update": ["pibidav.pibidav_core.doctype.dav_account.dav_account.disable_accounts_of_user"]
   }
 # 	"*": {
 # 		"on_update": "method",
@@ -161,7 +172,8 @@ scheduler_events = {
 #    ]
 #  },
   "daily": [
-    "pibidav.pibidav.doctype.nextcloud_settings.nextcloud_settings.daily_backup"
+    "pibidav.pibidav.doctype.nextcloud_settings.nextcloud_settings.daily_backup",
+    "pibidav.pibidav_core.audit.purge_old_entries"
   ],
 # 	"hourly": [
 # 		"pibidav.tasks.hourly"

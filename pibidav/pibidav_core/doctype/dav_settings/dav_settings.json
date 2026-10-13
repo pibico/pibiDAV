@@ -1,0 +1,84 @@
+{
+ "actions": [],
+ "creation": "2026-10-13 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "contacts_section",
+  "card_push_enabled",
+  "card_pull_enabled",
+  "calendar_section",
+  "cal_enabled",
+  "sync_section",
+  "sync_interval",
+  "audit_retention_days"
+ ],
+ "fields": [
+  {
+   "fieldname": "contacts_section",
+   "fieldtype": "Section Break",
+   "label": "Contacts (CardDAV)"
+  },
+  {
+   "default": "0",
+   "description": "Users may upload selected contacts to their own address books",
+   "fieldname": "card_push_enabled",
+   "fieldtype": "Check",
+   "label": "Frappe to CardDAV"
+  },
+  {
+   "default": "0",
+   "description": "Linked contacts are updated from the server; unknown vCards go to DAV Pending Contact",
+   "fieldname": "card_pull_enabled",
+   "fieldtype": "Check",
+   "label": "CardDAV to Frappe"
+  },
+  {
+   "fieldname": "calendar_section",
+   "fieldtype": "Section Break",
+   "label": "Calendar (CalDAV)"
+  },
+  {
+   "default": "0",
+   "fieldname": "cal_enabled",
+   "fieldtype": "Check",
+   "label": "Calendar Sync"
+  },
+  {
+   "fieldname": "sync_section",
+   "fieldtype": "Section Break",
+   "label": "Sync and Audit"
+  },
+  {
+   "default": "15",
+   "fieldname": "sync_interval",
+   "fieldtype": "Select",
+   "label": "Sync Interval (minutes)",
+   "options": "5\n15\n30\n60"
+  },
+  {
+   "default": "730",
+   "fieldname": "audit_retention_days",
+   "fieldtype": "Int",
+   "label": "Keep Audit Log (days)",
+   "non_negative": 1
+  }
+ ],
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-10-13 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Pibidav Core",
+ "name": "DAV Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "read": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

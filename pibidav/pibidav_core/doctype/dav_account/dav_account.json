@@ -1,0 +1,174 @@
+{
+ "actions": [],
+ "autoname": "hash",
+ "creation": "2026-10-13 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "service",
+  "column_break_svc",
+  "status",
+  "enabled",
+  "server_section",
+  "server_type",
+  "server_url",
+  "dav_path",
+  "column_break_srv",
+  "username",
+  "timeout",
+  "verify_tls",
+  "credential_section",
+  "app_password",
+  "column_break_cred",
+  "last_check",
+  "last_error"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "User",
+   "options": "User",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "service",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Service",
+   "options": "CardDAV\nCalDAV",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_svc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Pending\nConnected\nError\nDisabled",
+   "read_only": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "server_section",
+   "fieldtype": "Section Break",
+   "label": "Server"
+  },
+  {
+   "default": "Nextcloud",
+   "fieldname": "server_type",
+   "fieldtype": "Select",
+   "label": "Server Type",
+   "options": "Nextcloud\nGeneric",
+   "reqd": 1
+  },
+  {
+   "description": "Base URL of the server, e.g. https://cloud.example.com",
+   "fieldname": "server_url",
+   "fieldtype": "Data",
+   "label": "Server URL",
+   "options": "URL",
+   "reqd": 1
+  },
+  {
+   "default": "/remote.php/dav",
+   "description": "Path of the DAV root on the server",
+   "fieldname": "dav_path",
+   "fieldtype": "Data",
+   "label": "DAV Path",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_srv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Login name of this person on the server. Set by the administrator.",
+   "fieldname": "username",
+   "fieldtype": "Data",
+   "label": "Server Username",
+   "reqd": 1
+  },
+  {
+   "default": "15",
+   "fieldname": "timeout",
+   "fieldtype": "Int",
+   "label": "Timeout (s)"
+  },
+  {
+   "default": "1",
+   "fieldname": "verify_tls",
+   "fieldtype": "Check",
+   "label": "Verify TLS Certificate"
+  },
+  {
+   "fieldname": "credential_section",
+   "fieldtype": "Section Break",
+   "label": "Credential"
+  },
+  {
+   "description": "App password set by the account owner (Nextcloud: use Connect). Never visible to anyone else.",
+   "fieldname": "app_password",
+   "fieldtype": "Password",
+   "label": "App Password"
+  },
+  {
+   "fieldname": "column_break_cred",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "last_check",
+   "fieldtype": "Datetime",
+   "label": "Last Check",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_error",
+   "fieldtype": "Small Text",
+   "label": "Last Error",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-13 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Pibidav Core",
+ "name": "DAV Account",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Desk User",
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "user",
+ "track_changes": 1
+}
