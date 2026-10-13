@@ -173,10 +173,10 @@ function openNextCloudBrowser(addon) {
     const ncFolder = addon.nc_folder;
     const targetFolder = (ncFolder && ncFolder.startsWith("/")) ? ncFolder : '/';
 
-    new frappe.ui.pibiDocs({
+    frappe.require("nc_browser.bundle.js", () => new frappe.ui.pibiDocs({
         targetFolder: targetFolder,
         root_folder: "/"
-    });
+    }));
 }
 // Create Addon
 function createAddon(frm, callback) {

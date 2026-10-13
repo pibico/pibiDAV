@@ -4,3 +4,6 @@
 *.swp
 tags
 pibidav/docs/current
+pibidav/public/dist
+*.backup
+__pycache__

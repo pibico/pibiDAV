@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"azQJesz1jX\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"></span><a href=\\\"https://aiduct-pro.espib.co/app/home\\\">Inicio</a> &gt; <a href=\\\"/app/pibitools\\\">pibiTools</a> &gt; pibiDAV<br>\",\"col\":12}},{\"id\":\"XQTScKtokJ\",\"type\":\"card\",\"data\":{\"card_name\":\"Documents\",\"col\":4}},{\"id\":\"OIx7Apgo_M\",\"type\":\"card\",\"data\":{\"card_name\":\"Configuraci\u00f3n\",\"col\":4}}]",
+ "content": "[{\"id\":\"pdHeader01\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>pibiDAV</b></span>\",\"col\":12}},{\"id\":\"pdCardDav01\",\"type\":\"card\",\"data\":{\"card_name\":\"DAV\",\"col\":4}},{\"id\":\"XQTScKtokJ\",\"type\":\"card\",\"data\":{\"card_name\":\"Documents\",\"col\":4}},{\"id\":\"OIx7Apgo_M\",\"type\":\"card\",\"data\":{\"card_name\":\"Configuraci\\u00f3n\",\"col\":4}}]",
  "creation": "2025-01-27 13:17:47.060043",
  "custom_blocks": [],
  "docstatus": 0,
@@ -16,7 +16,71 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Configuraci\u00f3n",
+   "label": "DAV",
+   "link_count": 5,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "DAV Account",
+   "link_count": 0,
+   "link_to": "DAV Account",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "DAV Collection",
+   "link_count": 0,
+   "link_to": "DAV Collection",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "DAV Pending Contact",
+   "link_count": 0,
+   "link_to": "DAV Pending Contact",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "DAV Audit Log",
+   "link_count": 0,
+   "link_to": "DAV Audit Log",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "DAV Settings",
+   "link_count": 0,
+   "link_to": "DAV Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Configuración",
    "link_count": 3,
    "link_type": "DocType",
    "onboard": 0,
@@ -25,7 +89,7 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Categor\u00eda Archivado",
+   "label": "Categoría Archivado",
    "link_count": 0,
    "link_to": "File Category",
    "link_type": "DocType",
@@ -102,26 +166,16 @@
    "type": "Link"
   }
  ],
- "modified": "2025-01-27 13:37:26.856019",
+ "modified": "2026-10-13 23:30:00.000000",
  "modified_by": "Administrator",
  "module": "Pibidav",
  "name": "pibiDAV",
  "number_cards": [],
  "owner": "Administrator",
- "parent_page": "pibiTools",
+ "parent_page": "",
  "public": 1,
  "quick_lists": [],
- "roles": [
-  {
-   "role": "Docs Controller"
-  },
-  {
-   "role": "Docs User"
-  },
-  {
-   "role": "NextCloud User"
-  }
- ],
+ "roles": [],
  "sequence_id": 6.0,
  "shortcuts": [],
  "title": "pibiDAV"

@@ -1,0 +1,28 @@
+[project]
+name = "pibidav"
+authors = [
+    { name = "pibiCo", email = "pibico.sl@gmail.com"}
+]
+description = "CalDAV and CardDAV sync, vCard tools and Nextcloud files for Frappe"
+requires-python = ">=3.10"
+readme = "README.md"
+dynamic = ["version"]
+dependencies = [
+    # "frappe~=15.0.0" # Installed and managed by bench.
+    "icalendar>=6.0",
+    "vobject>=0.9.6",
+    "qrcode>=7.4",
+    "six>=1.16",  # vendored Nextcloud client (pibidav/nextcloud.py)
+]
+
+[build-system]
+requires = ["flit_core >=3.4,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "tab"
