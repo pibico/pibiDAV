@@ -23,7 +23,7 @@ from frappe.utils import (
 	now_datetime,
 	strip_html,
 )
-from icalendar import Calendar, vRecur
+from icalendar import Calendar, vCalAddress, vRecur
 from icalendar import Event as VEvent
 
 FREQS = {"DAILY": "Daily", "WEEKLY": "Weekly", "MONTHLY": "Monthly", "YEARLY": "Yearly"}
@@ -186,3 +186,21 @@ def build(event, uid, base_text=None, keep_server_rrule=False):
 
 	cal.add_missing_timezones()
 	return cal.to_ical().decode()
+
+
+def invitation(event, uid, organizer_email, organizer_name, attendees):
+	"""iTIP REQUEST (RFC 5546) for e-mail invitations; attendees is [(email, name)]."""
+	cal = Calendar.from_ical(build(event, uid))
+	cal.add("method", "REQUEST")
+	vevent = master(cal)
+	if cstr(vevent.get("STATUS")).upper() != "CANCELLED":
+		vevent.pop("STATUS", None)
+		vevent.add("status", "CONFIRMED")
+	organizer = vCalAddress(f"mailto:{organizer_email}")
+	organizer.params["cn"] = organizer_name
+	vevent.add("organizer", organizer)
+	for email, name in attendees:
+		attendee = vCalAddress(f"mailto:{email}")
+		attendee.params.update({"cn": name, "role": "REQ-PARTICIPANT", "partstat": "NEEDS-ACTION", "rsvp": "TRUE"})
+		vevent.add("attendee", attendee)
+	return cal.to_ical()

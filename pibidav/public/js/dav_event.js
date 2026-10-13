@@ -5,7 +5,11 @@ const DAV_CAL_API = "pibidav.pibidav_cal.api";
 
 frappe.ui.form.on("Event", {
 	refresh(frm) {
-		if (frm.is_new() || frm.doc.owner !== frappe.session.user) return;
+		if (frm.is_new()) return;
+		if ((frm.doc.event_participants || []).some((p) => p.reference_doctype === "Contact")) {
+			frm.add_custom_button(__("Send Invitations"), () => send_invitations(frm));
+		}
+		if (frm.doc.owner !== frappe.session.user) return;
 		frappe.call({ method: `${DAV_CAL_API}.get_links`, args: { event: frm.doc.name } }).then((r) => {
 			const links = r.message || [];
 			if (links.length) {
@@ -43,3 +47,33 @@ frappe.ui.form.on("Event", {
 		});
 	},
 });
+
+function send_invitations(frm) {
+	frappe.call({ method: `${DAV_CAL_API}.get_invitation_recipients`, args: { event: frm.doc.name } }).then((r) => {
+		const people = r.message || [];
+		if (!people.length) {
+			frappe.msgprint(__("No participant Contact has an e-mail address."));
+			return;
+		}
+		const d = new frappe.ui.Dialog({
+			title: __("Send Invitations"),
+			fields: people.map((p, i) => ({
+				fieldname: `c${i}`,
+				fieldtype: "Check",
+				label: frappe.utils.escape_html(`${p.name} (${p.email})`),
+				default: 1,
+			})),
+			primary_action_label: __("Send"),
+			primary_action(values) {
+				const contacts = people.filter((p, i) => values[`c${i}`]).map((p) => p.contact);
+				d.hide();
+				frappe.call({
+					method: `${DAV_CAL_API}.send_invitations`,
+					args: { event: frm.doc.name, contacts: JSON.stringify(contacts) },
+					freeze: true,
+				}).then((res) => frappe.show_alert({ message: __("{0} invitations sent", [res.message.sent]), indicator: "green" }));
+			},
+		});
+		d.show();
+	});
+}
