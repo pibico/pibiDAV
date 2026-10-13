@@ -59,7 +59,10 @@ nc_list = [
 
 doctype_js = {}
 for item in nc_list:
-  doctype_js[item] = "public/js/dist/nc_pibidav.js"
+  doctype_js[item] = ["public/js/dist/nc_pibidav.js"]
+doctype_js["Contact"].append("public/js/dav_contact.js")
+
+doctype_list_js = {"Contact": "public/js/dav_contact_list.js"}
 
 # Home Pages
 # ----------
@@ -117,10 +120,16 @@ for item in nc_list:
 
 permission_query_conditions = {
   "DAV Account": "pibidav.pibidav_core.doctype.dav_account.dav_account.get_permission_query_conditions",
+  "DAV Collection": "pibidav.pibidav_core.doctype.dav_collection.dav_collection.get_permission_query_conditions",
+  "DAV Card Link": "pibidav.pibidav_core.permissions.card_link_query",
+  "DAV Pending Contact": "pibidav.pibidav_core.permissions.pending_contact_query",
 }
 
 has_permission = {
   "DAV Account": "pibidav.pibidav_core.doctype.dav_account.dav_account.has_permission",
+  "DAV Collection": "pibidav.pibidav_core.doctype.dav_collection.dav_collection.has_permission",
+  "DAV Card Link": "pibidav.pibidav_core.permissions.has_owner_permission",
+  "DAV Pending Contact": "pibidav.pibidav_core.permissions.has_owner_permission",
 }
 
 jinja = {
@@ -171,6 +180,9 @@ scheduler_events = {
 #      "pibidav.pibidav.pibical.sync_outside_caldav"
 #    ]
 #  },
+  "cron": {
+    "*/5 * * * *": ["pibidav.pibidav_card.sync.run_due_syncs"]
+  },
   "daily": [
     "pibidav.pibidav.doctype.nextcloud_settings.nextcloud_settings.daily_backup",
     "pibidav.pibidav_core.audit.purge_old_entries"

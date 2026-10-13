@@ -202,3 +202,17 @@ def disable_accounts_of_user(doc, method=None):
 		frappe.db.set_value("DAV Account", name, {"enabled": 0, "status": "Disabled"})
 		account = frappe.get_doc("DAV Account", name)
 		log_operation(account, "disable", detail="user disabled; revoke the app password on the server", user=doc.name)
+
+
+@frappe.whitelist(methods=["POST"])
+def discover_collections(name):
+	"""Read the address books or calendars the account can see on the server."""
+	from pibidav.pibidav_core.discovery import discover
+
+	account = frappe.get_doc("DAV Account", name)
+	account.check_permission("write")
+	try:
+		return {"collections": len(discover(account))}
+	except DAVError as e:
+		log_operation(account, "discover", result="Error", detail=str(e))
+		frappe.throw(_("Could not read the collections: {0}").format(e))

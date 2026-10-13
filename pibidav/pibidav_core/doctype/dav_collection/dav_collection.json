@@ -1,0 +1,147 @@
+{
+ "actions": [],
+ "autoname": "hash",
+ "creation": "2026-10-13 14:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "dav_account",
+  "user",
+  "service",
+  "column_break_a",
+  "display_name",
+  "sync_enabled",
+  "read_only",
+  "server_section",
+  "href",
+  "owner_principal",
+  "column_break_b",
+  "sync_token",
+  "ctag",
+  "last_sync"
+ ],
+ "fields": [
+  {
+   "fieldname": "dav_account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "DAV Account",
+   "options": "DAV Account",
+   "read_only": 1,
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fetch_from": "dav_account.user",
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "User",
+   "options": "User",
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fetch_from": "dav_account.service",
+   "fieldname": "service",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Service",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_a",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "display_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Name",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "description": "Sync this address book or calendar with Frappe",
+   "fieldname": "sync_enabled",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Sync"
+  },
+  {
+   "default": "0",
+   "description": "The account cannot write to this collection",
+   "fieldname": "read_only",
+   "fieldtype": "Check",
+   "label": "Read Only",
+   "read_only": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "server_section",
+   "fieldtype": "Section Break",
+   "label": "Server"
+  },
+  {
+   "fieldname": "href",
+   "fieldtype": "Small Text",
+   "label": "Href",
+   "read_only": 1
+  },
+  {
+   "description": "Original owner when the collection is shared with this account",
+   "fieldname": "owner_principal",
+   "fieldtype": "Data",
+   "label": "Owner Principal",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_b",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sync_token",
+   "fieldtype": "Small Text",
+   "label": "Sync Token",
+   "read_only": 1
+  },
+  {
+   "fieldname": "ctag",
+   "fieldtype": "Data",
+   "label": "CTag",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_sync",
+   "fieldtype": "Datetime",
+   "label": "Last Sync",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-10-13 14:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Pibidav Core",
+ "name": "DAV Collection",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "delete": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Desk User",
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "display_name"
+}

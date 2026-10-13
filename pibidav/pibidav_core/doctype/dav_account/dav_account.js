@@ -10,6 +10,18 @@ frappe.ui.form.on("DAV Account", {
 		if (is_owner && frm.doc.server_type === "Nextcloud" && frm.doc.enabled) {
 			frm.add_custom_button(__("Connect"), () => start_login_flow(frm));
 		}
+		if (frm.doc.status === "Connected") {
+			frm.add_custom_button(__("Find Address Books / Calendars"), () => {
+				frappe.call({
+					method: `${DAV_ACCOUNT}.discover_collections`,
+					args: { name: frm.doc.name },
+					freeze: true,
+				}).then((r) => {
+					frappe.show_alert({ message: __("{0} found. Choose which ones to sync.", [r.message.collections]), indicator: "green" });
+					frappe.set_route("List", "DAV Collection", { dav_account: frm.doc.name });
+				});
+			});
+		}
 		frm.add_custom_button(__("Test Connection"), () => {
 			frappe.call({
 				method: `${DAV_ACCOUNT}.test_connection`,
