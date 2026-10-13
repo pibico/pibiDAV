@@ -1,15 +1,20 @@
 # Copyright (c) 2026, pibiCo and contributors
 # For license information, please see license.txt
 
-import requests
-
 import frappe
+import requests
 from frappe import _
 from frappe.model.document import Document
 from frappe.utils import now_datetime
 
 from pibidav.pibidav_core.audit import log_operation
-from pibidav.pibidav_core.client import DAVClient, DAVError, get_logger, normalize_base_url, same_origin
+from pibidav.pibidav_core.client import (
+	DAVClient,
+	DAVError,
+	get_logger,
+	normalize_base_url,
+	same_origin,
+)
 
 # Fields the account owner may change; everything else is set by the administrator
 OWNER_EDITABLE = {"app_password", "enabled"}
@@ -71,7 +76,7 @@ def get_permission_query_conditions(user=None):
 	user = user or frappe.session.user
 	if is_admin(user):
 		return ""
-	return "`tabDAV Account`.`user` = {}".format(frappe.db.escape(user))
+	return f"`tabDAV Account`.`user` = {frappe.db.escape(user)}"
 
 
 def get_own_account(name):
