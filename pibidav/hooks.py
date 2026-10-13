@@ -195,8 +195,8 @@ scheduler_events = {
 #  },
   "cron": {
     "*/5 * * * *": [
-      "pibidav.pibidav_card.sync.run_due_syncs",
-      "pibidav.pibidav_cal.sync.run_due_syncs"
+      "pibidav.pibidav_card.sync.run_due_card_syncs",
+      "pibidav.pibidav_cal.sync.run_due_cal_syncs"
     ]
   },
   "daily": [

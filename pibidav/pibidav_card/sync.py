@@ -228,7 +228,7 @@ def push_contact(client, account, collection, contact_name):
 # ---------- scheduler ----------
 
 
-def run_due_syncs():
+def run_due_card_syncs():
 	"""Cron entry: enqueue the pull of every collection whose interval has passed."""
 	if not cint(settings().card_pull_enabled):
 		return

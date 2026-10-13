@@ -244,7 +244,7 @@ def on_event_trash(doc, method=None):
 # ---------- scheduler ----------
 
 
-def run_due_syncs():
+def run_due_cal_syncs():
 	if not cint(settings().cal_pull_enabled):
 		return
 	interval = cint(settings().sync_interval) or 15
