@@ -201,7 +201,8 @@ scheduler_events = {
   },
   "daily": [
     "pibidav.pibidav.doctype.nextcloud_settings.nextcloud_settings.daily_backup",
-    "pibidav.pibidav_core.audit.purge_old_entries"
+    "pibidav.pibidav_core.audit.purge_old_entries",
+    "pibidav.pibidav_cal.housekeeping.complete_past_events"
   ],
 # 	"hourly": [
 # 		"pibidav.tasks.hourly"

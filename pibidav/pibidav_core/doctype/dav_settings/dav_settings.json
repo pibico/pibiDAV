@@ -12,6 +12,7 @@
   "cal_push_enabled",
   "column_break_cal",
   "cal_pull_enabled",
+  "complete_past_events",
   "sync_section",
   "sync_interval",
   "column_break_sync",
@@ -65,6 +66,13 @@
    "label": "CalDAV to Frappe"
   },
   {
+   "default": "0",
+   "description": "Every night, Open events that ended before today become Completed (repeating events once their series ends). Applies to all events of the site.",
+   "fieldname": "complete_past_events",
+   "fieldtype": "Check",
+   "label": "Complete Past Events"
+  },
+  {
    "fieldname": "sync_section",
    "fieldtype": "Section Break",
    "label": "Sync and Audit"
@@ -90,7 +98,7 @@
  ],
  "issingle": 1,
  "links": [],
- "modified": "2026-10-13 15:30:00.000000",
+ "modified": "2026-10-13 17:00:00.000000",
  "modified_by": "Administrator",
  "module": "Pibidav Core",
  "name": "DAV Settings",
