@@ -8,6 +8,7 @@
   "card_push_enabled",
   "column_break_card",
   "card_pull_enabled",
+  "qr_logo",
   "calendar_section",
   "cal_push_enabled",
   "column_break_cal",
@@ -41,6 +42,12 @@
    "fieldname": "card_pull_enabled",
    "fieldtype": "Check",
    "label": "CardDAV to Frappe"
+  },
+  {
+   "description": "Optional logo in the centre of contact QR codes",
+   "fieldname": "qr_logo",
+   "fieldtype": "Attach Image",
+   "label": "QR Logo"
   },
   {
    "fieldname": "calendar_section",
@@ -98,7 +105,7 @@
  ],
  "issingle": 1,
  "links": [],
- "modified": "2026-10-13 17:00:00.000000",
+ "modified": "2026-10-13 18:00:00.000000",
  "modified_by": "Administrator",
  "module": "Pibidav Core",
  "name": "DAV Settings",
