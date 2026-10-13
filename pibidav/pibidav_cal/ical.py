@@ -90,6 +90,9 @@ def apply(event, cal):
 		end = start + vevent.decoded("DURATION")
 	else:
 		end = start
+	if type(end) is not type(start) or end < start:
+		# Some clients store an end before the start; Frappe rejects it
+		end = start
 
 	event.subject = cstr(vevent.get("SUMMARY")) or "(no title)"
 	if isinstance(start, dt.datetime):
