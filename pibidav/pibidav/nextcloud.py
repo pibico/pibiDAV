@@ -10,6 +10,8 @@ share them or access application attributes.
 
 import datetime
 import time
+import functools
+
 import requests
 import xml.etree.ElementTree as ET
 import os
@@ -19,6 +21,8 @@ from six.moves.urllib import parse
 
 """ pibiCo add code for tag mgt """
 import json
+
+REQUEST_TIMEOUT = (10, 300)  # connect, read
 """ pibiCo end code for tag mgt """
 
 class ResponseError(Exception):
@@ -353,6 +357,8 @@ class Client(object):
 
         self._session = requests.session()
         self._session.verify = self._verify_certs
+        # requests has no default timeout: never wait forever for the server
+        self._session.request = functools.partial(self._session.request, timeout=REQUEST_TIMEOUT)
         self._session.auth = (user_id, password)
         self._user_id = user_id
 
@@ -536,6 +542,8 @@ class Client(object):
     def anon_login(self, folder_token, folder_password=''):
         self._session = requests.session()
         self._session.verify = self._verify_certs
+        # requests has no default timeout: never wait forever for the server
+        self._session.request = functools.partial(self._session.request, timeout=REQUEST_TIMEOUT)
         self._session.auth = (folder_token, folder_password)
 
         url_components = parse.urlparse(self.url)
@@ -1914,7 +1922,6 @@ class Client(object):
                 data=search_body
             )
 
-            print(f"get_path_from_fileid SEARCH: url={search_url}, status={res.status_code}, response_len={len(res.text)}, body={res.text[:300]}")
 
             if res.status_code in [200, 207]:
                 tree = ET.fromstring(res.content)

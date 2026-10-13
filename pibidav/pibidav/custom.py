@@ -25,10 +25,31 @@ PUBLIC_LINK_DOCTYPES = ("Purchase Invoice", "Sales Invoice")
 def require_nc_role():
   frappe.only_for(NC_ROLES)
 
+NC_ADMIN_ROLES = ("System Manager", "Docs Controller")
+
 def require_nc_admin():
-  # Same rule the Folder Set tree applies in JS, now enforced on the server
-  if "System Manager" not in frappe.get_roles() and not checkNCuser():
-    frappe.throw(_("Not permitted"), frappe.PermissionError)
+  frappe.only_for(NC_ADMIN_ROLES)
+
+def nc_roots():
+  """Folders of the superuser account that users may reach: the documents root of
+  NextCloud Settings or, if empty, the destination folders of its Reference Items."""
+  root = frappe.db.get_single_value("NextCloud Settings", "nc_documents_root")
+  roots = [root] if root else frappe.get_all("Reference Item", filters={"parent": "NextCloud Settings"}, pluck="nc_folder")
+  return ["/" + r.strip("/") + "/" for r in roots if r and r.strip("/")]
+
+def under_nc_roots(path):
+  path = "/" + (path or "").strip("/") + "/"
+  return ".." not in path.split("/") and any(path.startswith(root) for root in nc_roots())
+
+def check_nc_root(path):
+  if not under_nc_roots(path):
+    frappe.throw(_("The NextCloud folder must be inside the documents root of NextCloud Settings"), frappe.PermissionError)
+
+def nc_link(fileid):
+  """Internal NextCloud link to a fileid, built here (never from user HTML)."""
+  nc_url = (frappe.db.get_single_value("NextCloud Settings", "nc_backup_url") or "").rstrip("/") + "/"
+  url = "{0}f/{1}".format(nc_url, cint(fileid))
+  return '<a href="{0}" target="_blank">{0}</a>'.format(frappe.utils.escape_html(url))
 
 def check_nc_name(*values):
   for value in values:
@@ -41,15 +62,13 @@ def check_nc_path(path):
 
 @frappe.whitelist()
 def checkNCuser():
-  ncuser = frappe.get_value("NextCloud Settings", "NextCloud Settings", "nc_backup_username")
-  loggeduser = frappe.get_value("User", frappe.session.user, "nextcloud_username")
-  if ncuser == loggeduser:
-    return True
-  else:
-    return False
+  """Whether the user may manage Folder Sets (by role; the NC login of the profile is
+  editable by the user and is not used for this)."""
+  return bool(set(NC_ADMIN_ROLES) & set(frappe.get_roles()))
 
 @frappe.whitelist()
 def doCreateFolder(doctype):
+  require_nc_role()
   data = frappe.db.get_value("Reference Item", {"parent": "NextCloud Settings", "reference_doctype": doctype},['create_nc_folder','nc_enable'], as_dict = 1)
   if data is None:
     return False
@@ -60,10 +79,14 @@ def doCreateFolder(doctype):
 
 @frappe.whitelist()
 def create_nc_folder(dt, dn, abbr, strmain, folder_set, sharing_option=None, secret=None):
+  require_nc_role()
   frappe.has_permission(dt, "write", doc=dn, throw=True)
   check_nc_name(abbr, strmain)
   if sharing_option and sharing_option.split('-')[0] not in ("4", "17", "31"):
     frappe.throw(_("Invalid sharing option"))
+  # A public link that lets anyone upload, change and delete: administrators only
+  if sharing_option and sharing_option.split('-')[0] == "31":
+    frappe.only_for("System Manager")
   doc = frappe.get_doc(doctype=dt, docname=dn)
   ## Check docs excluded and included in the NC Integration
   docs_excluded = frappe.get_value("NextCloud Settings", "NextCloud Settings", "nc_doctype_excluded")
@@ -86,6 +109,8 @@ def create_nc_folder(dt, dn, abbr, strmain, folder_set, sharing_option=None, sec
       
   if data.create_nc_folder and data.nc_folder != '' and data.folder_set != '':
     pibidav = check_addon(dt,dn)
+    if pibidav is None:
+      frappe.throw(_("The NextCloud folder of {0} {1} is taken by a document of another doctype").format(dt, dn))
 
     ## Get default data from NextCloud Settings
     ## Assign data to variables for creating folders in NC
@@ -174,15 +199,19 @@ def check_nextcloud():
     frappe.throw(_("NextCloud Credentials not correct, please rectify"))
 
 def make_nc_session_user(user):
+  # The server is always the one of NextCloud Settings: the URL in the user profile
+  # is editable by the user and would let anyone make the ERP call internal hosts
   if user.nextcloud_enable:
-    if user.nextcloud_url and user.nextcloud_username and user.nextcloud_token:
+    nc_url = frappe.db.get_single_value("NextCloud Settings", "nc_backup_url")
+    if nc_url and user.nextcloud_username and user.nextcloud_token:
       nc_token = get_decrypted_password('User', user.name, 'nextcloud_token', False)
       try:
-        _session = nextcloud.Client(user.nextcloud_url)
+        _session = nextcloud.Client(nc_url)
         _session.login(user.nextcloud_username, nc_token)
         return _session
       except Exception as err:
-        frappe.throw(_("Error in login in NC: " + str(err)))
+        frappe.logger("pibidav").warning(f"NC login of {user.name} failed: {err!r}")
+        frappe.throw(_("Error in login in NC"))
         return "Failed" 
     else:
       frappe.msgprint(_("User has errors in credentials for NC"))
@@ -360,15 +389,14 @@ def upload_file_to_nc(doc, method=None):
         frappe.log_error(f"File not found in NC after upload: {str(e)}", "PibiDAV Upload")
 
       ## Get Shared Link from NC - call directly (not via enqueue)
+      ## The link opens the file without a password: it is never written to the logs
       share_link = ""
       if doc.attached_to_doctype in PUBLIC_LINK_DOCTYPES:
         try:
-          frappe.logger().info(f"Attempting to create share for: {nc_path}")
           share = nc.share_file_with_link(path=nc_path)
-          frappe.logger().info(f"share_file_with_link returned: {share}")
           if share:
             share_link = share.get_link()
-            frappe.logger().info(f"Share link created successfully: {share_link}")
+            frappe.logger().info(f"Share link created for File {doc.name}")
           else:
             frappe.logger().warning(f"share_file_with_link returned None")
         except Exception as e:
@@ -380,7 +408,6 @@ def upload_file_to_nc(doc, method=None):
       doc.uploaded_to_nextcloud = 1
       doc.folder_path = document.nc_folder
       doc.share_link = share_link
-      frappe.logger().info(f"File doc updated with share_link: {share_link}")
       
       fileid, nctags = tag_file_nc(nc, nc_path, _tag_list)
       doc.fileid = fileid
@@ -507,6 +534,7 @@ def upload_nc_file(remote_path, local_file):
 
 @frappe.whitelist()
 def get_nc_files_in_folder(folder, start=0, page_length=20):
+  require_nc_role()
   start = cint(start)
   page_length = cint(page_length)
   if folder == 0: folder = "/"
@@ -556,10 +584,7 @@ def make_nc_session():
   nc_settings = frappe.get_doc('NextCloud Settings', 'NextCloud Settings')
   if nc_settings.nc_backup_enable:
     nc_token = get_decrypted_password('NextCloud Settings', 'NextCloud Settings', 'nc_backup_token', True)
-    args = {
-      "verify_certs": False
-    }
-    session = nextcloud.Client(nc_settings.nc_backup_url, **args)
+    session = nextcloud.Client(nc_settings.nc_backup_url)
     session.login(nc_settings.nc_backup_username, nc_token)
     return session
   else:
@@ -674,24 +699,33 @@ def check_addon(dt, dn):
         frappe.db.commit()
   else:
     pibidav = frappe.get_doc("PibiDAV Addon", "pbc_{}".format(dn))
+    if pibidav.ref_doctype != dt or pibidav.ref_docname != dn:
+      # Named after the document name only: it belongs to a document of another doctype
+      frappe.logger("pibidav").warning(f"PibiDAV Addon {pibidav.name} belongs to {pibidav.ref_doctype}, not to {dt}")
+      return None
     
   return pibidav
 
+def check_addon_owner(addon, dt, dn):
+  """Addons are named after the document name only: never use the addon of a
+  document of another doctype that happens to have the same name."""
+  if addon.ref_doctype != dt or addon.ref_docname != dn:
+    frappe.throw(_("The NextCloud folder of {0} {1} is taken by {2} {3}").format(dt, dn, addon.ref_doctype, addon.ref_docname))
+
 @frappe.whitelist()
 def fetch_nc_folder_internal_link_from_addon(addon_name):
+    require_nc_role()
     pibidav = frappe.get_doc("PibiDAV Addon", addon_name)
     pibidav.check_permission("write")
     if not pibidav.nc_folder:
         frappe.throw(_("No NC Folder defined in the Addon."))
+    check_nc_root(pibidav.nc_folder)
 
     session = make_nc_session()  # Authenticate as superuser
     fileinfo = session.file_info(pibidav.nc_folder, properties=['{http://owncloud.org/ns}fileid'])
     if fileinfo:
         fileid = fileinfo.attributes['{http://owncloud.org/ns}fileid']
-        nc_url = frappe.get_value("NextCloud Settings", "NextCloud Settings", "nc_backup_url")
-        if nc_url[-1] != '/':
-            nc_url += '/'
-        intlink = f'<a href="{nc_url}f/{fileid}" target="_blank">{nc_url}f/{fileid}</a>'
+        intlink = nc_link(fileid)
         pibidav.nc_folder_internal_link = intlink
         pibidav.save()
         return intlink
@@ -725,30 +759,27 @@ def get_folder_path_from_link(fileid):
         folder_path = nc_session.get_path_from_fileid(fileid)
         #nc_session.logout()
 
-        if folder_path:
-            frappe.logger().info(f"Retrieved folder path for fileid {fileid}: {folder_path}")
+        # Only folders inside the documents root: the superuser account also holds backups
+        if folder_path and under_nc_roots(folder_path):
             return folder_path
-        else:
-            frappe.log_error(f"Folder path not found for fileid: {fileid}")
-            return "Folder path not found."
+        return "Folder path not found."
     except Exception as e:
-        # Log the error with a full traceback for debugging
         frappe.log_error(message=f"Error retrieving folder path for fileid {fileid}: {e}", title="NextCloud Path Retrieval Error")
-        return f"Error retrieving folder path: {e}"
+        return "Error retrieving folder path."
 
 @frappe.whitelist()
 def enable_nc_addon(dt, dn, nc_parent_folder=None):
     """
     Creates or updates a PibiDAV Addon for the given doctype/docname.
-    If nc_parent_folder contains a NC link, resolves the fileid to a folder path.
+    If nc_parent_folder contains a NC link (/f/<fileid>), resolves it to a folder path.
     """
-    import re
+    require_nc_role()
     frappe.has_permission(dt, "write", doc=dn, throw=True)
-    print(f"enable_nc_addon called: SITE={frappe.local.site}, dt={dt}, dn={dn}, nc_parent_folder={nc_parent_folder[:60] if nc_parent_folder else None}")
     # Get or create addon
     addon_name = f"pbc_{dn}"
     if frappe.db.exists("PibiDAV Addon", addon_name):
         pibidav = frappe.get_doc("PibiDAV Addon", addon_name)
+        check_addon_owner(pibidav, dt, dn)
     else:
         pibidav = frappe.new_doc("PibiDAV Addon")
         pibidav.ref_doctype = dt
@@ -756,24 +787,21 @@ def enable_nc_addon(dt, dn, nc_parent_folder=None):
 
     pibidav.nc_enable = 1
 
-    # If nc_parent_folder has a link, resolve it to a path
-    if nc_parent_folder:
-        pibidav.nc_folder_internal_link = nc_parent_folder
-        # Extract fileid from link
-        match = re.search(r'/f/(\d+)', nc_parent_folder)
-        if match:
-            fileid = match.group(1)
-            try:
-                nc_session = make_nc_session()
-                print(f"enable_nc_addon: NC session created, resolving fileid {fileid}")
-                if nc_session and nc_session != "Failed":
-                    folder_path = nc_session.get_path_from_fileid(fileid)
-                    print(f"enable_nc_addon: folder_path = {folder_path}")
-                    if folder_path and folder_path.startswith("/"):
-                        pibidav.nc_folder = folder_path
-            except Exception as e:
-                print(f"enable_nc_addon: ERROR resolving fileid {fileid}: {e}")
-                frappe.log_error(f"Could not resolve fileid {fileid}: {e}", "enable_nc_addon")
+    # If nc_parent_folder has a link, resolve it to a path inside the documents root
+    match = re.search(r'/f/(\d+)', nc_parent_folder or "")
+    if match:
+        fileid = match.group(1)
+        try:
+            nc_session = make_nc_session()
+            folder_path = nc_session.get_path_from_fileid(fileid) if nc_session else None
+        except Exception as e:
+            folder_path = None
+            frappe.log_error(f"Could not resolve fileid {fileid}: {e}", "enable_nc_addon")
+        if folder_path and folder_path.startswith("/") and under_nc_roots(folder_path):
+            pibidav.nc_folder = folder_path
+            pibidav.nc_folder_internal_link = nc_link(fileid)
+        else:
+            frappe.throw(_("That NextCloud folder is not inside the documents root"))
 
     # If nc_folder still empty, try default from settings
     if not pibidav.nc_folder:
@@ -784,7 +812,6 @@ def enable_nc_addon(dt, dn, nc_parent_folder=None):
             pibidav.nc_folder = settings.nc_folder
 
     pibidav.save()
-    frappe.db.commit()
 
     return {
         "name": pibidav.name,
@@ -796,8 +823,7 @@ def enable_nc_addon(dt, dn, nc_parent_folder=None):
 def create_nc_subfolder(parent_folder, folder_name):
     require_nc_role()
     check_nc_name(folder_name)
-    if ".." in (parent_folder or "").split("/"):
-        frappe.throw(_("Invalid NextCloud path: {0}").format(parent_folder))
+    check_nc_root(parent_folder)
     try:
         session = make_nc_session()
         if session == "Failed":

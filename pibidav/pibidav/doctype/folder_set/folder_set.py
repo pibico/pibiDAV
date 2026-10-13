@@ -30,6 +30,8 @@ class FolderSet(NestedSet):
 
 @frappe.whitelist()
 def get_children(doctype, parent='', **filters):
+	if doctype != 'Folder Set':
+		frappe.throw(_("Not permitted"), frappe.PermissionError)
 	return _get_children(doctype, parent)
 
 def _get_children(doctype, parent='', ignore_permissions=False):
@@ -52,5 +54,6 @@ def _get_children(doctype, parent='', ignore_permissions=False):
 	)
 
 @frappe.whitelist()
-def rename(old, new, debug=False):
-	return frappe.model.rename_doc.rename_doc('Folder Set', old, new, debug)
+def rename(old, new):
+	frappe.only_for(("System Manager", "Docs Controller"))
+	return frappe.model.rename_doc.rename_doc('Folder Set', old, new)

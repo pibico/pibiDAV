@@ -44,6 +44,7 @@ has_permission = {
 	"DAV Card Link": "pibidav.pibidav_core.permissions.has_owner_permission",
 	"DAV Pending Contact": "pibidav.pibidav_core.permissions.has_owner_permission",
 	"DAV Cal Link": "pibidav.pibidav_core.permissions.has_owner_permission",
+	"PibiDAV Addon": "pibidav.pibidav.doctype.pibidav_addon.pibidav_addon.has_permission",
 }
 
 ignore_links_on_delete = ["DAV Card Link", "DAV Cal Link", "DAV Pending Contact"]

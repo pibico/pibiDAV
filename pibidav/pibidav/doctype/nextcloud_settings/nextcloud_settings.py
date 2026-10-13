@@ -116,13 +116,10 @@ class NextCloudSettings(Document):
       self.failed_uploads.append(db_backup)
       self.error_log.append(_('\r\nFailed while uploading DB'))
       
-    site_config_response = self.upload_backup(site_config)
-    if site_config_response == "Failed":
-      self.failed_uploads.append(site_config)
-      self.error_log.append(_('\r\nFailed while uploading Site Config'))
-      
+    ## site_config.json is not uploaded: it holds the encryption key and the database
+    ## password, and the Nextcloud account is also used for everyday operations
     ## File Backup
-    if self.backup_files and db_response != "Failed" and site_config_response != "Failed":
+    if self.backup_files and db_response != "Failed":
       self.file_upload(public_file_backup, private_file_backup) 
       
   def file_upload(self, public_file_backup, private_file_backup):

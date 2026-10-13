@@ -107,7 +107,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-10-13 00:30:00.000000",
+ "modified": "2026-10-14 02:00:00.000000",
  "modified_by": "Administrator",
  "module": "Pibidav",
  "name": "PibiDAV Addon",
@@ -127,14 +127,14 @@
   },
   {
    "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
+   "delete": 0,
+   "email": 0,
+   "export": 0,
    "print": 1,
    "read": 1,
-   "report": 1,
+   "report": 0,
    "role": "NextCloud User",
-   "share": 1,
+   "share": 0,
    "write": 1
   },
   {

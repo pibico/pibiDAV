@@ -22,6 +22,7 @@
   "nc_doctype_included",
   "cb_nc_selection",
   "nc_doctype_excluded",
+  "nc_documents_root",
   "sb_settings",
   "reference_item"
  ],
@@ -142,12 +143,18 @@
   {
    "fieldname": "cb_01",
    "fieldtype": "Column Break"
+  },
+  {
+   "description": "Folder of the NextCloud account that users may browse, link and create folders in (e.g. /Company/). Empty: only the destination folders of the doctypes below. Keep backups outside it.",
+   "fieldname": "nc_documents_root",
+   "fieldtype": "Data",
+   "label": "Documents Root"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2022-05-11 22:03:17.161609",
+ "modified": "2026-10-14 02:00:00.000000",
  "modified_by": "Administrator",
  "module": "Pibidav",
  "name": "NextCloud Settings",
