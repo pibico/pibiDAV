@@ -2,7 +2,8 @@
 # For license information, please see license.txt
 
 """The Client Script 'Purchase Invoice PDF Fill' (module Pibidav) only lived in the
-database of one site; its logic is now public/js/nc_invoice.js."""
+database of one site; its logic moved to public/js/nc_invoice.js and, on 14/10/2026,
+to the cloud button of pibidrive (public link of the invoice PDF in pdf_file)."""
 
 import frappe
 

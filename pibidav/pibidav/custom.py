@@ -18,9 +18,9 @@ from frappe.utils.file_manager import get_file_path
 import frappe.desk.doctype.tag.tag as tag
 
 NC_ROLES = ("System Manager", "Docs Controller", "NextCloud User")
-# Public share links (no password, no expiry) are only created for invoices:
-# they are sent by hand to the accounting advisor at month end
-PUBLIC_LINK_DOCTYPES = ("Purchase Invoice", "Sales Invoice")
+# Invoice attachments (and their public link in pdf_file) moved to pibidrive's cloud
+# button (Paco, 14/10/2026): pibidav no longer uploads them
+SKIP_DOCTYPES = ("Purchase Invoice", "Sales Invoice")
 
 def require_nc_role():
   frappe.only_for(NC_ROLES)
@@ -331,6 +331,8 @@ def upload_file_to_nc(doc, method=None):
   ## Folders have no file_url: nothing to tag or upload
   if doc.is_folder or not doc.file_url:
     return
+  if doc.attached_to_doctype in SKIP_DOCTYPES:
+    return
   ## Tag File in Frappe
   _tag_list = tag_file_fp(doc)
   ## Method only valid for Files, not WebSites
@@ -388,26 +390,9 @@ def upload_file_to_nc(doc, method=None):
       except Exception as e:
         frappe.log_error(f"File not found in NC after upload: {str(e)}", "PibiDAV Upload")
 
-      ## Get Shared Link from NC - call directly (not via enqueue)
-      ## The link opens the file without a password: it is never written to the logs
-      share_link = ""
-      if doc.attached_to_doctype in PUBLIC_LINK_DOCTYPES:
-        try:
-          share = nc.share_file_with_link(path=nc_path)
-          if share:
-            share_link = share.get_link()
-            frappe.logger().info(f"Share link created for File {doc.name}")
-          else:
-            frappe.logger().warning(f"share_file_with_link returned None")
-        except Exception as e:
-          frappe.log_error(f"Error creating share link: {str(e)}", "PibiDAV Share Link")
-          frappe.logger().error(f"Full exception details: {type(e).__name__}: {str(e)}")
-          share_link = ""
-
       ## Update and save File in frappe updated with NC data
       doc.uploaded_to_nextcloud = 1
       doc.folder_path = document.nc_folder
-      doc.share_link = share_link
       
       fileid, nctags = tag_file_nc(nc, nc_path, _tag_list)
       doc.fileid = fileid
@@ -423,7 +408,7 @@ def upload_file_to_nc(doc, method=None):
       doc.save()
       nc.logout()
 
-      return {'fname': doc, 'local_path': local_path, 'local_site': share_link}
+      return {'fname': doc, 'local_path': local_path, 'local_site': doc.get('share_link') or ''}
   else:
     return
 

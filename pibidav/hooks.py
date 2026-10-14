@@ -8,16 +8,14 @@ required_apps = ["erpnext"]  # Custom Fields and the Nextcloud folder buttons on
 
 app_include_icons = ["pibidav/icons/timeless/icons.svg"]
 
-# Nextcloud folder buttons (legacy, moves to pibidrive)
+# Nextcloud folder buttons (legacy, moves to pibidrive; invoices already moved: cloud button)
 _NC_DOCTYPES = (
 	"Contact",
 	"Event",
 	"Customer",
 	"Supplier",
 	"Project",
-	"Sales Invoice",
 	"Sales Order",
-	"Purchase Invoice",
 	"Quotation",
 	"Purchase Order",
 	"Task",
@@ -30,8 +28,6 @@ doctype_js["Contact"].append("public/js/dav_contact.js")
 doctype_js["Event"].append("public/js/dav_event.js")
 for _dt in ("Customer", "Supplier"):
 	doctype_js[_dt].append("public/js/nc_party.js")
-for _dt in ("Sales Invoice", "Purchase Invoice"):
-	doctype_js[_dt].append("public/js/nc_invoice.js")
 doctype_list_js = {"Contact": "public/js/dav_contact_list.js"}
 
 permission_query_conditions = {
