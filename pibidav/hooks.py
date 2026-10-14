@@ -28,6 +28,10 @@ _NC_DOCTYPES = (
 doctype_js = {dt: ["public/js/dist/nc_pibidav.js"] for dt in _NC_DOCTYPES}
 doctype_js["Contact"].append("public/js/dav_contact.js")
 doctype_js["Event"].append("public/js/dav_event.js")
+for _dt in ("Customer", "Supplier"):
+	doctype_js[_dt].append("public/js/nc_party.js")
+for _dt in ("Sales Invoice", "Purchase Invoice"):
+	doctype_js[_dt].append("public/js/nc_invoice.js")
 doctype_list_js = {"Contact": "public/js/dav_contact_list.js"}
 
 permission_query_conditions = {

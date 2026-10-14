@@ -4,3 +4,4 @@
 pibidav.patches.v15_0.adopt_pibicard_contacts
 pibidav.patches.v15_0.unique_dav_links
 pibidav.patches.v15_0.set_nc_documents_root
+pibidav.patches.v15_0.remove_pi_pdf_fill_client_script
