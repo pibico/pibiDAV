@@ -1,10 +1,9 @@
 # pibiDAV
 
-Frappe/ERPNext v15 app (branch `v15`) that connects Frappe with CalDAV, CardDAV and Nextcloud servers:
+Frappe/ERPNext v15 app (branch `v15`) that connects Frappe with CalDAV and CardDAV servers (Nextcloud included):
 
 - **Contacts (CardDAV):** two-way sync of Contacts with the address books of each user, plus vCard tools that need no server (download a vCard or a vCard book, QR code, .vcf import).
 - **Calendar (CalDAV):** two-way sync of Events with the calendars of each user, and e-mail invitations (iCalendar REQUEST).
-- **Nextcloud files (legacy):** a copy of the attachments of selected doctypes in Nextcloud folders, Folder Set templates and a database backup to Nextcloud. This part will move to pibidrive.
 
 ## Installation
 
@@ -33,16 +32,9 @@ It needs ERPNext (Custom Fields and buttons on Customer, Supplier, Project...). 
 - **Conflicts.** If an item changed on the server and in Frappe since the last sync, it is not overwritten, and a *Conflict* row is written to DAV Audit Log.
 - **Contact UID.** `Contact.dav_uid` keeps the vCard UID of each contact. The UIDs of the old pibicard app were adopted by a patch.
 
-## Nextcloud files (legacy)
+## Nextcloud files
 
-**NextCloud Settings** holds:
-
-- the superuser account;
-- the backup options;
-- the doctypes whose attachments go to Nextcloud;
-- the **Documents Root**: the only folder of that account that users can browse, link or create folders in. Keep backups outside it.
-
-Each user browses with their own Nextcloud login, kept in the user profile and always on the server of NextCloud Settings. The backup uploads the database (and optionally the files), but not `site_config.json`.
+They are in **pibidrive** (libraries, cloud button, folders per record and public links). pibidav kept them until 14/10/2026; a patch removed that part and its data was migrated to pibidrive.
 
 ## Development
 

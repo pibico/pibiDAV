@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"pdHeader01\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>pibiDAV</b></span>\",\"col\":12}},{\"id\":\"pdCardDav01\",\"type\":\"card\",\"data\":{\"card_name\":\"DAV\",\"col\":4}},{\"id\":\"XQTScKtokJ\",\"type\":\"card\",\"data\":{\"card_name\":\"Documents\",\"col\":4}},{\"id\":\"OIx7Apgo_M\",\"type\":\"card\",\"data\":{\"card_name\":\"Configuraci\\u00f3n\",\"col\":4}}]",
+ "content": "[{\"id\": \"pdHeader01\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>pibiDAV</b></span>\", \"col\": 12}}, {\"id\": \"pdCardDav01\", \"type\": \"card\", \"data\": {\"card_name\": \"DAV\", \"col\": 4}}, {\"id\": \"pdCardCC01\", \"type\": \"card\", \"data\": {\"card_name\": \"Contactos y calendario\", \"col\": 4}}]",
  "creation": "2025-01-27 13:17:47.060043",
  "custom_blocks": [],
  "docstatus": 0,
@@ -80,70 +80,11 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Configuración",
-   "link_count": 3,
+   "label": "Contactos y calendario",
+   "link_count": 2,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Categoría Archivado",
-   "link_count": 0,
-   "link_to": "File Category",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "NextCloud Settings",
-   "link_count": 0,
-   "link_to": "NextCloud Settings",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Plantillas Carpetas",
-   "link_count": 0,
-   "link_to": "Folder Set",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Documents",
-   "link_count": 4,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "pibiDAV Addon",
-   "link_count": 0,
-   "link_to": "PibiDAV Addon",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Tag",
-   "link_count": 0,
-   "link_to": "Tag",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
   },
   {
    "hidden": 0,
@@ -166,9 +107,9 @@
    "type": "Link"
   }
  ],
- "modified": "2026-10-13 23:30:00.000000",
+ "modified": "2026-10-14 18:40:00.000000",
  "modified_by": "Administrator",
- "module": "Pibidav",
+ "module": "Pibidav Core",
  "name": "pibiDAV",
  "number_cards": [],
  "owner": "Administrator",
